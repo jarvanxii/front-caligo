@@ -2,7 +2,7 @@
 
 Frontend Vue 3 de Caligo. La aplicacion funciona como cabina de mando para los modulos de ciberseguridad y se conecta al backend Spring local mediante JWT.
 
-Los modulos mas avanzados ahora mismo estan en **Reconocimiento**, **Vulnerabilidades**, **Contrasenas** y **Redes / Utilidades**. Reconocimiento agrupa Caligo Intel, Nmap y OpenVAS. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto y sqlmap contra el backend Spring. Contrasenas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor. Redes / Utilidades integra WHOAMI e interfaz VPN del servidor.
+Los modulos mas avanzados ahora mismo estan en **Reconocimiento**, **OSINT**, **Vulnerabilidades**, **Contrasenas** y **Redes / Utilidades**. Reconocimiento agrupa Caligo Intel, Nmap y OpenVAS. OSINT integra Caligo People, Sherlock, Maigret, Social Analyzer, Holehe y theHarvester contra endpoints JWT. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto y sqlmap contra el backend Spring. Contrasenas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor. Redes / Utilidades integra WHOAMI e interfaz VPN del servidor.
 
 ## Stack
 
@@ -35,11 +35,13 @@ front-caligo/
       HashIdentifierWorkbench.vue
       PasswordCrackWorkbench.vue
       ScannerWorkbench.vue
+      OsintToolWorkbench.vue
       VulnerabilityToolWorkbench.vue
       WordlistGeneratorWorkbench.vue
       WordlistInventory.vue
     data/
       modulePages.js
+      osintTools.js
       vulnerabilityTools.js
     router/
       index.js
@@ -50,29 +52,47 @@ front-caligo/
     views/
       HomeView.vue
       LoginView.vue
-      ReconnaissanceView.vue
-      OsintView.vue
-      VulnerabilitiesView.vue
-      UrlsView.vue
-      OpenvasView.vue
-      MetasploitView.vue
-      BruteForceView.vue
-      PasswordsView.vue
-      vulnerabilities/
+      reconocimiento/
+        ReconnaissanceView.vue
+        UrlsView.vue
+        NmapView.vue
+        OpenvasView.vue
+        urls/
+      osint/
+        OsintView.vue
+        ProfileSearchView.vue
+        SherlockView.vue
+        MaigretView.vue
+        SocialAnalyzerView.vue
+        HoleheView.vue
+        TheHarvesterView.vue
+      vulnerabilidades/
+        VulnerabilitiesView.vue
+        MetasploitView.vue
+        BruteForceView.vue
         NucleiView.vue
         SearchsploitView.vue
         NiktoView.vue
         SqlmapView.vue
-      passwords/
+      contrasenas/
+        PasswordsView.vue
         JohnView.vue
         HashcatView.vue
         HashIdentifierView.vue
         CrunchView.vue
         CewlView.vue
         WordlistsView.vue
-      EncodingView.vue
-      SteganographyView.vue
-      network/
+      codificacion/
+        EncodingView.vue
+      esteganografia/
+        SteganographyView.vue
+        StegoAnalyzeView.vue
+        StegoMetadataAnalyzeView.vue
+        StegoMetadataEditorView.vue
+        StegoEmbedView.vue
+        StegoExtractView.vue
+      redes-utilidades/
+        NetworkUtilitiesView.vue
         WhoamiView.vue
         VpnsView.vue
 ```
@@ -157,7 +177,7 @@ Orden actual:
 
 `Home` no muestra barra lateral. El resto de vistas muestran una barra lateral contextual con herramientas utiles, sin entrada de resumen o panoramica. La barra lateral soporta secciones desplegables mediante `sidebarSections` en `src/data/modulePages.js`, manteniendo `utilities` como lista plana para las tarjetas internas del modulo.
 
-Las herramientas de `URLs`, `Nmap` y `OpenVAS` cuelgan de `Reconocimiento`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto` y `sqlmap` cuelgan de `Vulnerabilidades`; `WHOAMI` y `VPNs` cuelgan de `Redes / Utilidades`. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el analisis inteligente.
+Las herramientas de `URLs`, `Nmap` y `OpenVAS` cuelgan de `Reconocimiento`; `Caligo People`, `Sherlock`, `Maigret`, `Social Analyzer`, `Holehe` y `theHarvester` cuelgan de `OSINT`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto` y `sqlmap` cuelgan de `Vulnerabilidades`; `WHOAMI` y `VPNs` cuelgan de `Redes / Utilidades`. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el analisis inteligente.
 
 El header muestra, junto a la ruleta de ajustes, dos lecturas de identidad:
 
@@ -218,6 +238,47 @@ Utilidades visibles dentro del desplegable `URLs` de la barra lateral de Reconoc
 - Caligo Intel
 
 Las vistas URL individuales siguen existiendo como piezas internas, pero no se muestran en la barra lateral porque `Caligo Intel` ya une DNS, parser, HTTP, TLS, reputacion, historial, archivos publicos, endpoints y herramientas locales.
+
+## OSINT
+
+Vistas:
+
+```text
+src/views/osint/ProfileSearchView.vue
+src/views/osint/SherlockView.vue
+src/views/osint/MaigretView.vue
+src/views/osint/SocialAnalyzerView.vue
+src/views/osint/HoleheView.vue
+src/views/osint/TheHarvesterView.vue
+src/components/OsintToolWorkbench.vue
+src/data/osintTools.js
+```
+
+Rutas:
+
+| Vista | Ruta |
+| --- | --- |
+| Caligo People | `/osint/personas` |
+| Sherlock | `/osint/sherlock` |
+| Maigret | `/osint/maigret` |
+| Social Analyzer | `/osint/social-analyzer` |
+| Holehe | `/osint/holehe` |
+| theHarvester | `/osint/theharvester` |
+
+`Caligo People` acepta nombre real, pista opcional y plataformas para devolver candidatos publicos de LinkedIn y redes sociales. Las herramientas CLI se ejecutan en el servidor y usan jobs persistentes: puedes cambiar de vista y volver a la herramienta para recuperar progreso, logs y resultados.
+
+Endpoints usados:
+
+| Uso | Endpoint |
+| --- | --- |
+| Inventario OSINT | `GET /api/osint/capabilities` |
+| Busqueda por nombre | `POST /api/osint/profile-search/search` |
+| Sherlock | `POST /api/osint/sherlock/runs` |
+| Maigret | `POST /api/osint/maigret/runs` |
+| Social Analyzer | `POST /api/osint/social-analyzer/runs` |
+| Holehe | `POST /api/osint/holehe/runs` |
+| theHarvester | `POST /api/osint/theharvester/runs` |
+| Estado job | `GET /api/osint/{tool}/runs/{id}` |
 
 ## Redes / Utilidades
 

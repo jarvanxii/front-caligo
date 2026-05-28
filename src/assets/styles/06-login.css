@@ -1,0 +1,219 @@
+.login-view {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  height: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  place-items: center;
+  padding: 18px 28px 36px;
+  background: #040707;
+}
+
+.login-view::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(15, 23, 21, 0.08), transparent 36%),
+    linear-gradient(90deg, rgba(4, 7, 7, 0.68) 0%, rgba(4, 7, 7, 0.2) 50%, rgba(4, 7, 7, 0.68) 100%),
+    linear-gradient(180deg, rgba(4, 7, 7, 0.12) 0%, rgba(4, 7, 7, 0.58) 100%);
+  content: "";
+}
+
+.matrix-rain-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.login-shell {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: min(500px, 100%);
+  max-height: calc(100dvh - 54px);
+}
+
+.login-panel {
+  display: grid;
+  gap: 8px;
+  padding: clamp(20px, 4vw, 28px);
+  border: 1px solid rgba(226, 232, 240, 0.16);
+  background:
+    linear-gradient(180deg, rgba(21, 28, 32, 0.82), rgba(7, 11, 13, 0.92)),
+    linear-gradient(135deg, rgba(94, 234, 212, 0.075), transparent 42%),
+    rgba(7, 11, 13, 0.9);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(14px);
+}
+
+.login-logo-stage {
+  position: relative;
+  display: grid;
+  width: 260px;
+  margin: 0 auto 10px;
+  aspect-ratio: 1;
+  place-items: center;
+}
+
+.login-logo-stage::before {
+  position: absolute;
+  inset: 20%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(94, 234, 212, 0.18), transparent 64%),
+    radial-gradient(circle, rgba(226, 232, 240, 0.08), transparent 78%);
+  content: "";
+  filter: blur(0.5px);
+  animation: loginPulse 6s ease-in-out infinite;
+}
+
+.login-logo-orbit,
+.login-logo-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-logo-orbit {
+  border: 1px solid rgba(94, 234, 212, 0.28);
+  box-shadow:
+    inset 0 0 18px rgba(94, 234, 212, 0.08),
+    0 0 22px rgba(148, 163, 184, 0.12);
+}
+
+.login-logo-orbit--outer {
+  inset: 3%;
+}
+
+.login-logo-orbit--inner {
+  inset: 10%;
+  border-color: rgba(226, 232, 240, 0.22);
+}
+
+.login-logo-glow {
+  inset: 10%;
+  background:
+    radial-gradient(circle, rgba(94, 234, 212, 0.18), transparent 58%),
+    radial-gradient(circle, rgba(148, 163, 184, 0.13), transparent 78%);
+  animation: loginPulse 7s ease-in-out infinite reverse;
+}
+
+.login-logo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 232px;
+  height: 232px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 12px rgba(94, 234, 212, 0.36))
+    drop-shadow(0 0 24px rgba(226, 232, 240, 0.16));
+  animation: loginFloat 8s ease-in-out infinite;
+}
+
+.login-wordmark {
+  display: block;
+  width: min(210px, 74%);
+  height: 28px;
+  margin: -2px auto 14px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 5px rgba(226, 232, 240, 0.22))
+    drop-shadow(0 0 14px rgba(94, 234, 212, 0.18));
+}
+
+.login-panel h1 {
+  margin: 0 0 8px;
+  font-size: 2.9rem;
+  text-align: center;
+}
+
+.login-panel .eyebrow {
+  justify-self: start;
+}
+
+.login-panel p {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.login-panel label {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.login-panel input {
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  outline: none;
+  background: #090b0a;
+  color: var(--ink);
+}
+
+.login-panel input:focus {
+  border-color: var(--verdigris);
+}
+
+.login-panel button {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.privacy-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 5px 12px;
+  border-top: 1px solid rgba(192, 201, 213, 0.14);
+  background: rgba(8, 10, 13, 0.86);
+  color: rgba(215, 221, 229, 0.76);
+  font-size: 0.72rem;
+  line-height: 1.25;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes loginFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.35deg);
+  }
+
+  50% {
+    transform: translateY(-3px) rotate(0.35deg);
+  }
+}
+
+@keyframes loginPulse {
+  0%,
+  100% {
+    opacity: 0.58;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 0.88;
+    transform: scale(1.015);
+  }
+}
+

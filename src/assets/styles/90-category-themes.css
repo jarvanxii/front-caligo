@@ -1,0 +1,165 @@
+.app-shell {
+  --category-accent: #5eead4;
+  --category-accent-2: #9fb3c8;
+  --category-accent-rgb: 94, 234, 212;
+  --category-accent-2-rgb: 159, 179, 200;
+  --category-bg-a: rgba(6, 11, 13, 0.98);
+  --category-bg-b: rgba(3, 7, 9, 0.99);
+  --category-panel: rgba(7, 12, 14, 0.86);
+}
+
+.app-shell--module-reconocimiento {
+  --category-accent: #7dd3fc;
+  --category-accent-2: #5eead4;
+  --category-accent-rgb: 125, 211, 252;
+  --category-accent-2-rgb: 94, 234, 212;
+  --category-bg-a: rgba(5, 14, 19, 0.98);
+  --category-bg-b: rgba(2, 8, 12, 0.995);
+  --category-panel: rgba(6, 16, 20, 0.86);
+}
+
+.app-shell--module-osint {
+  --category-accent: #8fb4ff;
+  --category-accent-2: #f0abfc;
+  --category-accent-rgb: 143, 180, 255;
+  --category-accent-2-rgb: 240, 171, 252;
+  --category-bg-a: rgba(8, 10, 24, 0.98);
+  --category-bg-b: rgba(5, 5, 15, 0.995);
+  --category-panel: rgba(11, 12, 28, 0.86);
+}
+
+.app-shell--module-vulnerabilidades {
+  --category-accent: #fb7185;
+  --category-accent-2: #fb923c;
+  --category-accent-rgb: 251, 113, 133;
+  --category-accent-2-rgb: 251, 146, 60;
+  --category-bg-a: rgba(20, 8, 10, 0.98);
+  --category-bg-b: rgba(10, 5, 5, 0.995);
+  --category-panel: rgba(20, 9, 9, 0.86);
+}
+
+.app-shell--module-contrasenas {
+  --category-accent: #facc15;
+  --category-accent-2: #a3e635;
+  --category-accent-rgb: 250, 204, 21;
+  --category-accent-2-rgb: 163, 230, 53;
+  --category-bg-a: rgba(17, 14, 5, 0.98);
+  --category-bg-b: rgba(8, 8, 3, 0.995);
+  --category-panel: rgba(18, 15, 6, 0.86);
+}
+
+.app-shell--module-codificacion {
+  --category-accent: #34d399;
+  --category-accent-2: #bef264;
+  --category-accent-rgb: 52, 211, 153;
+  --category-accent-2-rgb: 190, 242, 100;
+  --category-bg-a: rgba(4, 16, 10, 0.98);
+  --category-bg-b: rgba(2, 8, 5, 0.995);
+  --category-panel: rgba(5, 17, 11, 0.86);
+}
+
+.app-shell--module-esteganografia {
+  --category-accent: #c084fc;
+  --category-accent-2: #67e8f9;
+  --category-accent-rgb: 192, 132, 252;
+  --category-accent-2-rgb: 103, 232, 249;
+  --category-bg-a: rgba(15, 9, 27, 0.98);
+  --category-bg-b: rgba(6, 5, 14, 0.995);
+  --category-panel: rgba(16, 10, 29, 0.86);
+}
+
+.app-shell--module-redes-utilidades {
+  --category-accent: #00ff5f;
+  --category-accent-2: #38bdf8;
+  --category-accent-rgb: 0, 255, 95;
+  --category-accent-2-rgb: 56, 189, 248;
+  --category-bg-a: rgba(3, 18, 10, 0.98);
+  --category-bg-b: rgba(2, 8, 10, 0.995);
+  --category-panel: rgba(3, 18, 12, 0.86);
+}
+
+.app-sidebar--reconocimiento {
+  --sidebar-accent: #7dd3fc;
+  --sidebar-accent-2: #5eead4;
+  --sidebar-accent-rgb: 125, 211, 252;
+}
+
+.app-sidebar--osint {
+  --sidebar-accent: #8fb4ff;
+  --sidebar-accent-2: #f0abfc;
+  --sidebar-accent-rgb: 143, 180, 255;
+}
+
+.app-sidebar--vulnerabilidades {
+  --sidebar-accent: #fb7185;
+  --sidebar-accent-2: #fb923c;
+  --sidebar-accent-rgb: 251, 113, 133;
+}
+
+.app-sidebar--contrasenas {
+  --sidebar-accent: #facc15;
+  --sidebar-accent-2: #a3e635;
+  --sidebar-accent-rgb: 250, 204, 21;
+}
+
+.app-sidebar--codificacion {
+  --sidebar-accent: #34d399;
+  --sidebar-accent-2: #bef264;
+  --sidebar-accent-rgb: 52, 211, 153;
+}
+
+.app-sidebar--esteganografia {
+  --sidebar-accent: #c084fc;
+  --sidebar-accent-2: #67e8f9;
+  --sidebar-accent-rgb: 192, 132, 252;
+}
+
+.app-sidebar--redes-utilidades {
+  --sidebar-accent: #00ff5f;
+  --sidebar-accent-2: #38bdf8;
+  --sidebar-accent-rgb: 0, 255, 95;
+}
+
+.app-shell--module-reconocimiento :is(.module-workspace, .urls-workspace, .scanner-workspace),
+.app-shell--module-osint :is(.module-workspace, .osint-workbench),
+.app-shell--module-vulnerabilidades :is(.module-workspace, .msf-workbench, .hydra-workbench, .vuln-workbench),
+.app-shell--module-contrasenas :is(.module-workspace, .password-lab),
+.app-shell--module-codificacion :is(.module-workspace),
+.app-shell--module-esteganografia :is(.module-workspace, .stego-workspace),
+.app-shell--module-redes-utilidades :is(.module-workspace, .identity-workbench, .vpn-workbench) {
+  --module-accent: var(--category-accent);
+  --module-accent-soft: rgba(var(--category-accent-rgb), 0.1);
+  background:
+    radial-gradient(circle at 86% 18%, rgba(var(--category-accent-2-rgb), 0.14), transparent 32%),
+    linear-gradient(112deg, rgba(var(--category-accent-rgb), 0.12), transparent 31%),
+    linear-gradient(245deg, rgba(var(--category-accent-2-rgb), 0.09), transparent 34%),
+    linear-gradient(180deg, var(--category-bg-a), var(--category-bg-b));
+}
+
+.app-shell--module-reconocimiento :is(.module-workspace, .urls-workspace, .scanner-workspace)::before,
+.app-shell--module-osint :is(.module-workspace, .osint-workbench)::before,
+.app-shell--module-vulnerabilidades :is(.module-workspace, .msf-workbench, .hydra-workbench, .vuln-workbench)::before,
+.app-shell--module-contrasenas :is(.module-workspace, .password-lab)::before,
+.app-shell--module-codificacion :is(.module-workspace)::before,
+.app-shell--module-esteganografia :is(.module-workspace, .stego-workspace)::before,
+.app-shell--module-redes-utilidades :is(.module-workspace, .identity-workbench, .vpn-workbench)::before {
+  background:
+    linear-gradient(90deg, rgba(226, 232, 240, 0.032) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(var(--category-accent-rgb), 0.026) 1px, transparent 1px),
+    repeating-linear-gradient(180deg, rgba(226, 232, 240, 0.022) 0 1px, transparent 1px 8px);
+  background-size: 72px 72px, 72px 72px, auto;
+}
+
+.app-shell--module-reconocimiento :is(.module-workspace__frame, .urls-workspace__copy, .urls-console, .urls-panel, .urls-score, .scanner-workspace__header > div, .scanner-engine, .scanner-console, .scanner-run, .scanner-panel),
+.app-shell--module-osint :is(.module-workspace__frame, .osint-tool-head > div, .osint-tool-status, .osint-panel),
+.app-shell--module-vulnerabilidades :is(.module-workspace__frame, .msf-title-block, .msf-rpc, .msf-status-strip article, .msf-panel, .hydra-topline > div, .hydra-status, .hydra-console, .hydra-run-panel, .hydra-results, .hydra-history, .vuln-tool-head, .vuln-tool-status, .vuln-panel),
+.app-shell--module-contrasenas :is(.module-workspace__frame, .password-lab__header > div, .password-lab__engine, .password-console, .password-run, .password-results, .password-history),
+.app-shell--module-codificacion :is(.module-workspace__frame),
+.app-shell--module-esteganografia :is(.module-workspace__frame, .stego-header > div, .stego-status, .stego-panel),
+.app-shell--module-redes-utilidades :is(.module-workspace__frame, .identity-head, .identity-panel, .identity-card, .vpn-profile-card) {
+  border-color: rgba(var(--category-accent-rgb), 0.18);
+  background:
+    linear-gradient(135deg, rgba(var(--category-accent-rgb), 0.055), transparent 44%),
+    linear-gradient(180deg, rgba(10, 15, 17, 0.88), rgba(4, 8, 9, 0.92)),
+    var(--category-panel);
+}

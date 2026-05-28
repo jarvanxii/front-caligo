@@ -130,13 +130,13 @@ export default {
     sidebarThemeClass() {
       const moduleKey = this.$route.meta?.moduleKey || this.currentPage?.key || this.$route.name;
       const themeByModule = {
-        reconocimiento: "blue",
-        osint: "blue",
-        vulnerabilidades: "orange",
-        contrasenas: "amber",
-        codificacion: "green",
-        esteganografia: "violet",
-        redesUtilidades: "green",
+        reconocimiento: "reconocimiento",
+        osint: "osint",
+        vulnerabilidades: "vulnerabilidades",
+        contrasenas: "contrasenas",
+        codificacion: "codificacion",
+        esteganografia: "esteganografia",
+        redesUtilidades: "redes-utilidades",
       };
       return `app-sidebar--${themeByModule[moduleKey] || this.currentPage?.accent || "green"}`;
     },

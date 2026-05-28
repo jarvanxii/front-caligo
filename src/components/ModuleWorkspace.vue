@@ -2,7 +2,7 @@
   <section
     id="module-overview"
     class="module-workspace"
-    :class="`module-workspace--${page.accent}`"
+    :class="[`module-workspace--${page.accent}`, `module-workspace--${page.key}`]"
     :aria-labelledby="`${page.key}-title`"
   >
     <div class="module-workspace__frame">

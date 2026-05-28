@@ -15,18 +15,6 @@
         </aside>
       </header>
 
-      <nav class="stego-tabs" aria-label="Herramientas de esteganografia">
-        <RouterLink
-          v-for="tool in tools"
-          :key="tool.key"
-          :class="{ 'is-active': tool.key === toolKey }"
-          :to="{ name: tool.routeName }"
-        >
-          <span>{{ tool.code }}</span>
-          <strong>{{ tool.label }}</strong>
-        </RouterLink>
-      </nav>
-
       <div class="stego-layout">
         <form v-if="toolKey === 'analyze'" class="stego-panel stego-console" @submit.prevent="analyzeFile">
           <header class="stego-panel__head">

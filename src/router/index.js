@@ -4,44 +4,50 @@ import store from "@/store";
 
 const HomeView = () => import("@/views/HomeView.vue");
 const LoginView = () => import("@/views/LoginView.vue");
-const ReconnaissanceView = () => import("@/views/ReconnaissanceView.vue");
-const OsintView = () => import("@/views/OsintView.vue");
-const VulnerabilitiesView = () => import("@/views/VulnerabilitiesView.vue");
-const OpenvasView = () => import("@/views/OpenvasView.vue");
-const MetasploitView = () => import("@/views/MetasploitView.vue");
-const UrlsView = () => import("@/views/UrlsView.vue");
-const UrlDnsResolverView = () => import("@/views/urls/UrlDnsResolverView.vue");
-const UrlInspectorView = () => import("@/views/urls/UrlInspectorView.vue");
-const UrlHttpSecurityView = () => import("@/views/urls/UrlHttpSecurityView.vue");
-const UrlTlsView = () => import("@/views/urls/UrlTlsView.vue");
-const UrlReputationView = () => import("@/views/urls/UrlReputationView.vue");
-const UrlHistoryView = () => import("@/views/urls/UrlHistoryView.vue");
-const UrlPublicFilesView = () => import("@/views/urls/UrlPublicFilesView.vue");
-const UrlEndpointsView = () => import("@/views/urls/UrlEndpointsView.vue");
-const UrlLocalToolsView = () => import("@/views/urls/UrlLocalToolsView.vue");
-const NmapView = () => import("@/views/NmapView.vue");
-const PasswordsView = () => import("@/views/PasswordsView.vue");
-const JohnView = () => import("@/views/passwords/JohnView.vue");
-const HashcatView = () => import("@/views/passwords/HashcatView.vue");
-const HashIdentifierView = () => import("@/views/passwords/HashIdentifierView.vue");
-const CrunchView = () => import("@/views/passwords/CrunchView.vue");
-const CewlView = () => import("@/views/passwords/CewlView.vue");
-const WordlistsView = () => import("@/views/passwords/WordlistsView.vue");
-const BruteForceView = () => import("@/views/BruteForceView.vue");
-const NucleiView = () => import("@/views/vulnerabilities/NucleiView.vue");
-const SearchsploitView = () => import("@/views/vulnerabilities/SearchsploitView.vue");
-const NiktoView = () => import("@/views/vulnerabilities/NiktoView.vue");
-const SqlmapView = () => import("@/views/vulnerabilities/SqlmapView.vue");
-const SteganographyView = () => import("@/views/SteganographyView.vue");
-const StegoAnalyzeView = () => import("@/views/steganography/StegoAnalyzeView.vue");
-const StegoMetadataAnalyzeView = () => import("@/views/steganography/StegoMetadataAnalyzeView.vue");
-const StegoMetadataEditorView = () => import("@/views/steganography/StegoMetadataEditorView.vue");
-const StegoEmbedView = () => import("@/views/steganography/StegoEmbedView.vue");
-const StegoExtractView = () => import("@/views/steganography/StegoExtractView.vue");
-const NetworkUtilitiesView = () => import("@/views/NetworkUtilitiesView.vue");
-const WhoamiView = () => import("@/views/network/WhoamiView.vue");
-const VpnsView = () => import("@/views/network/VpnsView.vue");
-const EncodingView = () => import("@/views/EncodingView.vue");
+const ReconnaissanceView = () => import("@/views/reconocimiento/ReconnaissanceView.vue");
+const UrlsView = () => import("@/views/reconocimiento/UrlsView.vue");
+const UrlDnsResolverView = () => import("@/views/reconocimiento/urls/UrlDnsResolverView.vue");
+const UrlInspectorView = () => import("@/views/reconocimiento/urls/UrlInspectorView.vue");
+const UrlHttpSecurityView = () => import("@/views/reconocimiento/urls/UrlHttpSecurityView.vue");
+const UrlTlsView = () => import("@/views/reconocimiento/urls/UrlTlsView.vue");
+const UrlReputationView = () => import("@/views/reconocimiento/urls/UrlReputationView.vue");
+const UrlHistoryView = () => import("@/views/reconocimiento/urls/UrlHistoryView.vue");
+const UrlPublicFilesView = () => import("@/views/reconocimiento/urls/UrlPublicFilesView.vue");
+const UrlEndpointsView = () => import("@/views/reconocimiento/urls/UrlEndpointsView.vue");
+const UrlLocalToolsView = () => import("@/views/reconocimiento/urls/UrlLocalToolsView.vue");
+const NmapView = () => import("@/views/reconocimiento/NmapView.vue");
+const OpenvasView = () => import("@/views/reconocimiento/OpenvasView.vue");
+const OsintView = () => import("@/views/osint/OsintView.vue");
+const ProfileSearchView = () => import("@/views/osint/ProfileSearchView.vue");
+const SherlockView = () => import("@/views/osint/SherlockView.vue");
+const MaigretView = () => import("@/views/osint/MaigretView.vue");
+const SocialAnalyzerView = () => import("@/views/osint/SocialAnalyzerView.vue");
+const HoleheView = () => import("@/views/osint/HoleheView.vue");
+const TheHarvesterView = () => import("@/views/osint/TheHarvesterView.vue");
+const VulnerabilitiesView = () => import("@/views/vulnerabilidades/VulnerabilitiesView.vue");
+const MetasploitView = () => import("@/views/vulnerabilidades/MetasploitView.vue");
+const BruteForceView = () => import("@/views/vulnerabilidades/BruteForceView.vue");
+const NucleiView = () => import("@/views/vulnerabilidades/NucleiView.vue");
+const SearchsploitView = () => import("@/views/vulnerabilidades/SearchsploitView.vue");
+const NiktoView = () => import("@/views/vulnerabilidades/NiktoView.vue");
+const SqlmapView = () => import("@/views/vulnerabilidades/SqlmapView.vue");
+const PasswordsView = () => import("@/views/contrasenas/PasswordsView.vue");
+const JohnView = () => import("@/views/contrasenas/JohnView.vue");
+const HashcatView = () => import("@/views/contrasenas/HashcatView.vue");
+const HashIdentifierView = () => import("@/views/contrasenas/HashIdentifierView.vue");
+const CrunchView = () => import("@/views/contrasenas/CrunchView.vue");
+const CewlView = () => import("@/views/contrasenas/CewlView.vue");
+const WordlistsView = () => import("@/views/contrasenas/WordlistsView.vue");
+const EncodingView = () => import("@/views/codificacion/EncodingView.vue");
+const SteganographyView = () => import("@/views/esteganografia/SteganographyView.vue");
+const StegoAnalyzeView = () => import("@/views/esteganografia/StegoAnalyzeView.vue");
+const StegoMetadataAnalyzeView = () => import("@/views/esteganografia/StegoMetadataAnalyzeView.vue");
+const StegoMetadataEditorView = () => import("@/views/esteganografia/StegoMetadataEditorView.vue");
+const StegoEmbedView = () => import("@/views/esteganografia/StegoEmbedView.vue");
+const StegoExtractView = () => import("@/views/esteganografia/StegoExtractView.vue");
+const NetworkUtilitiesView = () => import("@/views/redes-utilidades/NetworkUtilitiesView.vue");
+const WhoamiView = () => import("@/views/redes-utilidades/WhoamiView.vue");
+const VpnsView = () => import("@/views/redes-utilidades/VpnsView.vue");
 
 const routes = [
   {
@@ -178,6 +184,54 @@ const routes = [
     path: "/osint",
     name: "osint",
     component: OsintView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/personas",
+    name: "osintProfileSearch",
+    component: ProfileSearchView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/sherlock",
+    name: "osintSherlock",
+    component: SherlockView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/maigret",
+    name: "osintMaigret",
+    component: MaigretView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/social-analyzer",
+    name: "osintSocialAnalyzer",
+    component: SocialAnalyzerView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/holehe",
+    name: "osintHolehe",
+    component: HoleheView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/theharvester",
+    name: "osintTheHarvester",
+    component: TheHarvesterView,
     meta: {
       moduleKey: "osint",
     },
