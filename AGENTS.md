@@ -42,8 +42,18 @@ marketing-oriented. Header modules currently map to OpenVAS, Metasploit, URLs,
 Contraseñas and Esteganografía; keep naming aligned with the backend module
 codes when wiring API data.
 
+Frontend work is normally tested locally with Vite. Do not deploy this frontend
+unless the user explicitly asks for a frontend deploy. When backend behavior is
+changed from the paired `back-caligo` repository, the backend should be
+committed, pushed and deployed to the LAN server so this local frontend can test
+against a live API.
+
+Do not commit `.env.local`; use it only for the local API target. Before changing
+the LAN API host, check the intended Caligo server IP because previous project
+context has used `192.168.0.253`, while the credentials file maps
+`192.168.0.254` to another application server.
+
 ## Commit & Pull Request Guidelines
 
 This repo has no commit history yet. Use short Spanish descriptive commits and
 keep frontend changes separate from `back-caligo`.
-

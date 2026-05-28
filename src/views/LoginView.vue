@@ -2,7 +2,7 @@
   <section class="login-view" aria-label="Acceso a Caligo">
     <MatrixRain />
     <div class="login-shell">
-      <form class="login-panel" @submit.prevent="enterWithoutCredentials">
+      <form class="login-panel" @submit.prevent="enter">
         <div class="login-logo-stage" aria-hidden="true">
           <span class="login-logo-orbit login-logo-orbit--outer"></span>
           <span class="login-logo-orbit login-logo-orbit--inner"></span>
@@ -11,13 +11,16 @@
         </div>
         <img class="login-wordmark" src="@/assets/images/caligo-wordmark.png" alt="Caligo" />
         <span class="eyebrow">Acceso restringido</span>
-        <label for="email">Correo</label>
-        <input id="email" type="email" placeholder="analista@caligo.local" autocomplete="email" />
+        <label for="username">Usuario</label>
+        <input id="username" v-model.trim="username" type="text" placeholder="hacker" autocomplete="username" />
 
-        <label for="password">Clave</label>
-        <input id="password" type="password" placeholder="Clave de acceso" autocomplete="current-password" />
+        <label for="password">Contraseña</label>
+        <input id="password" v-model="password" type="password" placeholder="password123" autocomplete="current-password" />
 
-        <button type="submit">Acceder</button>
+        <p v-if="error" class="login-panel__error">{{ error }}</p>
+        <button type="submit" :disabled="loading" :aria-busy="loading.toString()">
+          {{ loading ? "Validando" : "Acceder" }}
+        </button>
       </form>
     </div>
   </section>
@@ -31,9 +34,32 @@ export default {
   components: {
     MatrixRain,
   },
+  data() {
+    return {
+      username: "",
+      password: "",
+      loading: false,
+      error: "",
+    };
+  },
   methods: {
-    enterWithoutCredentials() {
-      this.$router.push({ name: "home" });
+    async enter() {
+      this.loading = true;
+      this.error = "";
+      try {
+        if (!this.username || !this.password) {
+          throw new Error("Introduce usuario y contraseña");
+        }
+        await this.$store.dispatch("login", {
+          username: this.username,
+          password: this.password,
+        });
+        this.$router.push({ name: "home" });
+      } catch (error) {
+        this.error = error.message || "No se pudo entrar en Caligo";
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };

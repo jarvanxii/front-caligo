@@ -3,83 +3,105 @@
     <section class="home-hero" aria-labelledby="home-title">
       <AsciiDescent />
 
-      <div class="home-view__hero">
-        <div class="home-view__copy">
-          <span class="eyebrow">Laboratorio de ciberseguridad controlada</span>
-          <h1 id="home-title">Caligo</h1>
+      <div class="home-command" aria-labelledby="home-title">
+        <div class="home-command__copy">
+          <span class="eyebrow">Centro operativo</span>
+          <h1 id="home-title">Superficie, acceso y evidencia bajo control.</h1>
           <p>
-            Una consola web para centralizar analisis, codificacion, esteganografia y
-            herramientas ofensivas en entornos seguros.
+            Una cabina local para lanzar herramientas de seguridad desde el servidor,
+            revisar resultados y moverte entre fases sin perder trazabilidad.
           </p>
-          <div class="home-view__metrics" aria-label="Resumen del laboratorio">
-            <span><strong>05</strong> modulos base</span>
-            <span><strong>Lab</strong> aislado</span>
-            <span><strong>Trace</strong> activo</span>
+          <div class="home-command__stats" aria-label="Resumen del laboratorio">
+            <span><strong>22</strong> herramientas</span>
+            <span><strong>JWT</strong> activo</span>
+            <span><strong>LAN</strong> backend</span>
           </div>
-          <div class="home-view__actions">
-            <a class="primary-action" href="#openvas">Abrir OpenVAS</a>
-            <a class="secondary-action" href="#modulos">Ver modulos</a>
+          <div class="home-command__actions">
+            <RouterLink class="home-action home-action--primary" :to="{ name: 'reconocimiento' }">
+              Abrir reconocimiento
+            </RouterLink>
+            <RouterLink class="home-action" :to="{ name: 'vulnerabilidades' }">
+              Validar hallazgos
+            </RouterLink>
           </div>
         </div>
 
-        <aside class="signal-panel" aria-label="Estado inicial del laboratorio">
-          <div class="signal-panel__header">
-            <span>Estado</span>
-            <strong>Scaffold activo</strong>
+        <aside class="home-status-board" aria-label="Estado del laboratorio">
+          <div class="home-status-board__top">
+            <span>caligo://runtime</span>
+            <strong>Operativo</strong>
           </div>
-          <dl>
+
+          <div class="home-status-board__grid">
             <div>
-              <dt>Frontend</dt>
-              <dd>Vue 3</dd>
+              <span>API</span>
+              <strong>{{ apiBaseUrl }}</strong>
             </div>
             <div>
-              <dt>Rutas</dt>
-              <dd>Vue Router</dd>
+              <span>Sesion</span>
+              <strong>{{ currentUser }}</strong>
             </div>
             <div>
-              <dt>Estado</dt>
-              <dd>Vuex</dd>
+              <span>Modo</span>
+              <strong>Authorized lab</strong>
             </div>
-          </dl>
-          <div class="signal-panel__trace" aria-label="Traza del sistema">
-            <span>scope: authorized-lab</span>
-            <span>mode: controlled</span>
-            <span>audit: enabled</span>
+            <div>
+              <span>Salida</span>
+              <strong>Jobs y PDF</strong>
+            </div>
+          </div>
+
+          <ol class="home-status-board__flow" aria-label="Flujo de trabajo">
+            <li v-for="step in workflow" :key="step.code">
+              <span>{{ step.code }}</span>
+              <div>
+                <strong>{{ step.title }}</strong>
+                <small>{{ step.detail }}</small>
+              </div>
+            </li>
+          </ol>
+
+          <div class="home-status-board__trace">
+            <span>scope.locked</span>
+            <span>audit.enabled</span>
+            <span>server.tools.synced</span>
           </div>
         </aside>
       </div>
     </section>
 
-    <section id="modulos" class="module-section" aria-labelledby="module-section-title">
-      <div class="section-heading">
-        <span class="eyebrow">Primer mapa de trabajo</span>
-        <h2 id="module-section-title">Modulos previstos</h2>
-      </div>
+    <section id="modulos" class="home-tooldeck" aria-labelledby="module-section-title">
+      <header class="home-section-head">
+        <div>
+          <span class="eyebrow">Dominios de trabajo</span>
+          <h2 id="module-section-title">Herramientas organizadas por fase</h2>
+        </div>
+        <p>Entra por el objetivo: descubrir, validar, transformar o analizar artefactos.</p>
+      </header>
 
-      <div class="module-grid">
-        <article v-for="module in modules" :id="module.key" :key="module.key" class="module-card">
-          <span>{{ module.status }}</span>
-          <h3>{{ module.name }}</h3>
-          <p>{{ moduleDescriptions[module.key] }}</p>
-        </article>
+      <div class="home-toolgrid">
+        <RouterLink
+          v-for="module in modules"
+          :id="module.key"
+          :key="module.key"
+          :to="{ name: module.routeName }"
+          class="home-toolcard"
+        >
+          <span class="home-toolcard__status" :class="{ 'is-operational': module.status === 'operativo' }">
+            {{ module.status }}
+          </span>
+          <strong>{{ module.name }}</strong>
+          <p>{{ module.description }}</p>
+          <span class="home-toolcard__enter">Entrar</span>
+        </RouterLink>
       </div>
     </section>
 
-    <section id="operaciones" class="operations-band" aria-label="Principios operativos">
-      <article>
-        <span>01</span>
-        <strong>Entornos permitidos</strong>
-        <p>Las acciones se limitaran a laboratorios, rangos autorizados y activos definidos.</p>
-      </article>
-      <article>
-        <span>02</span>
-        <strong>Trazabilidad</strong>
-        <p>Cada ejecucion debera dejar registro, parametros y resultado verificable.</p>
-      </article>
-      <article>
-        <span>03</span>
-        <strong>Aislamiento</strong>
-        <p>Las herramientas pesadas viviran en workers separados del panel principal.</p>
+    <section id="operaciones" class="home-ops" aria-label="Principios operativos">
+      <article v-for="principle in principles" :key="principle.code">
+        <span>{{ principle.code }}</span>
+        <strong>{{ principle.title }}</strong>
+        <p>{{ principle.detail }}</p>
       </article>
     </section>
   </section>
@@ -98,14 +120,25 @@ export default {
     ...mapGetters({
       modules: "availableModules",
     }),
-    moduleDescriptions() {
-      return {
-        openvas: "Orquestacion futura de escaneos Greenbone/OpenVAS con resultados normalizados.",
-        metasploit: "Lanzamiento controlado de verificaciones y laboratorios de explotacion autorizados.",
-        urls: "Analisis, normalizacion y comprobacion de URLs, endpoints y superficies web.",
-        contrasenas: "Laboratorio controlado para John, Hashcat y gestion segura de hashes.",
-        esteganografia: "Herramientas para ocultacion, extraccion, encoding y transformaciones de datos.",
-      };
+    apiBaseUrl() {
+      return this.$store.state.apiBaseUrl?.replace(/^https?:\/\//, "") || "sin configurar";
+    },
+    currentUser() {
+      return this.$store.state.user?.username || "sin sesion";
+    },
+    workflow() {
+      return [
+        { code: "01", title: "Reconocimiento", detail: "URLs, DNS, Nmap y OpenVAS." },
+        { code: "02", title: "Validacion", detail: "Metasploit e Hydra bajo alcance." },
+        { code: "03", title: "Evidencia", detail: "Resultados, trazas e informes." },
+      ];
+    },
+    principles() {
+      return [
+        { code: "scope", title: "Alcance cerrado", detail: "Objetivos privados, rangos autorizados y validacion previa en backend." },
+        { code: "trace", title: "Ejecucion auditable", detail: "Jobs con usuario, parametros, progreso y salida tecnica conservada." },
+        { code: "ops", title: "Herramientas reales", detail: "El navegador orquesta; el servidor ejecuta motores instalados y controlados." },
+      ];
     },
   },
 };
