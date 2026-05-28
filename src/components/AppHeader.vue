@@ -16,6 +16,23 @@
         </RouterLink>
       </div>
 
+      <button
+        class="app-header__ip-monitor"
+        type="button"
+        title="Refrescar identidad de red"
+        aria-label="Refrescar IP cliente y servidor"
+        @click="refreshNetworkIdentity"
+      >
+        <span>
+          <small>IP SERVIDOR:</small>
+          <strong>{{ serverIpLabel }}</strong>
+        </span>
+        <span>
+          <small>IP CLIENTE:</small>
+          <strong>{{ clientIpLabel }}</strong>
+        </span>
+      </button>
+
       <div ref="settingsMenu" class="app-header__settings-wrap">
         <button
           class="app-header__settings"
@@ -242,10 +259,19 @@ export default {
       updateResult: null,
       serverToolFilter: "",
       activeToolGroup: "all",
-      priorityToolIds: ["metasploit", "hydra", "nuclei", "searchsploit", "nikto", "sqlmap", "nmap", "openvas", "john", "hashcat"],
+      priorityToolIds: ["metasploit", "hydra", "nuclei", "searchsploit", "nikto", "sqlmap", "nmap", "openvas", "wireguard", "openvpn", "john", "hashcat"],
+      networkIdentity: null,
+      clientPublicIp: "",
+      networkIdentityTimer: null,
     };
   },
   computed: {
+    serverIpLabel() {
+      return this.networkIdentity?.server?.publicIp || "...";
+    },
+    clientIpLabel() {
+      return this.clientPublicIp || this.networkIdentity?.client?.observedIp || "...";
+    },
     sortedServerTools() {
       return [...this.serverTools].sort((left, right) => {
         const groupDiff = this.groupRank(left.group) - this.groupRank(right.group);
@@ -303,10 +329,15 @@ export default {
   mounted() {
     document.addEventListener("click", this.onDocumentClick);
     document.addEventListener("keydown", this.onDocumentKeydown);
+    window.addEventListener("caligo:network-identity-changed", this.refreshNetworkIdentity);
+    this.refreshNetworkIdentity();
+    this.networkIdentityTimer = window.setInterval(this.refreshNetworkIdentity, 30000);
   },
   beforeUnmount() {
     document.removeEventListener("click", this.onDocumentClick);
     document.removeEventListener("keydown", this.onDocumentKeydown);
+    window.removeEventListener("caligo:network-identity-changed", this.refreshNetworkIdentity);
+    window.clearInterval(this.networkIdentityTimer);
     document.body.classList.remove("settings-updates-open");
   },
   watch: {
@@ -318,6 +349,34 @@ export default {
     },
   },
   methods: {
+    async refreshNetworkIdentity() {
+      await Promise.allSettled([
+        this.loadNetworkIdentity(),
+        this.loadClientPublicIp(),
+      ]);
+    },
+    async loadNetworkIdentity() {
+      if (!caligoApi.getStoredToken()) {
+        return;
+      }
+      try {
+        this.networkIdentity = await caligoApi.request("/api/network/identity");
+      } catch {
+        this.networkIdentity = null;
+      }
+    },
+    async loadClientPublicIp() {
+      try {
+        const response = await fetch("https://api.ipify.org?format=json", { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (/^[0-9a-fA-F:.]{3,80}$/.test(payload?.ip || "")) {
+          this.clientPublicIp = payload.ip;
+        }
+      } catch {
+        // Public client IP is best-effort; the backend-observed IP remains available.
+      }
+    },
     isNavActive(item) {
       return this.$route.name === item.routeName || this.$route.meta?.moduleKey === item.key;
     },
@@ -410,8 +469,9 @@ export default {
         Vulnerabilidades: 20,
         "Fuerza bruta": 30,
         Contrasenas: 40,
-        Esteganografia: 50,
-        URLs: 60,
+        Redes: 50,
+        Esteganografia: 60,
+        URLs: 70,
       }[group] ?? 99;
     },
     toolRank(id) {

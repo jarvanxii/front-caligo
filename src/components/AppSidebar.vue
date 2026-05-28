@@ -136,7 +136,7 @@ export default {
         contrasenas: "amber",
         codificacion: "green",
         esteganografia: "violet",
-        redesUtilidades: "blue",
+        redesUtilidades: "green",
       };
       return `app-sidebar--${themeByModule[moduleKey] || this.currentPage?.accent || "green"}`;
     },

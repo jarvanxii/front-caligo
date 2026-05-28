@@ -2,7 +2,7 @@
 
 Frontend Vue 3 de Caligo. La aplicacion funciona como cabina de mando para los modulos de ciberseguridad y se conecta al backend Spring local mediante JWT.
 
-Los modulos mas avanzados ahora mismo estan en **Reconocimiento**, **Vulnerabilidades** y **Contrasenas**. Reconocimiento agrupa Caligo Intel, Nmap y OpenVAS. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto y sqlmap contra el backend Spring. Contrasenas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor.
+Los modulos mas avanzados ahora mismo estan en **Reconocimiento**, **Vulnerabilidades**, **Contrasenas** y **Redes / Utilidades**. Reconocimiento agrupa Caligo Intel, Nmap y OpenVAS. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto y sqlmap contra el backend Spring. Contrasenas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor. Redes / Utilidades integra WHOAMI e interfaz VPN del servidor.
 
 ## Stack
 
@@ -72,6 +72,9 @@ front-caligo/
         WordlistsView.vue
       EncodingView.vue
       SteganographyView.vue
+      network/
+        WhoamiView.vue
+        VpnsView.vue
 ```
 
 ## Ejecucion local
@@ -154,7 +157,14 @@ Orden actual:
 
 `Home` no muestra barra lateral. El resto de vistas muestran una barra lateral contextual con herramientas utiles, sin entrada de resumen o panoramica. La barra lateral soporta secciones desplegables mediante `sidebarSections` en `src/data/modulePages.js`, manteniendo `utilities` como lista plana para las tarjetas internas del modulo.
 
-Las herramientas de `URLs`, `Nmap` y `OpenVAS` cuelgan de `Reconocimiento`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto` y `sqlmap` cuelgan de `Vulnerabilidades` para que el header agrupe dominios de trabajo y no herramientas sueltas. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el analisis inteligente.
+Las herramientas de `URLs`, `Nmap` y `OpenVAS` cuelgan de `Reconocimiento`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto` y `sqlmap` cuelgan de `Vulnerabilidades`; `WHOAMI` y `VPNs` cuelgan de `Redes / Utilidades`. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el analisis inteligente.
+
+El header muestra, junto a la ruleta de ajustes, dos lecturas de identidad:
+
+- `IP SERVIDOR`: IP publica de salida del backend Caligo, leida desde `/api/network/identity`.
+- `IP CLIENTE`: IP publica del navegador si `api.ipify.org` responde; si no, se mantiene la IP observada por el backend.
+
+La lectura se refresca al cargar, cada 30 segundos y cuando la vista de VPN emite cambios de tunel.
 
 ## Ajustes y actualizaciones
 
@@ -168,6 +178,8 @@ Endpoints usados:
 | --- | --- |
 | Inventario versionado | `GET /api/system/tools` |
 | Actualizar herramienta | `POST /api/system/tools/{id}/update` |
+
+El inventario incluye tambien herramientas de red/VPN cuando el backend las detecta: `wireguard`, `openvpn` y `resolvconf`.
 
 Las actualizaciones se ejecutan en el backend con una allowlist cerrada y
 requieren usuario `ADMIN`. Si el servidor no tiene permisos `sudo -n` para el
@@ -206,6 +218,43 @@ Utilidades visibles dentro del desplegable `URLs` de la barra lateral de Reconoc
 - Caligo Intel
 
 Las vistas URL individuales siguen existiendo como piezas internas, pero no se muestran en la barra lateral porque `Caligo Intel` ya une DNS, parser, HTTP, TLS, reputacion, historial, archivos publicos, endpoints y herramientas locales.
+
+## Redes / Utilidades
+
+Vistas:
+
+```text
+src/views/network/WhoamiView.vue
+src/views/network/VpnsView.vue
+src/components/IdentityWorkbench.vue
+src/components/VpnWorkbench.vue
+```
+
+Rutas:
+
+| Vista | Ruta |
+| --- | --- |
+| WHOAMI | `/redes-utilidades/identidad/whoami` |
+| VPNs | `/redes-utilidades/identidad/vpns` |
+
+`WHOAMI` adapta la utilidad de **La Identidad de Gollum** al estilo Caligo:
+navegador, sistema, permisos, storage, cookies, scripts, WebGL, media devices,
+geolocalizacion opcional, IP publica del navegador, IP observada por el backend,
+IP publica del servidor y estado VPN.
+
+`VPNs` lee perfiles WireGuard/OpenVPN del servidor, permite elegir perfil por
+proveedor/pais/ciudad si los metadatos existen, conecta/desconecta mediante el
+backend y refresca automaticamente las IPs del header al cambiar el tunel.
+
+Endpoints usados:
+
+| Uso | Endpoint |
+| --- | --- |
+| Identidad cliente/servidor | `GET /api/network/identity` |
+| Estado VPN | `GET /api/network/vpn/status` |
+| Perfiles VPN | `GET /api/network/vpn/profiles` |
+| Conectar VPN | `POST /api/network/vpn/connect` |
+| Desconectar VPN | `POST /api/network/vpn/disconnect` |
 
 ## Nmap y OpenVAS dentro de Reconocimiento
 

@@ -39,6 +39,8 @@ const StegoMetadataEditorView = () => import("@/views/steganography/StegoMetadat
 const StegoEmbedView = () => import("@/views/steganography/StegoEmbedView.vue");
 const StegoExtractView = () => import("@/views/steganography/StegoExtractView.vue");
 const NetworkUtilitiesView = () => import("@/views/NetworkUtilitiesView.vue");
+const WhoamiView = () => import("@/views/network/WhoamiView.vue");
+const VpnsView = () => import("@/views/network/VpnsView.vue");
 const EncodingView = () => import("@/views/EncodingView.vue");
 
 const routes = [
@@ -336,6 +338,22 @@ const routes = [
     path: "/redes-utilidades",
     name: "redesUtilidades",
     component: NetworkUtilitiesView,
+    meta: {
+      moduleKey: "redesUtilidades",
+    },
+  },
+  {
+    path: "/redes-utilidades/identidad/whoami",
+    name: "networkWhoami",
+    component: WhoamiView,
+    meta: {
+      moduleKey: "redesUtilidades",
+    },
+  },
+  {
+    path: "/redes-utilidades/identidad/vpns",
+    name: "networkVpns",
+    component: VpnsView,
     meta: {
       moduleKey: "redesUtilidades",
     },
