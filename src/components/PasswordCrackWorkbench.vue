@@ -24,7 +24,7 @@
 
           <label>
             Hashes autorizados
-            <textarea v-model="form.hashes" rows="6" spellcheck="false" placeholder="Un hash por linea"></textarea>
+            <textarea v-model="form.hashes" rows="6" spellcheck="false" placeholder="Un hash por línea"></textarea>
           </label>
 
           <div class="password-fields">
@@ -50,13 +50,13 @@
               Ataque
               <select v-model="form.attackMode">
                 <option value="wordlist">Diccionario</option>
-                <option value="mask">Mascara</option>
+                <option value="mask">Máscara</option>
               </select>
             </label>
           </div>
 
           <label v-if="!isJohn && form.attackMode === 'mask'">
-            Mascara
+            Máscara
             <input v-model.trim="form.mask" type="text" spellcheck="false" placeholder="?l?l?l?l?d?d" />
           </label>
 
@@ -94,7 +94,7 @@
           <p v-else-if="capabilityError" class="password-alert">{{ capabilityError }}</p>
         </form>
 
-        <section class="password-run" aria-label="Ejecucion">
+        <section class="password-run" aria-label="Ejecución">
           <header>
             <span>{{ job?.status || "READY" }}</span>
             <strong>{{ progress }}%</strong>
@@ -110,7 +110,7 @@
               <dd>{{ job?.phase || "Esperando material" }}</dd>
             </div>
             <div>
-              <dt>Duracion</dt>
+              <dt>Duración</dt>
               <dd>{{ durationLabel }}</dd>
             </div>
             <div>
@@ -218,14 +218,14 @@ export default {
     copy() {
       return this.isJohn
         ? {
-            eyebrow: "Contrasenas / John",
+            eyebrow: "Contraseñas / John",
             title: "John the Ripper",
-            summary: "Auditoria offline de hashes con formatos de John, diccionarios locales del servidor y jobs persistentes.",
+            summary: "Auditoría offline de hashes con formatos de John, diccionarios locales del servidor y jobs persistentes.",
           }
         : {
-            eyebrow: "Contrasenas / Hashcat",
+            eyebrow: "Contraseñas / Hashcat",
             title: "Hashcat",
-            summary: "Cracking offline con modos Hashcat, ataque por diccionario o mascara y seguimiento del proceso en vivo.",
+            summary: "Cracking offline con modos Hashcat, ataque por diccionario o máscara y seguimiento del proceso en vivo.",
           };
     },
     toolInfo() {
@@ -258,7 +258,7 @@ export default {
     },
     startButtonLabel() {
       if (this.starting) return "Preparando";
-      if (this.isRunning) return "En ejecucion";
+      if (this.isRunning) return "En ejecución";
       return this.isJohn ? "Ejecutar John" : "Ejecutar Hashcat";
     },
     progress() {
@@ -286,12 +286,12 @@ export default {
       const lines = this.job?.logs || [];
       if (lines.length) return lines.slice(-14).join("\n");
       if (this.job?.error) return this.job.error;
-      return this.job ? "El motor aun no ha emitido traza." : "La traza aparecera al iniciar una ejecucion.";
+      return this.job ? "El motor aún no ha emitido traza." : "La traza aparecerá al iniciar una ejecución.";
     },
     emptyResultLabel() {
-      if (this.isRunning) return "El motor sigue trabajando. Puedes cambiar de vista y volver aqui para recuperar el progreso.";
+      if (this.isRunning) return "El motor sigue trabajando. Puedes cambiar de vista y volver aquí para recuperar el progreso.";
       if (this.job?.status === "COMPLETED") return "No se han recuperado passwords con el material actual.";
-      return "Ejecuta una auditoria o carga un job reciente para ver resultados.";
+      return "Ejecuta una auditoría o carga un job reciente para ver resultados.";
     },
   },
   watch: {
@@ -320,7 +320,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para ejecutar herramientas");
+        throw new Error("Inicia sesión para ejecutar herramientas");
       }
     },
     async loadCapabilities() {
@@ -331,7 +331,7 @@ export default {
         this.applyDefaults();
         this.loadHistory();
       } catch (error) {
-        this.capabilityError = error.message || "No se pudo consultar las herramientas de contrasenas";
+        this.capabilityError = error.message || "No se pudieron consultar las herramientas de contraseñas";
       }
     },
     applyDefaults() {

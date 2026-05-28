@@ -407,7 +407,36 @@ const routes = [
   {
     path: "/redes-utilidades/identidad/vpns",
     name: "networkVpns",
+    redirect: { name: "networkVpnsWireguard" },
+    meta: {
+      moduleKey: "redesUtilidades",
+    },
+  },
+  {
+    path: "/redes-utilidades/vpns",
+    redirect: { name: "networkVpnsWireguard" },
+    meta: {
+      moduleKey: "redesUtilidades",
+    },
+  },
+  {
+    path: "/redes-utilidades/vpns/wireguard",
+    name: "networkVpnsWireguard",
     component: VpnsView,
+    props: {
+      initialProtocol: "wireguard",
+    },
+    meta: {
+      moduleKey: "redesUtilidades",
+    },
+  },
+  {
+    path: "/redes-utilidades/vpns/openvpn",
+    name: "networkVpnsOpenvpn",
+    component: VpnsView,
+    props: {
+      initialProtocol: "openvpn",
+    },
     meta: {
       moduleKey: "redesUtilidades",
     },

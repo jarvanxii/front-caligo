@@ -18,13 +18,13 @@
       <div class="osint-grid">
         <form class="osint-panel osint-console" @submit.prevent="submit">
           <header>
-            <span>{{ tool.mode === "search" ? "Consulta" : "Parametros" }}</span>
+            <span>{{ tool.mode === "search" ? "Consulta" : "Parámetros" }}</span>
             <strong>{{ tool.command }}</strong>
           </header>
 
           <template v-if="tool.mode === 'search'">
             <label>
-              Nombre o identidad publica
+              Nombre o identidad pública
               <input v-model.trim="form.query" type="text" autocomplete="off" spellcheck="false" placeholder="Nombre Apellido" />
             </label>
 
@@ -41,7 +41,7 @@
             </div>
 
             <label>
-              Resultados maximos
+              Resultados máximos
               <input v-model.number="form.maxResults" type="number" min="3" max="40" />
             </label>
           </template>
@@ -74,7 +74,7 @@
             </div>
             <div class="osint-fields">
               <label>
-                Limite
+                Límite
                 <input v-model.number="form.limit" type="number" min="20" max="1000" />
               </label>
               <label>
@@ -115,7 +115,7 @@
 
         <section class="osint-panel osint-run">
           <header>
-            <span>{{ tool.mode === "search" ? "Resultados publicos" : job?.phase || "Esperando parametros" }}</span>
+            <span>{{ tool.mode === "search" ? "Resultados públicos" : job?.phase || "Esperando parámetros" }}</span>
             <strong>{{ tool.mode === "search" ? profileCandidateCount : `${progress}%` }}</strong>
           </header>
 
@@ -123,9 +123,9 @@
             <div class="osint-signal">
               <span>Objetivo</span>
               <strong>{{ form.query || "sin consulta" }}</strong>
-              <small>LinkedIn y redes indexadas por motores publicos</small>
+              <small>LinkedIn y redes indexadas por motores públicos</small>
             </div>
-            <p class="osint-hint">Valida manualmente cada candidato: coincidencia de nombre no equivale a atribucion de identidad.</p>
+            <p class="osint-hint">Valida manualmente cada candidato: coincidencia de nombre no equivale a atribución de identidad.</p>
           </template>
 
           <template v-else>
@@ -179,7 +179,7 @@
           </a>
         </div>
 
-        <pre v-else>{{ logText || "Los resultados apareceran aqui." }}</pre>
+        <pre v-else>{{ logText || "Los resultados aparecerán aquí." }}</pre>
       </section>
 
       <section v-if="tool.mode !== 'search'" class="osint-panel osint-panel--history">
@@ -352,7 +352,7 @@ export default {
           }),
         });
       } catch (error) {
-        this.error = error.message || "No se pudo ejecutar la busqueda OSINT";
+        this.error = error.message || "No se pudo ejecutar la búsqueda OSINT";
       } finally {
         this.busy = false;
       }

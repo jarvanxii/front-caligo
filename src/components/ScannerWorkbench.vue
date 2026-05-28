@@ -18,7 +18,7 @@
       <div class="scanner-layout">
         <form class="scanner-console" @submit.prevent="startScan">
           <header class="scanner-console__head">
-            <span>Parametros</span>
+            <span>Parámetros</span>
             <strong>{{ tool.toUpperCase() }}</strong>
           </header>
 
@@ -158,7 +158,7 @@
           <p v-else-if="capabilityError" class="scanner-warning">{{ capabilityError }}</p>
         </form>
 
-        <section class="scanner-run" aria-label="Ejecucion">
+        <section class="scanner-run" aria-label="Ejecución">
           <header class="scanner-run__head">
             <span>{{ job?.status || "READY" }}</span>
             <strong>{{ progress }}%</strong>
@@ -171,10 +171,10 @@
           <dl class="scanner-run__meta">
             <div>
               <dt>Fase</dt>
-              <dd>{{ job?.phase || "Esperando parametros" }}</dd>
+              <dd>{{ job?.phase || "Esperando parámetros" }}</dd>
             </div>
             <div>
-              <dt>Duracion</dt>
+              <dt>Duración</dt>
               <dd>{{ durationLabel }}</dd>
             </div>
             <div>
@@ -243,7 +243,7 @@
 
       <section v-if="!isNmap && openVasSummary" class="scanner-results scanner-results--summary scanner-results--openvas">
         <article>
-          <span>Criticos</span>
+          <span>Críticos</span>
           <strong>{{ openVasSummary.critical || 0 }}</strong>
         </article>
         <article>
@@ -292,7 +292,7 @@
               <strong>{{ finding.name || "Hallazgo sin nombre" }}</strong>
               <span :class="severityClass(finding.severity)">CVSS {{ finding.severity || "0.0" }}</span>
             </div>
-            <p>{{ finding.description || "Sin descripcion tecnica disponible." }}</p>
+            <p>{{ finding.description || "Sin descripción técnica disponible." }}</p>
             <small>{{ finding.host || "N/D" }} / {{ finding.port || "N/D" }} / {{ finding.threat || "Info" }}</small>
           </article>
         </div>
@@ -363,13 +363,13 @@ export default {
         ? {
             eyebrow: "Reconocimiento / Puertos",
             title: "Nmap",
-            summary: "Escaneo parametrizado desde el backend con perfiles, puertos, timing, scripts controlados y progreso de ejecucion.",
+            summary: "Escaneo parametrizado desde el backend con perfiles, puertos, timing, scripts controlados y progreso de ejecución.",
             placeholder: "192.168.0.1 o 192.168.0.0/24",
           }
         : {
             eyebrow: "Reconocimiento / Vulnerabilidades",
             title: "OpenVAS",
-            summary: "Orquestacion de tareas Greenbone con perfil, port list, alive test y seguimiento del progreso GMP.",
+            summary: "Orquestación de tareas Greenbone con perfil, port list, alive test y seguimiento del progreso GMP.",
             placeholder: "192.168.0.50",
           };
     },
@@ -391,7 +391,7 @@ export default {
     },
     startButtonLabel() {
       if (this.starting) return "Lanzando";
-      if (this.isRunning) return "En ejecucion";
+      if (this.isRunning) return "En ejecución";
       return this.isNmap ? "Ejecutar Nmap" : "Crear tarea OpenVAS";
     },
     reportAvailable() {
@@ -509,7 +509,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para ejecutar herramientas");
+        throw new Error("Inicia sesión para ejecutar herramientas");
       }
     },
     async loadCapabilities() {

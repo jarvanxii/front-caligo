@@ -3,12 +3,9 @@
     <div class="vpn-workbench__shell">
       <header class="identity-head">
         <div>
-          <span class="eyebrow">Redes / Identidad</span>
-          <h1 id="vpn-title">VPNs</h1>
-          <p>
-            Control de tuneles WireGuard/OpenVPN cargados en el servidor Caligo. Los perfiles
-            se descubren en rutas allowlisted y se activan mediante helper con sudo limitado.
-          </p>
+          <span class="eyebrow">Redes / VPNs</span>
+          <h1 id="vpn-title">{{ protocolTitle }}</h1>
+          <p>{{ protocolDescription }}</p>
         </div>
 
         <aside class="identity-status" :class="{ 'is-ready': helperReady, 'is-warning': !helperReady }">
@@ -33,7 +30,7 @@
       <section class="vpn-status-grid">
         <article class="identity-card identity-card--signal">
           <span>Estado</span>
-          <strong :class="vpnActive ? 'tone-success' : 'tone-neutral'">{{ vpnActive ? "Activa" : "Sin tunel" }}</strong>
+          <strong :class="vpnActive ? 'tone-success' : 'tone-neutral'">{{ vpnActive ? "Activa" : "Sin túnel" }}</strong>
           <small>{{ activeProfilesLabel }}</small>
         </article>
         <article class="identity-card identity-card--signal">
@@ -44,10 +41,10 @@
         <article class="identity-card identity-card--signal">
           <span>Perfiles</span>
           <strong>{{ profiles.length }}</strong>
-          <small>WireGuard/OpenVPN detectados</small>
+          <small>{{ protocolTitle }} detectados</small>
         </article>
         <article class="identity-card identity-card--signal">
-          <span>Ultima accion</span>
+          <span>Última acción</span>
           <strong>{{ operationResult?.status || "Sin cambios" }}</strong>
           <small>{{ operationResult?.action || "Esperando orden" }}</small>
         </article>
@@ -57,15 +54,15 @@
         <article class="identity-panel">
           <header>
             <span>Perfil</span>
-            <strong>Seleccion</strong>
+            <strong>Selección</strong>
           </header>
 
           <label class="vpn-select-label">
-            Perfil disponible
+            Perfil {{ protocolTitle }}
             <select v-model="selectedProfileId">
               <option value="">Selecciona un perfil</option>
               <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
-                {{ profile.label }} · {{ profile.protocol }}
+                {{ profile.label }} - {{ profile.protocol }}
               </option>
             </select>
           </label>
@@ -73,11 +70,11 @@
           <div class="vpn-profile-detail">
             <template v-if="selectedProfile">
               <span>{{ selectedProfile.provider }}</span>
-              <strong>{{ selectedProfile.country || "Sin pais" }}{{ selectedProfile.city ? ` / ${selectedProfile.city}` : "" }}</strong>
+              <strong>{{ selectedProfile.country || "Sin país" }}{{ selectedProfile.city ? ` / ${selectedProfile.city}` : "" }}</strong>
               <small>{{ selectedProfile.description }}</small>
               <code>{{ selectedProfile.path }}</code>
             </template>
-            <p v-else>Los perfiles se cargan desde el servidor y permiten parametrizar proveedor, pais, ciudad y protocolo mediante metadatos JSON.</p>
+            <p v-else>{{ emptySelectionMessage }}</p>
           </div>
 
           <p v-if="error" class="identity-error">{{ error }}</p>
@@ -85,7 +82,7 @@
 
         <article class="identity-panel">
           <header>
-            <span>Proveedores recomendados</span>
+            <span>Proveedores compatibles</span>
             <strong>Privacidad</strong>
           </header>
           <div class="vpn-provider-list">
@@ -101,7 +98,7 @@
 
       <section class="identity-panel identity-panel--wide">
         <header>
-          <span>Perfiles detectados</span>
+          <span>Perfiles {{ protocolTitle }}</span>
           <strong>{{ profiles.length }}</strong>
         </header>
         <div v-if="profiles.length" class="vpn-profile-grid">
@@ -115,17 +112,15 @@
           >
             <span>{{ profile.protocol }}</span>
             <strong>{{ profile.label }}</strong>
-            <small>{{ profile.provider }} · {{ profile.country || "custom" }}</small>
+            <small>{{ profile.provider }} - {{ profile.country || "custom" }}</small>
           </button>
         </div>
-        <p v-else class="vpn-empty">
-          No hay perfiles cargados. Copia ficheros `.conf` en WireGuard o `.ovpn` en OpenVPN y añade metadatos opcionales en JSON.
-        </p>
+        <p v-else class="vpn-empty">{{ emptyProfilesMessage }}</p>
       </section>
 
       <section class="identity-panel identity-panel--wide">
         <header>
-          <span>Salida tecnica</span>
+          <span>Salida técnica</span>
           <strong>{{ operationResult?.exitCode ?? vpnStatus.exitCode ?? "N/D" }}</strong>
         </header>
         <pre>{{ technicalOutput }}</pre>
@@ -139,6 +134,12 @@ import { caligoApi } from "@/services/caligoApi";
 
 export default {
   name: "VpnWorkbench",
+  props: {
+    initialProtocol: {
+      type: String,
+      default: "wireguard",
+    },
+  },
   data() {
     return {
       loading: false,
@@ -151,11 +152,34 @@ export default {
     };
   },
   computed: {
-    profiles() {
+    protocolKey() {
+      return this.initialProtocol === "openvpn" ? "openvpn" : "wireguard";
+    },
+    protocolTitle() {
+      return this.protocolKey === "openvpn" ? "OpenVPN" : "WireGuard";
+    },
+    protocolDescription() {
+      if (this.protocolKey === "openvpn") {
+        return "Control de perfiles OpenVPN cargados en el servidor Caligo. Cada perfil puede incluir proveedor, país, ciudad y notas operativas mediante metadatos JSON.";
+      }
+      return "Control de perfiles WireGuard cargados en el servidor Caligo. Cada perfil puede incluir proveedor, país, ciudad y notas operativas mediante metadatos JSON.";
+    },
+    emptySelectionMessage() {
+      return `Los perfiles ${this.protocolTitle} se cargan desde el servidor y permiten parametrizar proveedor, país, ciudad y conexión mediante metadatos JSON.`;
+    },
+    emptyProfilesMessage() {
+      const extension = this.protocolKey === "openvpn" ? ".ovpn" : ".conf";
+      return `No hay perfiles ${this.protocolTitle} cargados. Copia ficheros ${extension} en el directorio allowlisted del servidor y añade metadatos opcionales en JSON.`;
+    },
+    allProfiles() {
       return this.profilePayload?.profiles || [];
     },
+    profiles() {
+      return this.allProfiles.filter((profile) => String(profile.protocol || "").toLowerCase() === this.protocolKey);
+    },
     providerHints() {
-      return this.profilePayload?.providers || [];
+      const providers = this.profilePayload?.providers || [];
+      return providers.filter((provider) => String(provider.protocols || "").toLowerCase().includes(this.protocolKey));
     },
     selectedProfile() {
       return this.profiles.find((profile) => profile.id === this.selectedProfileId) || null;
@@ -171,7 +195,7 @@ export default {
       if (Array.isArray(profiles) && profiles.length) {
         return profiles.join(", ");
       }
-      return this.vpnActive ? "Tunel activo" : "Sin perfiles activos";
+      return this.vpnActive ? "Túnel activo" : "Sin perfiles activos";
     },
     statusMessage() {
       if (this.loading) return "Leyendo perfiles";
@@ -181,10 +205,16 @@ export default {
     },
     technicalOutput() {
       return JSON.stringify({
+        protocol: this.protocolKey,
         status: this.vpnStatus,
         profiles: this.profilePayload,
         operation: this.operationResult,
       }, null, 2);
+    },
+  },
+  watch: {
+    initialProtocol() {
+      this.syncSelectedProfile();
     },
   },
   mounted() {
@@ -198,14 +228,18 @@ export default {
         const payload = await caligoApi.request("/api/network/vpn/profiles");
         this.profilePayload = payload;
         this.vpnStatus = payload?.status || {};
-        if (!this.selectedProfileId && this.profiles.length) {
-          this.selectedProfileId = this.profiles[0].id;
-        }
+        this.syncSelectedProfile();
       } catch (error) {
         this.error = error?.message || "No se pudieron leer los perfiles VPN";
       } finally {
         this.loading = false;
       }
+    },
+    syncSelectedProfile() {
+      if (this.selectedProfile) {
+        return;
+      }
+      this.selectedProfileId = this.profiles[0]?.id || "";
     },
     async connect() {
       if (!this.selectedProfileId || this.actionBusy) return;

@@ -172,7 +172,7 @@ export default {
         return this.openSections[section.id];
       }
 
-      return false;
+      return this.isSectionActive(section);
     },
     toggleSection(section) {
       this.openSections = {

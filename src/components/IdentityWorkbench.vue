@@ -6,8 +6,8 @@
           <span class="eyebrow">Redes / Identidad</span>
           <h1 id="identity-title">WHOAMI</h1>
           <p>
-            Lectura combinada del navegador, la sesion local y el servidor Caligo para comparar
-            superficie cliente, cabeceras observadas, IP publica del backend y estado VPN.
+            Lectura combinada del navegador, la sesión local y el servidor Caligo para comparar
+            superficie cliente, cabeceras observadas, IP pública del backend y estado VPN.
           </p>
         </div>
 
@@ -29,7 +29,7 @@
           Descargar JSON
         </button>
         <button type="button" :disabled="geoLoading" @click="requestGeoLocation">
-          {{ geoLoading ? "Geolocalizando" : "Reintentar ubicacion" }}
+          {{ geoLoading ? "Geolocalizando" : "Reintentar ubicación" }}
         </button>
       </div>
 
@@ -143,7 +143,7 @@
 
       <section class="identity-panel identity-panel--wide">
         <header>
-          <span>Salida tecnica</span>
+          <span>Salida técnica</span>
           <strong>Snapshot crudo</strong>
         </header>
         <div class="identity-raw-grid">
@@ -162,10 +162,10 @@
 import { caligoApi } from "@/services/caligoApi";
 
 const PERMISSION_MAP = [
-  { key: "geolocation", label: "Geolocalizacion" },
+  { key: "geolocation", label: "Geolocalización" },
   { key: "notifications", label: "Notificaciones" },
-  { key: "camera", label: "Camara" },
-  { key: "microphone", label: "Microfono" },
+  { key: "camera", label: "Cámara" },
+  { key: "microphone", label: "Micrófono" },
   { key: "clipboard-read", label: "Clipboard read" },
   { key: "clipboard-write", label: "Clipboard write" },
 ];
@@ -328,12 +328,12 @@ export default {
         },
         {
           label: "VPN servidor",
-          value: this.vpnActive ? "Activa" : "Sin tunel",
+          value: this.vpnActive ? "Activa" : "Sin túnel",
           note: this.activeVpnProfiles,
           tone: this.vpnActive ? "tone-success" : "tone-neutral",
         },
         {
-          label: "Exposicion local",
+          label: "Exposición local",
           value: `${this.exposureScore}/100`,
           note: `${this.permissionGrantedCount} permisos concedidos; ${this.snapshot.thirdPartyScripts} scripts terceros`,
           tone: this.exposureScore >= 70 ? "tone-warning" : "tone-neutral",
@@ -347,7 +347,7 @@ export default {
         this.buildCard("Idioma", this.snapshot.language, this.snapshot.languages),
         this.buildCard("Zona horaria", this.snapshot.timezone, this.snapshot.locale),
         this.buildCard("Contexto seguro", this.snapshot.secureContext, `COI: ${this.snapshot.crossOriginIsolated}`, this.booleanTone(this.snapshot.secureContext)),
-        this.buildCard("WebDriver", this.snapshot.webdriver, "Automatizacion declarada", this.snapshot.webdriver === "Si" ? "tone-warning" : "tone-success"),
+        this.buildCard("WebDriver", this.snapshot.webdriver, "Automatización declarada", this.snapshot.webdriver === "Sí" ? "tone-warning" : "tone-success"),
         this.buildCard("User Agent", this.compactValue(this.snapshot.userAgent), "Cadena completa expuesta"),
         this.buildCard("Referrer", this.compactValue(this.snapshot.referrer), "Procedencia visible"),
       ];
@@ -355,7 +355,7 @@ export default {
     networkCards() {
       return [
         this.buildCard("Online", this.snapshot.online, "navigator.onLine", this.booleanTone(this.snapshot.online)),
-        this.buildCard("Conexion", this.snapshot.connectionType, `Effective: ${this.snapshot.effectiveType}`),
+        this.buildCard("Conexión", this.snapshot.connectionType, `Effective: ${this.snapshot.effectiveType}`),
         this.buildCard("Downlink", this.snapshot.downlink, `RTT: ${this.snapshot.rtt}`),
         this.buildCard("Ahorro datos", this.snapshot.saveData, "saveData del navegador", this.booleanTone(this.snapshot.saveData)),
         this.buildCard("Cookies", this.snapshot.cookiesEnabled, `${this.snapshot.cookieCount} cookies visibles`, this.booleanTone(this.snapshot.cookiesEnabled)),
@@ -366,14 +366,14 @@ export default {
     },
     hardwareCards() {
       return [
-        this.buildCard("CPU", this.snapshot.cpuCores, "Nucleos logicos"),
+        this.buildCard("CPU", this.snapshot.cpuCores, "Núcleos lógicos"),
         this.buildCard("Memoria", this.snapshot.deviceMemory, "deviceMemory"),
         this.buildCard("Pantalla", this.snapshot.screenResolution, `Disponible: ${this.snapshot.availableScreen}`),
         this.buildCard("Viewport", this.snapshot.viewport, `Ratio: ${this.snapshot.pixelRatio}`),
         this.buildCard("Color", this.snapshot.colorDepth, `${this.snapshot.colorGamut} / ${this.snapshot.dynamicRange}`),
         this.buildCard("GPU vendor", this.snapshot.webglVendor, "WebGL debug"),
         this.buildCard("GPU renderer", this.compactValue(this.snapshot.webglRenderer), "Renderer WebGL"),
-        this.buildCard("Bateria", this.snapshot.batteryLevel, `${this.snapshot.batteryCharging} / ${this.snapshot.batteryTime}`),
+        this.buildCard("Batería", this.snapshot.batteryLevel, `${this.snapshot.batteryCharging} / ${this.snapshot.batteryTime}`),
       ];
     },
     permissionCards() {
@@ -382,7 +382,7 @@ export default {
           const value = this.permissionState[item.key] || "unsupported";
           return this.buildCard(item.label, this.formatPermission(value), "Permissions API", this.permissionTone(value));
         }),
-        this.buildCard("Geolocalizacion", `${this.snapshot.geoLat}, ${this.snapshot.geoLon}`, `Precision: ${this.snapshot.geoAccuracy}`, this.snapshot.geoLat === "-" ? "tone-neutral" : "tone-warning"),
+        this.buildCard("Geolocalización", `${this.snapshot.geoLat}, ${this.snapshot.geoLon}`, `Precisión: ${this.snapshot.geoAccuracy}`, this.snapshot.geoLat === "-" ? "tone-neutral" : "tone-warning"),
         this.buildCard("Media devices", this.snapshot.mediaDevices, `${this.snapshot.audioInputs} audio / ${this.snapshot.videoInputs} video`),
       ];
     },
@@ -390,7 +390,7 @@ export default {
       const server = this.serverIdentity?.server || {};
       const client = this.serverIdentity?.client || {};
       return [
-        { label: "IP publica", value: server.publicIp || "No disponible" },
+        { label: "IP pública", value: server.publicIp || "No disponible" },
         { label: "Fuente IP", value: server.publicIpSource || "No disponible" },
         { label: "Hostname", value: server.hostname || "No disponible" },
         { label: "Cliente observado", value: client.observedIp || "No disponible" },
@@ -454,9 +454,9 @@ export default {
       const connection = nav.connection || nav.mozConnection || nav.webkitConnection || null;
       const intl = Intl.DateTimeFormat().resolvedOptions();
 
-      this.snapshot.online = nav.onLine ? "Si" : "No";
-      this.snapshot.secureContext = window.isSecureContext ? "Si" : "No";
-      this.snapshot.crossOriginIsolated = window.crossOriginIsolated ? "Si" : "No";
+      this.snapshot.online = nav.onLine ? "Sí" : "No";
+      this.snapshot.secureContext = window.isSecureContext ? "Sí" : "No";
+      this.snapshot.crossOriginIsolated = window.crossOriginIsolated ? "Sí" : "No";
       this.snapshot.browser = this.detectBrowser(nav.userAgent);
       this.snapshot.browserVersion = this.detectBrowserVersion(nav.userAgent);
       this.snapshot.engine = this.detectEngine(nav.userAgent);
@@ -468,15 +468,15 @@ export default {
       this.snapshot.locale = intl.locale || "No expuesto";
       this.snapshot.timezone = intl.timeZone || "No expuesto";
       this.snapshot.vendor = nav.vendor || "No expuesto";
-      this.snapshot.cookiesEnabled = nav.cookieEnabled ? "Si" : "No";
+      this.snapshot.cookiesEnabled = nav.cookieEnabled ? "Sí" : "No";
       this.snapshot.doNotTrack = nav.doNotTrack === "1" ? "Activado" : "Desactivado";
       this.snapshot.globalPrivacyControl = nav.globalPrivacyControl ? "Activado" : "No expuesto";
-      this.snapshot.webdriver = nav.webdriver ? "Si" : "No";
+      this.snapshot.webdriver = nav.webdriver ? "Sí" : "No";
       this.snapshot.connectionType = connection?.type || "No expuesto";
       this.snapshot.effectiveType = connection?.effectiveType || "No expuesto";
       this.snapshot.downlink = connection?.downlink ? `${connection.downlink} Mbps` : "No expuesto";
       this.snapshot.rtt = connection?.rtt ? `${connection.rtt} ms` : "No expuesto";
-      this.snapshot.saveData = connection?.saveData ? "Si" : "No";
+      this.snapshot.saveData = connection?.saveData ? "Sí" : "No";
       this.snapshot.cpuCores = nav.hardwareConcurrency ? String(nav.hardwareConcurrency) : "No expuesto";
       this.snapshot.deviceMemory = nav.deviceMemory ? `${nav.deviceMemory} GB` : "No expuesto";
       this.snapshot.maxTouchPoints = String(nav.maxTouchPoints || 0);
@@ -490,9 +490,9 @@ export default {
       this.snapshot.reducedMotion = this.matchMediaState("(prefers-reduced-motion: reduce)");
       this.snapshot.contrast = this.detectContrast();
       this.snapshot.colorGamut = this.detectColorGamut();
-      this.snapshot.dynamicRange = this.matchMedia("(dynamic-range: high)") ? "Alta" : "Estandar o no expuesto";
+      this.snapshot.dynamicRange = this.matchMedia("(dynamic-range: high)") ? "Alta" : "Estándar o no expuesto";
       this.snapshot.historyLength = String(window.history.length);
-      this.snapshot.referrer = document.referrer || "Directo / vacio";
+      this.snapshot.referrer = document.referrer || "Directo / vacío";
       this.snapshot.localStorageItems = this.safeStorageLength(window.localStorage);
       this.snapshot.sessionStorageItems = this.safeStorageLength(window.sessionStorage);
       this.snapshot.cookieCount = document.cookie ? String(document.cookie.split(";").filter(Boolean).length) : "0";
@@ -520,7 +520,7 @@ export default {
       }
       this.snapshot.browserPublicIp = "No disponible";
       this.snapshot.browserPublicIpSource = "sin respuesta";
-      this.pushIssue("No se pudo resolver la IP publica del navegador.");
+      this.pushIssue("No se pudo resolver la IP pública del navegador.");
     },
     async fetchServerIdentity() {
       try {
@@ -550,7 +550,7 @@ export default {
         this.snapshot.storageEstimateStatus = "Estimate disponible";
         if (navigator.storage.persisted) {
           const persisted = await navigator.storage.persisted();
-          this.snapshot.storagePersisted = persisted ? "Si" : "No";
+          this.snapshot.storagePersisted = persisted ? "Sí" : "No";
         }
       } catch {
         this.snapshot.storageEstimateStatus = "No se pudo estimar storage";
@@ -649,23 +649,23 @@ export default {
       const nav = navigator;
       this.snapshot.pluginsCount = typeof nav.plugins?.length === "number" ? String(nav.plugins.length) : "No expuesto";
       this.snapshot.mimeTypesCount = typeof nav.mimeTypes?.length === "number" ? String(nav.mimeTypes.length) : "No expuesto";
-      this.snapshot.serviceWorker = "serviceWorker" in nav ? "Si" : "No";
-      this.snapshot.shareApi = "share" in nav ? "Si" : "No";
-      this.snapshot.bluetoothApi = "bluetooth" in nav ? "Si" : "No";
-      this.snapshot.usbApi = "usb" in nav ? "Si" : "No";
-      this.snapshot.serialApi = "serial" in nav ? "Si" : "No";
-      this.snapshot.hidApi = "hid" in nav ? "Si" : "No";
-      this.snapshot.nfcApi = "NDEFReader" in window ? "Si" : "No";
-      this.snapshot.clipboardApi = nav.clipboard ? "Si" : "No";
-      this.snapshot.credentialApi = "credentials" in nav ? "Si" : "No";
-      this.snapshot.pdfViewerEnabled = typeof nav.pdfViewerEnabled === "boolean" ? (nav.pdfViewerEnabled ? "Si" : "No") : "No expuesto";
+      this.snapshot.serviceWorker = "serviceWorker" in nav ? "Sí" : "No";
+      this.snapshot.shareApi = "share" in nav ? "Sí" : "No";
+      this.snapshot.bluetoothApi = "bluetooth" in nav ? "Sí" : "No";
+      this.snapshot.usbApi = "usb" in nav ? "Sí" : "No";
+      this.snapshot.serialApi = "serial" in nav ? "Sí" : "No";
+      this.snapshot.hidApi = "hid" in nav ? "Sí" : "No";
+      this.snapshot.nfcApi = "NDEFReader" in window ? "Sí" : "No";
+      this.snapshot.clipboardApi = nav.clipboard ? "Sí" : "No";
+      this.snapshot.credentialApi = "credentials" in nav ? "Sí" : "No";
+      this.snapshot.pdfViewerEnabled = typeof nav.pdfViewerEnabled === "boolean" ? (nav.pdfViewerEnabled ? "Sí" : "No") : "No expuesto";
     },
     async requestGeoLocation(options = {}) {
       if (!navigator.geolocation || this.geoLoading) {
         return false;
       }
       this.geoLoading = true;
-      this.statusMessage = options.automatic ? "Solicitando ubicacion" : "Leyendo geolocalizacion";
+      this.statusMessage = options.automatic ? "Solicitando ubicación" : "Leyendo geolocalización";
       return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -680,7 +680,7 @@ export default {
             });
           },
           (error) => {
-            this.pushIssue(`Geolocalizacion: ${this.describeGeolocationError(error)}`);
+            this.pushIssue(`Geolocalización: ${this.describeGeolocationError(error)}`);
             this.geoLoading = false;
             this.inspectPermissions().finally(() => {
               this.buildReport();
@@ -693,7 +693,7 @@ export default {
     },
     describeGeolocationError(error) {
       if (error?.code === 1) return "permiso denegado";
-      if (error?.code === 2) return "posicion no disponible";
+      if (error?.code === 2) return "posición no disponible";
       if (error?.code === 3) return "timeout";
       return error?.message || "error desconocido";
     },
@@ -739,7 +739,7 @@ export default {
         "",
         "[IPs]",
         `Servidor: ${this.snapshot.serverPublicIp} (${this.snapshot.serverPublicIpSource})`,
-        `Cliente publico: ${this.snapshot.browserPublicIp} (${this.snapshot.browserPublicIpSource})`,
+        `Cliente público: ${this.snapshot.browserPublicIp} (${this.snapshot.browserPublicIpSource})`,
         `Cliente observado por backend: ${this.snapshot.clientObservedIp}`,
         "",
         "[Navegador]",
@@ -750,14 +750,14 @@ export default {
         `User-Agent: ${this.snapshot.userAgent}`,
         "",
         "[Privacidad]",
-        `Exposicion: ${this.exposureScore}/100`,
+        `Exposición: ${this.exposureScore}/100`,
         `Permisos concedidos: ${this.permissionGrantedCount}`,
         `Cookies: ${this.snapshot.cookiesEnabled} (${this.snapshot.cookieCount})`,
         `Storage: ${this.snapshot.storageUsage} / ${this.snapshot.storageQuota}`,
         `Terceros: ${this.snapshot.thirdPartyScripts} scripts, ${this.snapshot.trackerMatches} trackers`,
         "",
         "[VPN]",
-        `Activa: ${this.vpnActive ? "Si" : "No"}`,
+        `Activa: ${this.vpnActive ? "Sí" : "No"}`,
         `Perfiles: ${this.activeVpnProfiles}`,
         "",
         "[Incidencias]",
@@ -793,7 +793,7 @@ export default {
       return "tone-neutral";
     },
     booleanTone(value) {
-      return value === "Si" || value === "Activado" ? "tone-success" : "tone-neutral";
+      return value === "Sí" || value === "Activado" ? "tone-success" : "tone-neutral";
     },
     numericValue(value) {
       const parsed = Number.parseInt(String(value), 10);
@@ -810,10 +810,10 @@ export default {
       return typeof window.matchMedia === "function" && window.matchMedia(query).matches;
     },
     matchMediaState(query) {
-      return this.matchMedia(query) ? "Si" : "No";
+      return this.matchMedia(query) ? "Sí" : "No";
     },
     detectContrast() {
-      if (this.matchMedia("(prefers-contrast: more)")) return "Mas contraste";
+      if (this.matchMedia("(prefers-contrast: more)")) return "Más contraste";
       if (this.matchMedia("(prefers-contrast: less)")) return "Menos contraste";
       return "Normal o no expuesto";
     },

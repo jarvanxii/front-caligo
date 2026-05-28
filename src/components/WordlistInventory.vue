@@ -3,9 +3,9 @@
     <div class="password-lab__shell">
       <header class="password-lab__header password-lab__header--compact">
         <div>
-          <span class="eyebrow">Contrasenas / Diccionarios</span>
+          <span class="eyebrow">Contraseñas / Diccionarios</span>
           <h1 id="wordlists-title">Wordlists</h1>
-          <p>Inventario de listas permitidas en el servidor para auditorias offline y pruebas de laboratorio.</p>
+          <p>Inventario de listas permitidas en el servidor para auditorías offline y pruebas de laboratorio.</p>
         </div>
 
         <aside class="password-lab__engine is-ready">
@@ -72,7 +72,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para consultar wordlists");
+        throw new Error("Inicia sesión para consultar wordlists");
       }
     },
     async loadWordlists() {
@@ -89,7 +89,7 @@ export default {
     },
     formatLines(value) {
       const lines = Number(value || 0);
-      return lines ? `${lines.toLocaleString("es-ES")} lineas` : "lineas no calculadas";
+      return lines ? `${lines.toLocaleString("es-ES")} líneas` : "líneas no calculadas";
     },
     sizeLabel(bytes) {
       const value = Number(bytes || 0);

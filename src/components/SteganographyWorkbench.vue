@@ -91,7 +91,7 @@
               Perfil
               <select v-model="metadataEdit.profile">
                 <option value="forense">Forense</option>
-                <option value="limpio">Minimo</option>
+                <option value="limpio">Mínimo</option>
                 <option value="personalizado">Personalizado</option>
               </select>
             </label>
@@ -99,7 +99,7 @@
 
           <div class="stego-field-grid">
             <label>
-              Titulo
+              Título
               <input v-model.trim="metadataEdit.title" type="text" autocomplete="off" spellcheck="false" placeholder="Caligo sample" />
             </label>
 
@@ -110,7 +110,7 @@
           </div>
 
           <label>
-            Descripcion / comentario
+            Descripción / comentario
             <textarea v-model="metadataEdit.description" rows="5" spellcheck="false" placeholder="Nota operativa visible para el laboratorio"></textarea>
           </label>
 
@@ -140,7 +140,7 @@
 
           <div class="stego-field-grid">
             <label>
-              Metodo
+              Método
               <select v-model="embed.method">
                 <option value="auto">Auto</option>
                 <option value="image-lsb">Imagen LSB</option>
@@ -263,17 +263,17 @@ const TOOLS = [
     routeName: "stegoAnalyze",
     code: "ANL",
     label: "Analizador",
-    eyebrow: "Esteganografia / Analisis",
+    eyebrow: "Esteganografía / Análisis",
     title: "Analizador de muestras",
-    summary: "Inspeccion local de magic bytes, entropia, cadenas visibles, metadatos basicos, bytes anexos y paquetes Caligo.",
-    empty: "Carga una muestra para obtener un perfil forense rapido.",
+    summary: "Inspección local de magic bytes, entropía, cadenas visibles, metadatos básicos, bytes anexos y paquetes Caligo.",
+    empty: "Carga una muestra para obtener un perfil forense rápido.",
   },
   {
     key: "metadata-analyze",
     routeName: "stegoMetadataAnalyze",
     code: "META",
     label: "Metadatos",
-    eyebrow: "Esteganografia / Metadatos",
+    eyebrow: "Esteganografía / Metadatos",
     title: "Analizador de metadatos",
     summary: "Inventario local de metadatos visibles en PNG, JPEG, PDF y contenedores sin enviar la muestra fuera del navegador.",
     empty: "Carga una muestra para mapear metadatos, segmentos y campos visibles.",
@@ -283,7 +283,7 @@ const TOOLS = [
     routeName: "stegoMetadataEditor",
     code: "EDIT",
     label: "Editor",
-    eyebrow: "Esteganografia / Metadatos",
+    eyebrow: "Esteganografía / Metadatos",
     title: "Editor de metadatos",
     summary: "Inserta metadatos controlados en PNG tEXt, JPEG COM o genera un sidecar JSON para formatos no editables desde navegador.",
     empty: "Selecciona un fichero y prepara una marca de laboratorio descargable.",
@@ -293,7 +293,7 @@ const TOOLS = [
     routeName: "stegoEmbed",
     code: "LSB+",
     label: "Incrustar",
-    eyebrow: "Esteganografia / Ocultacion",
+    eyebrow: "Esteganografía / Ocultación",
     title: "Incrustar datos",
     summary: "Oculta texto, JSON, Base64 o ficheros completos mediante LSB de imagen, chunk PNG o footer universal.",
     empty: "Elige un portador y genera una muestra descargable.",
@@ -303,7 +303,7 @@ const TOOLS = [
     routeName: "stegoExtract",
     code: "LSB-",
     label: "Extraer",
-    eyebrow: "Esteganografia / Recuperacion",
+    eyebrow: "Esteganografía / Recuperación",
     title: "Extraer payloads",
     summary: "Busca y recupera paquetes CALIGO_STEGO_V1 desde footer, PNG tEXt o LSB de imagen.",
     empty: "Carga una muestra generada por Caligo para recuperar su payload.",
@@ -428,8 +428,8 @@ export default {
           pngPacket ? "Paquete Caligo localizado en chunk PNG tEXt." : "",
           lsb?.hasPacket ? "Cabecera Caligo detectada en LSB de imagen." : "",
           container.appendedBytes > 0 ? `Bytes anexos tras fin de contenedor: ${formatBytes(container.appendedBytes)}.` : "",
-          entropy > 7.85 && bytes.length > 4096 ? "Entropia muy alta: posible cifrado, compresion o datos aleatorios." : "",
-          strings.some((line) => /password|secret|token|payload|stego|private/i.test(line)) ? "Cadenas visibles con terminos sensibles." : "",
+          entropy > 7.85 && bytes.length > 4096 ? "Entropía muy alta: posible cifrado, compresión o datos aleatorios." : "",
+          strings.some((line) => /password|secret|token|payload|stego|private/i.test(line)) ? "Cadenas visibles con términos sensibles." : "",
           ...container.indicators,
         ].filter(Boolean);
 
@@ -443,16 +443,16 @@ export default {
           verdict: risk === "high" ? "ALTA" : risk === "medium" ? "MEDIA" : "BAJA",
           tone: risk === "high" ? "danger" : risk === "medium" ? "warning" : "success",
           badge: type.label,
-          title: risk === "high" ? "Indicadores fuertes" : risk === "medium" ? "Revisar manualmente" : "Sin senales claras",
+          title: risk === "high" ? "Indicadores fuertes" : risk === "medium" ? "Revisar manualmente" : "Sin señales claras",
           body: risk === "high"
-            ? "La muestra contiene senales compatibles con datos ocultos o estructura anexa."
+            ? "La muestra contiene señales compatibles con datos ocultos o estructura anexa."
             : risk === "medium"
-              ? "Hay metadatos, entropia o cadenas que conviene revisar con herramientas nativas."
-              : "No se detectan paquetes Caligo ni anomalias fuertes con las pruebas locales disponibles.",
+              ? "Hay metadatos, entropía o cadenas que conviene revisar con herramientas nativas."
+              : "No se detectan paquetes Caligo ni anomalías fuertes con las pruebas locales disponibles.",
           metrics: [
             { label: "Tipo", value: type.label, note: type.family },
-            { label: "Tamano", value: formatBytes(file.size), note: "Fichero local" },
-            { label: "Entropia", value: `${entropy.toFixed(2)}`, note: "bits/byte" },
+            { label: "Tamaño", value: formatBytes(file.size), note: "Fichero local" },
+            { label: "Entropía", value: `${entropy.toFixed(2)}`, note: "bits/byte" },
             { label: "SHA-256", value: hash.slice(0, 12), note: "huella" },
           ],
           panels: [
@@ -582,7 +582,7 @@ export default {
           ],
           panels: [
             { title: "Campos escritos", badge: "meta", content: listText(Object.entries(fields).map(([key, value]) => `${key}: ${value}`)) },
-            { title: "Operacion", badge: "ops", content: listText(notes) },
+            { title: "Operación", badge: "ops", content: listText(notes) },
             { title: "JSON", badge: "json", content: JSON.stringify(fields, null, 2), copyValue: JSON.stringify(fields, null, 2) },
           ],
         };
@@ -619,7 +619,7 @@ export default {
           const image = await imageFileToCanvas(carrier);
           capacityBytes = lsbCapacityBytes(image.imageData);
           if (packet.length > capacityBytes) {
-            throw new Error(`El paquete necesita ${formatBytes(packet.length)} y la imagen ofrece ${formatBytes(capacityBytes)} utiles.`);
+            throw new Error(`El paquete necesita ${formatBytes(packet.length)} y la imagen ofrece ${formatBytes(capacityBytes)} útiles.`);
           }
           writeLsbBytes(image.imageData, packet);
           image.context.putImageData(image.imageData, 0, 0);
@@ -647,11 +647,11 @@ export default {
           metrics: [
             { label: "Portador", value: type.label, note: carrier.name },
             { label: "Payload", value: formatBytes(payload.bytes.length), note: payload.name },
-            { label: "Metodo", value: method, note: this.embed.method === "auto" ? "auto" : "manual" },
+            { label: "Método", value: method, note: this.embed.method === "auto" ? "auto" : "manual" },
             { label: "Capacidad", value: capacityBytes ? formatBytes(capacityBytes) : "N/D", note: "LSB" },
           ],
           panels: [
-            { title: "Salida", badge: "file", content: listText([`Fichero: ${outputName}`, `Metodo: ${method}`, `Paquete: ${formatBytes(packet.length)}`, `CRC32: ${crc32Hex(payload.bytes)}`]) },
+            { title: "Salida", badge: "file", content: listText([`Fichero: ${outputName}`, `Método: ${method}`, `Paquete: ${formatBytes(packet.length)}`, `CRC32: ${crc32Hex(payload.bytes)}`]) },
             { title: "Cabecera", badge: "json", content: JSON.stringify(parsePacket(packet).header, null, 2) },
             { title: "Payload", badge: this.embed.payloadSource, content: payload.preview, copyValue: payload.preview },
           ],
@@ -726,7 +726,7 @@ export default {
           bytes,
           name: this.embed.payloadName || file.name || "payload.bin",
           mime: file.type || "application/octet-stream",
-          preview: `Fichero: ${file.name}\nTamano: ${formatBytes(bytes.length)}\nMIME: ${file.type || "application/octet-stream"}`,
+          preview: `Fichero: ${file.name}\nTamaño: ${formatBytes(bytes.length)}\nMIME: ${file.type || "application/octet-stream"}`,
         };
       }
 
@@ -770,7 +770,7 @@ export default {
       this.embed.payloadText = JSON.stringify({
         laboratorio: "Caligo",
         formato: MAGIC_TEXT,
-        nota: "Primera version basada en el flujo de Feanor",
+        nota: "Primera versión basada en el flujo de Feanor",
       }, null, 2);
     },
     clearAnalyze() {
@@ -898,7 +898,7 @@ function collectContainerHints(bytes, type) {
   }
 
   const appendedBytes = Math.max(0, bytes.length - endOffset);
-  if (appendedBytes > 0) indicators.push("Contenido despues del final logico del contenedor.");
+  if (appendedBytes > 0) indicators.push("Contenido después del final lógico del contenedor.");
   return { metadataLines, formatLines, indicators, appendedBytes };
 }
 
@@ -907,7 +907,7 @@ function buildMetadataProfile(bytes, type, file) {
   const structure = [
     `Nombre: ${file?.name || "sin_nombre"}`,
     `MIME navegador: ${file?.type || "N/D"}`,
-    `Tamano: ${formatBytes(file?.size || bytes.length)}`,
+    `Tamaño: ${formatBytes(file?.size || bytes.length)}`,
     `Magic bytes: ${bytesToHex(bytes.slice(0, 16))}`,
   ];
   const editModes = [];
@@ -952,7 +952,7 @@ function buildMetadataProfile(bytes, type, file) {
       const match = text.match(new RegExp(`/${field}\\s*(\\((?:\\\\.|[^)]){0,500}\\)|<[^>]{1,500}>)`));
       if (match) entries.push({ group: "PDF Info", key: field, value: decodePdfMetadataValue(match[1]) });
     }
-    structure.push("PDF Info: lectura heuristica local");
+    structure.push("PDF Info: lectura heurística local");
   }
 
   if (type.label === "ZIP") {
@@ -1040,7 +1040,7 @@ function writeJpegComment(bytes, fields) {
   if (bytes[0] !== 0xff || bytes[1] !== 0xd8) throw new Error("JPEG sin marcador SOI.");
   const comment = Object.entries(fields).map(([key, value]) => `${key}: ${value}`).join("\n");
   const data = textToLatin1(comment);
-  if (data.length > 65531) throw new Error("El comentario JPEG supera el tamano maximo del segmento COM.");
+  if (data.length > 65531) throw new Error("El comentario JPEG supera el tamaño máximo del segmento COM.");
   const length = data.length + 2;
   const segment = concatBytes(new Uint8Array([0xff, 0xfe, (length >>> 8) & 255, length & 255]), data);
   return concatBytes(bytes.slice(0, 2), segment, bytes.slice(2));
@@ -1106,7 +1106,7 @@ function buildPacket(payload, header) {
 }
 
 function parsePacket(packet) {
-  if (!equalsBytes(packet.slice(0, MAGIC_BYTES.length), MAGIC_BYTES)) throw new Error("Cabecera Caligo no valida.");
+  if (!equalsBytes(packet.slice(0, MAGIC_BYTES.length), MAGIC_BYTES)) throw new Error("Cabecera Caligo no válida.");
   const headerLength = readUint32(packet, MAGIC_BYTES.length);
   const payloadLength = readUint32(packet, MAGIC_BYTES.length + 4);
   const expectedCrc = readUint32(packet, MAGIC_BYTES.length + 8);

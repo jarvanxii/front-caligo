@@ -1,5 +1,5 @@
 <template>
-  <VpnWorkbench />
+  <VpnWorkbench :initial-protocol="initialProtocol" />
 </template>
 
 <script>
@@ -9,6 +9,12 @@ export default {
   name: "VpnsView",
   components: {
     VpnWorkbench,
+  },
+  props: {
+    initialProtocol: {
+      type: String,
+      default: "wireguard",
+    },
   },
 };
 </script>

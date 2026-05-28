@@ -4,8 +4,8 @@
       <header class="msf-topbar">
         <div class="msf-title-block">
           <span class="eyebrow">Vulnerabilidades / Metasploit</span>
-          <h1 id="msf-title">Mesa de operacion</h1>
-          <p>Descubre servicios, selecciona modulos, lanza payloads en laboratorio y controla sesiones activas desde un solo panel.</p>
+          <h1 id="msf-title">Mesa de operación</h1>
+          <p>Descubre servicios, selecciona módulos, lanza payloads en laboratorio y controla sesiones activas desde un solo panel.</p>
         </div>
 
         <aside class="msf-status-strip" aria-label="Estado operativo">
@@ -45,8 +45,8 @@
             <label>
               Perfil
               <select v-model="discovery.profile">
-                <option value="quick">Rapido</option>
-                <option value="standard">Estandar</option>
+                <option value="quick">Rápido</option>
+                <option value="standard">Estándar</option>
                 <option value="service">Servicios</option>
                 <option value="web">Web expuesta</option>
               </select>
@@ -134,19 +134,19 @@
                 <strong>{{ host.address }}</strong>
                 <small>{{ openPortSummary(host) }}</small>
               </div>
-              <em>{{ isOwned(host) ? "PAYLOAD ACTIVO" : "sin sesion" }}</em>
+              <em>{{ isOwned(host) ? "PAYLOAD ACTIVO" : "sin sesión" }}</em>
             </article>
           </div>
 
           <div v-else class="msf-empty">
             <span>Sin superficie cargada</span>
-            <p>Lanza un discovery o selecciona un modulo manualmente.</p>
+            <p>Lanza un discovery o selecciona un módulo manualmente.</p>
           </div>
         </section>
 
         <section class="msf-panel msf-recommendations" aria-label="Recomendaciones">
           <header class="msf-panel__head">
-            <span>Modulos sugeridos</span>
+            <span>Módulos sugeridos</span>
             <strong>{{ recommendations.length }}</strong>
           </header>
 
@@ -171,7 +171,7 @@
             >
               <span>{{ item.type }} / {{ item.port || "auto" }}</span>
               <strong>{{ compactModule(item.module) }}</strong>
-              <small>{{ item.reason || item.service || "Modulo compatible con el servicio detectado." }}</small>
+              <small>{{ item.reason || item.service || "Módulo compatible con el servicio detectado." }}</small>
             </button>
           </div>
 
@@ -188,12 +188,12 @@
           </div>
 
           <div v-if="!visibleRecommendations.length && !searchedModules.length" class="msf-empty msf-empty--compact">
-            <span>Sin modulos cargados</span>
-            <p>Ejecuta discovery o busca manualmente por servicio, CVE o nombre del modulo.</p>
+            <span>Sin módulos cargados</span>
+            <p>Ejecuta discovery o busca manualmente por servicio, CVE o nombre del módulo.</p>
           </div>
         </section>
 
-        <section class="msf-panel msf-executor" aria-label="Ejecucion">
+        <section class="msf-panel msf-executor" aria-label="Ejecución">
           <header class="msf-panel__head">
             <span>Composer</span>
             <strong>{{ execution.moduleType || "manual" }}</strong>
@@ -215,7 +215,7 @@
           </div>
 
           <label>
-            Modulo
+            Módulo
             <input v-model.trim="execution.moduleName" type="text" autocomplete="off" spellcheck="false" placeholder="exploit/multi/handler" />
           </label>
 
@@ -249,7 +249,7 @@
           </label>
 
           <button type="button" :disabled="executing || !canExecute" @click="executeModule">
-            {{ executing ? "Lanzando" : "Ejecutar modulo" }}
+            {{ executing ? "Lanzando" : "Ejecutar módulo" }}
           </button>
 
           <div v-if="moduleInfo" class="msf-module-info">
@@ -291,7 +291,7 @@
 
           <div v-else class="msf-empty">
             <span>Sin sesiones</span>
-            <p>Las maquinas comprometidas apareceran aqui y se marcaran en el mapa.</p>
+            <p>Las máquinas comprometidas aparecerán aquí y se marcarán en el mapa.</p>
           </div>
         </section>
       </div>
@@ -300,13 +300,13 @@
         <header class="msf-remote-head">
           <div>
             <span>Post-explotacion</span>
-            <strong>{{ activeSession ? `Sesion #${activeSession.id}` : "sin sesion activa" }}</strong>
+            <strong>{{ activeSession ? `Sesión #${activeSession.id}` : "sin sesión activa" }}</strong>
           </div>
           <small>{{ activeSession ? sessionHost(activeSession) : "Esperando payload Meterpreter" }}</small>
         </header>
 
         <div v-if="sessions.length" class="msf-ops-grid">
-          <aside class="msf-session-picker" aria-label="Seleccion de sesion">
+          <aside class="msf-session-picker" aria-label="Selección de sesión">
             <button
               v-for="session in sessions"
               :key="session.id"
@@ -344,7 +344,7 @@
 
               <div v-if="focusedRemoteEntry?.name" class="msf-fs-selection">
                 <div>
-                  <span>Seleccion</span>
+                  <span>Selección</span>
                   <strong>{{ focusedRemoteEntry.name }}</strong>
                 </div>
                 <button type="button" :disabled="remoteBusy" @click="openFocusedEntry">{{ focusedRemoteEntry.directory ? "Abrir" : "Leer" }}</button>
@@ -359,7 +359,7 @@
             </div>
 
             <p v-if="remoteError" class="msf-alert">{{ remoteError }}</p>
-            <p v-else-if="activeSession && !isMeterpreter(activeSession)" class="msf-alert">El explorador grafico requiere una sesion Meterpreter. Usa la consola para sesiones shell.</p>
+            <p v-else-if="activeSession && !isMeterpreter(activeSession)" class="msf-alert">El explorador gráfico requiere una sesión Meterpreter. Usa la consola para sesiones shell.</p>
 
             <div v-if="remoteEntries.length" class="msf-file-list">
               <button type="button" @click="loadRemoteWorkspace(parentPath(remoteWorkspace.currentPath))">
@@ -382,7 +382,7 @@
 
             <div v-else class="msf-empty msf-empty--compact">
               <span>{{ remoteBusy ? "Leyendo" : "Sin listado" }}</span>
-              <p>{{ remoteBusy ? "Consultando la sesion Meterpreter." : "Selecciona una sesion Meterpreter o carga una ruta." }}</p>
+              <p>{{ remoteBusy ? "Consultando la sesión Meterpreter." : "Selecciona una sesión Meterpreter o carga una ruta." }}</p>
             </div>
           </section>
 
@@ -411,7 +411,7 @@
               <button type="submit" :disabled="!activeSession || !activeCommand">Enviar</button>
             </form>
 
-            <pre>{{ activeSessionOutput || "La salida de consola aparecera aqui." }}</pre>
+            <pre>{{ activeSessionOutput || "La salida de consola aparecerá aquí." }}</pre>
 
             <div v-if="remoteFile.content" class="msf-file-preview">
               <header>
@@ -429,7 +429,7 @@
 
         <div v-else class="msf-empty">
           <span>Sin payloads</span>
-          <p>Cuando una sesion aparezca, podras seleccionarla, navegar su sistema de ficheros y operar desde consola.</p>
+          <p>Cuando una sesión aparezca, podrás seleccionarla, navegar su sistema de ficheros y operar desde consola.</p>
         </div>
       </section>
     </div>
@@ -547,7 +547,7 @@ export default {
       return this.hosts.filter((host) => this.isOwned(host)).length;
     },
     selectedModuleLabel() {
-      if (!this.execution.moduleName) return "Modulo manual";
+      if (!this.execution.moduleName) return "Módulo manual";
       return this.compactModule(this.execution.moduleName);
     },
     activeSession() {
@@ -570,7 +570,7 @@ export default {
     },
     moduleDescription() {
       const info = this.moduleInfo?.info || {};
-      return info.description || info.name || "Informacion del modulo cargada desde Metasploit.";
+      return info.description || info.name || "Información del módulo cargada desde Metasploit.";
     },
   },
   mounted() {
@@ -590,7 +590,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para usar Metasploit");
+        throw new Error("Inicia sesión para usar Metasploit");
       }
     },
     async loadCapabilities() {
@@ -753,7 +753,7 @@ export default {
         const response = await caligoApi.request(`/api/metasploit/module-catalog?query=${query}&type=${type}`);
         this.searchedModules = response.modules || [];
       } catch (error) {
-        this.error = error.message || "No se pudo buscar el modulo";
+        this.error = error.message || "No se pudo buscar el módulo";
       } finally {
         this.searchingModules = false;
       }
@@ -805,7 +805,7 @@ export default {
         window.setTimeout(this.refreshSessions, 1500);
         window.setTimeout(this.refreshSessions, 5000);
       } catch (error) {
-        this.error = error.message || "No se pudo ejecutar el modulo";
+        this.error = error.message || "No se pudo ejecutar el módulo";
       } finally {
         this.executing = false;
       }
@@ -816,7 +816,7 @@ export default {
       try {
         return JSON.parse(raw);
       } catch {
-        throw new Error("Opciones JSON no validas");
+        throw new Error("Opciones JSON no válidas");
       }
     },
     async refreshSessions() {
@@ -922,7 +922,7 @@ export default {
     async deleteFocusedEntry() {
       if (!this.focusedRemoteEntry || !this.activeSession || !this.isMeterpreter(this.activeSession)) return;
       const path = this.focusedRemotePath;
-      const ok = window.confirm(`Borrar en la sesion remota?\n\n${path}`);
+      const ok = window.confirm(`¿Borrar en la sesión remota?\n\n${path}`);
       if (!ok) return;
       await this.remoteMutation("delete", { path, directory: Boolean(this.focusedRemoteEntry.directory) });
       this.remoteFile = { path: "", content: "", truncated: false };
@@ -958,7 +958,7 @@ export default {
           };
         }
       } catch (error) {
-        this.remoteError = error.message || "No se pudo ejecutar la operacion remota";
+        this.remoteError = error.message || "No se pudo ejecutar la operación remota";
       } finally {
         this.remoteBusy = false;
       }
@@ -1023,7 +1023,7 @@ export default {
         await caligoApi.request(`/api/metasploit/sessions/${id}`, { method: "DELETE" });
         await this.refreshSessions();
       } catch (error) {
-        this.error = error.message || "No se pudo cerrar la sesion";
+        this.error = error.message || "No se pudo cerrar la sesión";
       }
     },
     isOwned(host) {

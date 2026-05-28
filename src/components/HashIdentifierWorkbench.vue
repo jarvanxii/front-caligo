@@ -3,9 +3,9 @@
     <div class="password-lab__shell">
       <header class="password-lab__header password-lab__header--compact">
         <div>
-          <span class="eyebrow">Contrasenas / Fingerprint</span>
+          <span class="eyebrow">Contraseñas / Fingerprint</span>
           <h1 id="hash-id-title">Identificador de hashes</h1>
-          <p>Clasifica formatos probables con hashID y heuristicas locales antes de lanzar John o Hashcat.</p>
+          <p>Clasifica formatos probables con hashID y heurísticas locales antes de lanzar John o Hashcat.</p>
         </div>
 
         <aside class="password-lab__engine" :class="{ 'is-ready': engineReady }">
@@ -47,7 +47,7 @@
               <small>{{ candidate.hint || "Detectado por hashID" }}</small>
             </article>
           </div>
-          <p v-else class="password-empty">Pega un hash para obtener formatos probables y pistas de ejecucion.</p>
+          <p v-else class="password-empty">Pega un hash para obtener formatos probables y pistas de ejecución.</p>
 
           <div v-if="result?.output" class="password-log">
             <span>Salida hashID</span>
@@ -83,7 +83,7 @@ export default {
     },
     engineMessage() {
       if (!this.capabilities) return "Comprobando hashID";
-      return this.toolInfo?.version || "Heuristicas locales disponibles";
+      return this.toolInfo?.version || "Heurísticas locales disponibles";
     },
     candidates() {
       const seen = new Set();
@@ -102,7 +102,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para ejecutar herramientas");
+        throw new Error("Inicia sesión para ejecutar herramientas");
       }
     },
     async loadCapabilities() {

@@ -37,7 +37,7 @@
             <strong>{{ apiBaseUrl }}</strong>
           </div>
           <div>
-            <span>Sesion</span>
+            <span>Sesión</span>
             <strong>{{ currentUser }}</strong>
           </div>
           <div>
@@ -83,12 +83,12 @@ export default {
       return this.$store.state.apiBaseUrl?.replace(/^https?:\/\//, "") || "sin configurar";
     },
     currentUser() {
-      return this.$store.state.user?.username || "sin sesion";
+      return this.$store.state.user?.username || "sin sesión";
     },
     workflow() {
       return [
         { code: "01", title: "Reconocimiento", detail: "URLs, DNS, Nmap y OpenVAS." },
-        { code: "02", title: "Validacion", detail: "Metasploit e Hydra bajo alcance." },
+        { code: "02", title: "Validación", detail: "Metasploit e Hydra bajo alcance." },
         { code: "03", title: "Evidencia", detail: "Resultados, trazas e informes." },
       ];
     },

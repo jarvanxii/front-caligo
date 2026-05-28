@@ -13,19 +13,19 @@
           <p>{{ page.summary }}</p>
         </div>
 
-        <dl class="module-workspace__status" aria-label="Estado del modulo">
+        <dl class="module-workspace__status" aria-label="Estado del módulo">
           <div>
             <dt>Estado</dt>
             <dd>{{ page.status }}</dd>
           </div>
           <div>
-            <dt>Senal</dt>
+            <dt>Señal</dt>
             <dd>{{ page.signal }}</dd>
           </div>
         </dl>
       </header>
 
-      <dl class="module-workspace__stats" aria-label="Resumen tecnico">
+      <dl class="module-workspace__stats" aria-label="Resumen técnico">
         <div v-for="stat in page.stats" :key="stat[0]">
           <dt>{{ stat[0] }}</dt>
           <dd>{{ stat[1] }}</dd>

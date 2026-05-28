@@ -105,7 +105,7 @@ export async function ensureLocalSession() {
       user: getStoredUser(),
     };
   }
-  throw new Error("Sesion no iniciada");
+  throw new Error("Sesión no iniciada");
 }
 
 export const caligoApi = {

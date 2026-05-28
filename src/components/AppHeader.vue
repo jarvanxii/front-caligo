@@ -88,7 +88,7 @@
                   Refrescar
                 </button>
                 <button class="settings-updates__close" type="button" aria-label="Cerrar actualizaciones" @click="closeUpdatesModal">
-                  Ã—
+                  ×
                 </button>
               </div>
             </header>
@@ -119,7 +119,7 @@
                   :class="{ 'is-active': activeToolGroup === group }"
                   @click="activeToolGroup = group"
                 >
-                  {{ group }}
+                  {{ displayToolGroup(group) }}
                 </button>
               </div>
             </div>
@@ -134,7 +134,7 @@
                 <span>{{ updateResult.status === "completed" ? "actualizada" : "no se pudo actualizar" }}</span>
               </div>
               <details v-if="updateResult.output" class="settings-updates__output">
-                <summary>Ver salida tecnica</summary>
+                <summary>Ver salida técnica</summary>
                 <pre>{{ updateResult.output }}</pre>
               </details>
             </div>
@@ -157,9 +157,9 @@
                   :class="{ 'is-missing': !tool.installed, 'is-updating': updatingToolId === tool.id }"
                 >
                   <div>
-                    <span>{{ tool.group }}</span>
+                    <span>{{ displayToolGroup(tool.group) }}</span>
                     <strong>{{ tool.label }}</strong>
-                    <small>{{ tool.version || (tool.installed ? "Sin version detectada" : "No instalada") }}</small>
+                    <small>{{ tool.version || (tool.installed ? "Sin versión detectada" : "No instalada") }}</small>
                   </div>
                   <button
                     type="button"
@@ -183,7 +183,7 @@
               </div>
               <section v-for="group in groupedServerTools" :key="group.name" class="settings-updates__group">
                 <div class="settings-updates__group-title">
-                  <span>{{ group.name }}</span>
+                  <span>{{ displayToolGroup(group.name) }}</span>
                   <small>{{ group.tools.length }}</small>
                 </div>
 
@@ -202,8 +202,8 @@
                   </div>
 
                   <div class="settings-updates__version">
-                    <span>Version</span>
-                    <strong>{{ tool.version || (tool.installed ? "Sin version detectada" : "No instalada") }}</strong>
+                    <span>Versión</span>
+                    <strong>{{ tool.version || (tool.installed ? "Sin versión detectada" : "No instalada") }}</strong>
                     <small v-if="tool.path">{{ tool.path }}</small>
                   </div>
 
@@ -222,16 +222,23 @@
         </section>
       </Transition>
     </Teleport>
+
+    <GuideModal :open="guideModalOpen" @close="closeGuideModal" />
   </header>
 </template>
 
 <script>
+import GuideModal from "@/components/GuideModal.vue";
 import wordmarkUrl from "@/assets/images/caligo-wordmark.png";
 import { mainModulePages } from "@/data/modulePages";
 import { caligoApi } from "@/services/caligoApi";
+import { resolveClientIp, resolveServerIp } from "@/utils/networkIdentity";
 
 export default {
   name: "AppHeader",
+  components: {
+    GuideModal,
+  },
   data() {
     return {
       wordmarkUrl,
@@ -244,12 +251,14 @@ export default {
       settingsItems: [
         { key: "preferences", label: "Preferencias" },
         { key: "security", label: "Seguridad" },
+        { key: "guide", label: "Guía" },
         { key: "users", label: "Usuarios" },
-        { key: "administration", label: "AdministraciÃ³n" },
-        { key: "configuration", label: "ConfiguraciÃ³n" },
+        { key: "administration", label: "Administración" },
+        { key: "configuration", label: "Configuración" },
         { key: "updates", label: "Actualizaciones" },
-        { key: "logout", label: "Cerrar SesiÃ³n", action: "logout" },
+        { key: "logout", label: "Cerrar Sesión", action: "logout" },
       ],
+      guideModalOpen: false,
       updatesModalOpen: false,
       serverTools: [],
       serverToolsGeneratedAt: "",
@@ -267,10 +276,10 @@ export default {
   },
   computed: {
     serverIpLabel() {
-      return this.networkIdentity?.server?.publicIp || "...";
+      return resolveServerIp(this.networkIdentity) || "...";
     },
     clientIpLabel() {
-      return this.clientPublicIp || this.networkIdentity?.client?.observedIp || "...";
+      return resolveClientIp(this.networkIdentity, this.clientPublicIp) || "...";
     },
     sortedServerTools() {
       return [...this.serverTools].sort((left, right) => {
@@ -343,6 +352,7 @@ export default {
   watch: {
     $route() {
       this.closeSettings();
+      this.closeGuideModal();
     },
     updatesModalOpen(value) {
       document.body.classList.toggle("settings-updates-open", value);
@@ -398,6 +408,10 @@ export default {
           this.closeUpdatesModal();
           return;
         }
+        if (this.guideModalOpen) {
+          this.closeGuideModal();
+          return;
+        }
         this.closeSettings();
       }
     },
@@ -412,7 +426,18 @@ export default {
         this.openUpdatesModal();
         return;
       }
+      if (item.key === "guide") {
+        this.openGuideModal();
+        return;
+      }
       this.closeSettings();
+    },
+    openGuideModal() {
+      this.closeSettings();
+      this.guideModalOpen = true;
+    },
+    closeGuideModal() {
+      this.guideModalOpen = false;
     },
     async openUpdatesModal() {
       this.closeSettings();
@@ -469,10 +494,19 @@ export default {
         Vulnerabilidades: 20,
         "Fuerza bruta": 30,
         Contrasenas: 40,
+        Contraseñas: 40,
         Redes: 50,
         Esteganografia: 60,
+        Esteganografía: 60,
         URLs: 70,
       }[group] ?? 99;
+    },
+    displayToolGroup(group) {
+      return {
+        Contrasenas: "Contraseñas",
+        Esteganografia: "Esteganografía",
+        Codificacion: "Codificación",
+      }[group] || group;
     },
     toolRank(id) {
       const index = this.priorityToolIds.indexOf(id);

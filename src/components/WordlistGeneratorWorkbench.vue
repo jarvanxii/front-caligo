@@ -18,18 +18,18 @@
       <div class="password-lab__grid">
         <form class="password-console" @submit.prevent="startRun">
           <header>
-            <span>Parametros</span>
+            <span>Parámetros</span>
             <strong>{{ tool.toUpperCase() }}</strong>
           </header>
 
           <template v-if="isCrunch">
             <div class="password-fields">
               <label>
-                Longitud minima
+                Longitud mínima
                 <input v-model.number="form.minLength" type="number" min="1" max="8" />
               </label>
               <label>
-                Longitud maxima
+                Longitud máxima
                 <input v-model.number="form.maxLength" type="number" min="1" max="8" />
               </label>
             </div>
@@ -59,7 +59,7 @@
 
             <label class="password-switch password-switch--standalone">
               <input v-model="form.withNumbers" type="checkbox" />
-              <span>Incluir palabras con numeros</span>
+              <span>Incluir palabras con números</span>
             </label>
           </template>
 
@@ -76,7 +76,7 @@
           <p v-else-if="capabilityError" class="password-alert">{{ capabilityError }}</p>
         </form>
 
-        <section class="password-run" aria-label="Generacion">
+        <section class="password-run" aria-label="Generación">
           <header>
             <span>{{ job?.status || "READY" }}</span>
             <strong>{{ progress }}%</strong>
@@ -89,10 +89,10 @@
           <dl>
             <div>
               <dt>Fase</dt>
-              <dd>{{ job?.phase || "Esperando parametros" }}</dd>
+              <dd>{{ job?.phase || "Esperando parámetros" }}</dd>
             </div>
             <div>
-              <dt>Duracion</dt>
+              <dt>Duración</dt>
               <dd>{{ durationLabel }}</dd>
             </div>
             <div>
@@ -117,7 +117,7 @@
         <header>
           <div>
             <span>Wordlist generada</span>
-            <strong>{{ generatedLines }} lineas</strong>
+            <strong>{{ generatedLines }} líneas</strong>
           </div>
           <button type="button" @click="loadHistory">Actualizar historial</button>
         </header>
@@ -126,7 +126,7 @@
           <code>{{ generatedPath }}</code>
           <span>{{ sizeLabel(generatedSize) }}</span>
         </div>
-        <p v-else>El fichero aparecera aqui cuando termine la generacion.</p>
+        <p v-else>El fichero aparecerá aquí cuando termine la generación.</p>
       </section>
 
       <section class="password-history">
@@ -190,12 +190,12 @@ export default {
     copy() {
       return this.isCrunch
         ? {
-            eyebrow: "Contrasenas / Wordlists",
+            eyebrow: "Contraseñas / Wordlists",
             title: "Crunch",
             summary: "Genera diccionarios acotados por longitud y charset dentro del directorio controlado de Caligo.",
           }
         : {
-            eyebrow: "Contrasenas / Wordlists",
+            eyebrow: "Contraseñas / Wordlists",
             title: "CeWL",
             summary: "Crea wordlists desde contenido web autorizado y las deja disponibles para John, Hashcat o Hydra.",
           };
@@ -255,7 +255,7 @@ export default {
       const lines = this.job?.logs || [];
       if (lines.length) return lines.slice(-14).join("\n");
       if (this.job?.error) return this.job.error;
-      return this.job ? "El generador aun no ha emitido traza." : "La traza aparecera al iniciar una generacion.";
+      return this.job ? "El generador aún no ha emitido traza." : "La traza aparecerá al iniciar una generación.";
     },
   },
   watch: {
@@ -282,7 +282,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para ejecutar herramientas");
+        throw new Error("Inicia sesión para ejecutar herramientas");
       }
     },
     async loadCapabilities() {
@@ -318,7 +318,7 @@ export default {
         rememberRuntimeJob(this.runtimeScope, this.job.id);
         this.startPolling();
       } catch (error) {
-        this.error = error.message || "No se pudo iniciar la generacion";
+        this.error = error.message || "No se pudo iniciar la generación";
       } finally {
         this.starting = false;
       }

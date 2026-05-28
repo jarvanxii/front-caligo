@@ -53,7 +53,7 @@
       </div>
       <div>
         <span>TLS</span>
-        <strong>{{ result.tls?.validNow ? "Valido" : "Revisar" }}</strong>
+        <strong>{{ result.tls?.validNow ? "Válido" : "Revisar" }}</strong>
       </div>
     </section>
 
@@ -133,7 +133,7 @@
         </article>
         <article>
           <span>Validez</span>
-          <strong>{{ result.tls.validNow ? "Valido" : "Revisar" }}</strong>
+          <strong>{{ result.tls.validNow ? "Válido" : "Revisar" }}</strong>
         </article>
         <article>
           <span>Expira</span>
@@ -150,7 +150,7 @@
     <section v-if="reputationCards.length" class="urls-panel">
       <header class="urls-panel__header">
         <span>REP</span>
-        <h2>Reputacion</h2>
+        <h2>Reputación</h2>
       </header>
       <div class="urls-card-grid">
         <article v-for="card in reputationCards" :key="card.name" class="urls-subpanel">
@@ -164,13 +164,13 @@
     <section v-if="result?.history" class="urls-panel">
       <header class="urls-panel__header">
         <span>HST</span>
-        <h2>Historial publico</h2>
+        <h2>Historial público</h2>
       </header>
       <div class="urls-card-grid">
         <article class="urls-subpanel">
           <span>RDAP</span>
           <strong>{{ result.history.rdap?.success ? "Visible" : "Sin datos" }}</strong>
-          <p>{{ result.history.rdap?.ldhName || result.history.rdap?.error || "Registro publico." }}</p>
+          <p>{{ result.history.rdap?.ldhName || result.history.rdap?.error || "Registro público." }}</p>
         </article>
         <article class="urls-subpanel">
           <span>crt.sh</span>
@@ -180,7 +180,7 @@
         <article class="urls-subpanel">
           <span>Wayback</span>
           <strong>{{ result.history.wayback?.count || 0 }}</strong>
-          <p>Capturas historicas recuperadas.</p>
+          <p>Capturas históricas recuperadas.</p>
         </article>
       </div>
     </section>
@@ -188,7 +188,7 @@
     <section v-if="publicFileRows.length" class="urls-panel">
       <header class="urls-panel__header">
         <span>PUB</span>
-        <h2>Archivos publicos</h2>
+        <h2>Archivos públicos</h2>
       </header>
       <div class="urls-card-grid">
         <article v-for="file in publicFileRows" :key="file.key" class="urls-subpanel">
@@ -285,7 +285,7 @@ export default {
     },
     redirectSummary() {
       const redirects = this.result?.http?.redirects || [];
-      if (!redirects.length) return "Sin cadena de redireccion.";
+      if (!redirects.length) return "Sin cadena de redirección.";
       return redirects.map((item) => `${item.status} -> ${item.to}`).join(" | ");
     },
     reputationCards() {
@@ -293,7 +293,7 @@ export default {
       if (!reputation) return [];
       return [
         this.reputationCard("URLHaus", reputation.urlhaus, this.urlHausNote(reputation.urlhaus)),
-        this.reputationCard("urlscan.io", reputation.urlscan, `${reputation.urlscan?.total || 0} resultados publicos`),
+        this.reputationCard("urlscan.io", reputation.urlscan, `${reputation.urlscan?.total || 0} resultados públicos`),
         this.reputationCard("VirusTotal", reputation.virustotal, this.integrationNote(reputation.virustotal)),
         this.reputationCard("AbuseIPDB", reputation.abuseIpDb, this.integrationNote(reputation.abuseIpDb)),
         this.reputationCard("Safe Browsing", reputation.safeBrowsing, this.integrationNote(reputation.safeBrowsing)),
@@ -331,7 +331,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para ejecutar herramientas");
+        throw new Error("Inicia sesión para ejecutar herramientas");
       }
     },
     async runTool() {

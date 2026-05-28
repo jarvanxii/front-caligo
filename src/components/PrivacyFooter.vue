@@ -1,6 +1,6 @@
 <template>
   <footer class="privacy-footer" role="contentinfo">
-    <span>Privacidad: Caligo esta disenado para laboratorios controlados. No introduzcas secretos reales sin autorizacion.</span>
+    <span>Privacidad: Caligo está diseñado para laboratorios controlados. No introduzcas secretos reales sin autorización.</span>
   </footer>
 </template>
 

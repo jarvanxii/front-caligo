@@ -67,7 +67,7 @@
               <input v-model.trim="form.httpPath" type="text" placeholder="/login" />
             </label>
             <label>
-              Parametros
+              Parámetros
               <input v-model.trim="form.httpParameters" type="text" placeholder="username=^USER^&password=^PASS^" />
             </label>
             <div class="hydra-fields">
@@ -76,15 +76,15 @@
                 <input v-model.trim="form.httpFailCondition" type="text" placeholder="F=incorrect" />
               </label>
               <label>
-                Exito si
+                Éxito si
                 <input v-model.trim="form.httpSuccessCondition" type="text" placeholder="S=dashboard" />
               </label>
             </div>
           </section>
 
           <label v-else>
-            Opciones del modulo
-            <input v-model.trim="form.moduleOptions" type="text" placeholder="Opcional: argumento especifico Hydra" />
+            Opciones del módulo
+            <input v-model.trim="form.moduleOptions" type="text" placeholder="Opcional: argumento específico Hydra" />
           </label>
         </form>
 
@@ -181,7 +181,7 @@
 
         <section class="hydra-console hydra-console--run">
           <header>
-            <span>Ejecucion</span>
+            <span>Ejecución</span>
             <strong>{{ job?.status || "READY" }}</strong>
           </header>
 
@@ -192,7 +192,7 @@
               <strong>{{ form.tasks }}</strong>
             </label>
             <label>
-              Timeout conexion
+              Timeout conexión
               <input v-model.number="form.connectTimeoutSeconds" type="range" min="3" max="120" />
               <strong>{{ form.connectTimeoutSeconds }}s</strong>
             </label>
@@ -230,7 +230,7 @@
       <section class="hydra-run-panel" aria-label="Progreso Hydra">
         <div class="hydra-run-panel__main">
           <header>
-            <span>{{ job?.phase || "Esperando parametros" }}</span>
+              <span>{{ job?.phase || "Esperando parámetros" }}</span>
             <strong>{{ progress }}%</strong>
           </header>
           <div class="hydra-progress"><span :style="{ width: `${progress}%` }"></span></div>
@@ -240,7 +240,7 @@
               <dd>{{ job?.target || form.target || "N/D" }}</dd>
             </div>
             <div>
-              <dt>Duracion</dt>
+              <dt>Duración</dt>
               <dd>{{ durationLabel }}</dd>
             </div>
             <div>
@@ -269,7 +269,7 @@
       <section v-if="credentials.length" class="hydra-results">
         <header>
           <div>
-            <span>Credenciales validas</span>
+            <span>Credenciales válidas</span>
             <strong>{{ credentials.length }} hallazgo{{ credentials.length === 1 ? "" : "s" }}</strong>
           </div>
           <button type="button" @click="showPasswords = !showPasswords">
@@ -387,21 +387,21 @@ export default {
     },
     usernameModes() {
       return this.capabilities?.usernameModes || [
-        { value: "single", label: "Usuario unico" },
+        { value: "single", label: "Usuario único" },
         { value: "list", label: "Lista pegada" },
         { value: "file", label: "Wordlist servidor" },
       ];
     },
     passwordModes() {
       return (this.capabilities?.passwordModes || [
-        { value: "single", label: "Password unico" },
+        { value: "single", label: "Password único" },
         { value: "list", label: "Lista pegada" },
         { value: "file", label: "Wordlist servidor" },
         { value: "combo", label: "Combo login:pass" },
       ]).map((item) => ({
         ...item,
         shortLabel: {
-          single: "Unica",
+          single: "Única",
           list: "Lista",
           file: "Fichero",
           combo: "Combo",
@@ -423,8 +423,8 @@ export default {
     credentialHint() {
       if (this.form.passwordMode === "combo") return "Formato login:password, manual o desde fichero permitido.";
       if (this.form.passwordMode === "file") return "Se usara una wordlist local del servidor.";
-      if (this.form.passwordMode === "list") return "Una password por linea.";
-      return "No se guarda en parametros ni preview.";
+      if (this.form.passwordMode === "list") return "Una password por línea.";
+      return "No se guarda en parámetros ni preview.";
     },
     canStart() {
       return this.engineReady && this.form.target && this.form.service && !this.isRunning;
@@ -434,7 +434,7 @@ export default {
     },
     startButtonLabel() {
       if (this.starting) return "Preparando";
-      if (this.isRunning) return "En ejecucion";
+      if (this.isRunning) return "En ejecución";
       return "Lanzar Hydra";
     },
     progress() {
@@ -461,7 +461,7 @@ export default {
     logText() {
       const lines = this.job?.logs || [];
       if (lines.length) return lines.slice(-14).join("\n");
-      return this.job ? "Hydra aun no ha emitido traza." : "La traza aparecera al iniciar una ejecucion.";
+      return this.job ? "Hydra aún no ha emitido traza." : "La traza aparecerá al iniciar una ejecución.";
     },
   },
   watch: {
@@ -486,7 +486,7 @@ export default {
     async ensureSession() {
       if (!this.$store.getters.isAuthenticated) {
         this.$router.push({ name: "login" });
-        throw new Error("Inicia sesion para ejecutar herramientas");
+        throw new Error("Inicia sesión para ejecutar herramientas");
       }
     },
     async loadCapabilities() {
