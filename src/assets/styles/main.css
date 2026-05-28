@@ -1541,20 +1541,20 @@ select {
   gap: 0.34em;
   width: max-content;
   max-width: 100%;
-  color: rgba(188, 211, 217, 0.78);
+  color: rgba(219, 244, 247, 0.92);
   font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 0.74rem;
   font-stretch: condensed;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
-  opacity: 0.95;
+  opacity: 0.98;
   text-transform: uppercase;
   transform: translateX(-50%);
   text-shadow:
-    0 0 7px rgba(184, 247, 239, 0.22),
-    0 0 18px rgba(94, 234, 212, 0.13),
-    0 0 30px rgba(226, 232, 240, 0.12);
+    0 0 8px rgba(184, 247, 239, 0.3),
+    0 0 20px rgba(94, 234, 212, 0.18),
+    0 0 34px rgba(226, 232, 240, 0.16);
 }
 
 .control-illusion__phrase::before,
@@ -1589,7 +1589,7 @@ select {
 .control-illusion__letter {
   display: inline-block;
   min-width: 0.52em;
-  color: rgba(188, 211, 217, 0.78);
+  color: rgba(219, 244, 247, 0.92);
   filter: blur(0.55px);
   opacity: 0;
   transform: translateY(-40px) translateX(var(--fall-drift)) scaleY(1.68);
@@ -7022,64 +7022,64 @@ p {
   }
 
   72% {
-    color: rgba(188, 211, 217, 0.76);
-    filter: blur(0.56px);
-    opacity: 0.8;
+    color: rgba(219, 244, 247, 0.92);
+    filter: blur(0.28px);
+    opacity: 0.96;
   }
 
   100% {
-    color: rgba(188, 211, 217, 0.76);
-    filter: blur(0.56px);
-    opacity: 0.8;
+    color: rgba(219, 244, 247, 0.92);
+    filter: blur(0.28px);
+    opacity: 0.96;
     text-shadow:
-      0 0 8px rgba(184, 247, 239, 0.19),
-      0 0 22px rgba(94, 234, 212, 0.12),
-      0 0 32px rgba(226, 232, 240, 0.08);
+      0 0 8px rgba(184, 247, 239, 0.28),
+      0 0 22px rgba(94, 234, 212, 0.16),
+      0 0 34px rgba(226, 232, 240, 0.11);
     transform: translateY(0) translateX(0) scaleY(1);
   }
 }
 
 @keyframes controlBrokenLight {
   0%,
-  82%,
-  88%,
+  34%,
+  39%,
   100% {
-    color: rgba(188, 211, 217, 0.76);
-    filter: blur(0.56px);
-    opacity: 0.8;
+    color: rgba(219, 244, 247, 0.92);
+    filter: blur(0.28px);
+    opacity: 0.96;
     text-shadow:
-      0 0 8px rgba(184, 247, 239, 0.19),
-      0 0 22px rgba(94, 234, 212, 0.12),
-      0 0 32px rgba(226, 232, 240, 0.08);
+      0 0 8px rgba(184, 247, 239, 0.28),
+      0 0 22px rgba(94, 234, 212, 0.16),
+      0 0 34px rgba(226, 232, 240, 0.11);
   }
 
-  83%,
-  86% {
-    color: rgba(136, 159, 167, 0.62);
-    filter: blur(0.74px);
-    opacity: 0.64;
-    text-shadow:
-      0 0 5px rgba(184, 247, 239, 0.08),
-      0 0 15px rgba(94, 234, 212, 0.05);
-  }
-
-  84% {
-    color: rgba(224, 252, 250, 0.84);
-    filter: blur(0.38px);
+  35.2%,
+  37.4% {
+    color: rgba(186, 216, 223, 0.82);
+    filter: blur(0.48px);
     opacity: 0.84;
     text-shadow:
-      0 0 10px rgba(184, 247, 239, 0.24),
-      0 0 24px rgba(94, 234, 212, 0.14),
-      0 0 36px rgba(226, 232, 240, 0.09);
+      0 0 6px rgba(184, 247, 239, 0.12),
+      0 0 16px rgba(94, 234, 212, 0.07);
   }
 
-  85% {
-    color: rgba(151, 175, 183, 0.64);
-    filter: blur(0.64px);
-    opacity: 0.66;
+  36% {
+    color: rgba(238, 254, 253, 0.98);
+    filter: blur(0.2px);
+    opacity: 0.99;
     text-shadow:
-      0 0 6px rgba(184, 247, 239, 0.09),
-      0 0 17px rgba(94, 234, 212, 0.06);
+      0 0 10px rgba(184, 247, 239, 0.28),
+      0 0 24px rgba(94, 234, 212, 0.16),
+      0 0 36px rgba(226, 232, 240, 0.1);
+  }
+
+  36.7% {
+    color: rgba(194, 224, 230, 0.86);
+    filter: blur(0.42px);
+    opacity: 0.88;
+    text-shadow:
+      0 0 7px rgba(184, 247, 239, 0.16),
+      0 0 18px rgba(94, 234, 212, 0.09);
   }
 }
 
@@ -7128,8 +7128,8 @@ p {
   }
 
   .control-illusion__letter {
-    filter: blur(0.7px);
-    opacity: 0.78;
+    filter: blur(0.28px);
+    opacity: 0.96;
     transform: none;
   }
 

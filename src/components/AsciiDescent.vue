@@ -146,8 +146,8 @@ export default {
         const revealRank = revealRankByIndex.get(index) ?? index;
         const zone = CONTROL_FAULT_ZONES[Math.floor((index / Math.max(1, chars.length)) * CONTROL_FAULT_ZONES.length)];
         const letterDelay = 0.5 + revealRank * 0.105 + seededUnit(index, 7) * 0.55;
-        const faultDelay = 10.5 + zone * 1.35;
-        const faultDuration = 24 + zone * 2.4;
+        const faultDelay = 12 + zone * 4.6 + seededUnit(index, 13) * 1.4;
+        const faultDuration = 150 + zone * 12 + seededUnit(index, 19) * 8;
         const fallDrift = Math.round((seededUnit(index, 23) - 0.5) * 32);
 
         return {
