@@ -36,10 +36,12 @@
             'ascii-descent__char',
             `ascii-descent__char--${char.tone}`,
             {
+              'ascii-descent__char--falling': char.falling,
               'ascii-descent__char--spark': char.spark,
               'ascii-descent__char--spark-orange': char.spark && char.sparkTone === 'orange',
             },
           ]"
+          :style="char.style"
         >{{ char.value }}</span></span></pre>
       </div>
       <div class="ascii-descent__meta ascii-descent__meta--bottom" aria-hidden="true">
@@ -87,7 +89,7 @@ const HASH_POSITIONS = WORD_LINES.flatMap((line, lineIndex) =>
   Array.from(line).flatMap((value, charIndex) => (value === "#" ? [`${lineIndex}-${charIndex}`] : [])),
 );
 const SPARK_INTERVAL_MS = 360;
-const BOOT_DIM_MS = 3800;
+const BOOT_DIM_MS = 19000;
 const CONTROL_PHRASE = "CONTROL IS AN ILLUSION";
 const SIGNAL_GLYPHS = "01#/_-+*:=|CALIGO";
 const RAIN_COLUMN_COUNT = 54;
@@ -117,6 +119,8 @@ export default {
         Array.from(line.padEnd(WORD_WIDTH)).map((value, charIndex) => ({
           value,
           tone: this.toneForWordCharacter(value, charIndex),
+          falling: value !== " ",
+          style: this.styleForWordCharacter(value, lineIndex, charIndex),
           spark: this.isActiveHashSpark(value, lineIndex, charIndex),
           sparkTone: this.activeHashSparkTone,
         })),
@@ -124,10 +128,10 @@ export default {
     },
   },
   mounted() {
-    this.jumpHashSpark();
-    this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
     this.bootTimer = window.setTimeout(() => {
       this.booting = false;
+      this.jumpHashSpark();
+      this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
     }, BOOT_DIM_MS);
   },
   beforeUnmount() {
@@ -145,7 +149,7 @@ export default {
       return chars.map((value, index) => {
         const revealRank = revealRankByIndex.get(index) ?? index;
         const zone = CONTROL_FAULT_ZONES[Math.floor((index / Math.max(1, chars.length)) * CONTROL_FAULT_ZONES.length)];
-        const letterDelay = 0.5 + revealRank * 0.105 + seededUnit(index, 7) * 0.55;
+        const letterDelay = 1.75 + revealRank * 0.13 + seededUnit(index, 7) * 0.85;
         const faultDelay = 12 + zone * 4.6 + seededUnit(index, 13) * 1.4;
         const faultDuration = 150 + zone * 12 + seededUnit(index, 19) * 8;
         const fallDrift = Math.round((seededUnit(index, 23) - 0.5) * 32);
@@ -168,8 +172,8 @@ export default {
           SIGNAL_GLYPHS[(index * 7 + glyphIndex * 3) % SIGNAL_GLYPHS.length],
         ).join("\n");
         const x = Math.round((4 + seededUnit(index, 2) * 92) * 100) / 100;
-        const delay = 0.22 + seededUnit(index, 5) * 2.35;
-        const duration = 2 + seededUnit(index, 8) * 1.35;
+        const delay = 0.2 + seededUnit(index, 5) * 3.1;
+        const duration = 3.8 + seededUnit(index, 8) * 2.4;
         const drift = Math.round((seededUnit(index, 13) - 0.5) * 38);
         return {
           id: `signal-${index}`,
@@ -186,6 +190,29 @@ export default {
     toneForWordCharacter(value, charIndex) {
       if (value === " ") return "space";
       return `word-${Math.min(5, Math.floor(charIndex / WORD_BAND_WIDTH))}`;
+    },
+    styleForWordCharacter(value, lineIndex, charIndex) {
+      if (value === " ") return null;
+
+      const key = lineIndex * WORD_WIDTH + charIndex;
+      const vertical = lineIndex / Math.max(1, WORD_LINES.length - 1);
+      const lateral = Math.abs(charIndex / Math.max(1, WORD_WIDTH - 1) - 0.5);
+      const drift = Math.round((seededUnit(key, 47) - 0.5) * 52);
+      const midDrift = Math.round(drift * (0.3 + seededUnit(key, 53) * 0.24));
+      const fall = Math.round(130 + seededUnit(key, 43) * 122 + vertical * 32);
+      const delay = 0.12 + seededUnit(key, 31) * 1.9 + vertical * 0.65 + lateral * 0.28;
+      const duration = 10.5 + seededUnit(key, 37) * 4.2;
+
+      return {
+        "--ascii-delay": `${delay.toFixed(2)}s`,
+        "--ascii-drop-duration": `${duration.toFixed(2)}s`,
+        "--ascii-fall-start": `-${fall}px`,
+        "--ascii-fall-high": `-${Math.round(fall * 0.72)}px`,
+        "--ascii-fall-mid": `-${Math.round(fall * 0.34)}px`,
+        "--ascii-drift": `${drift}px`,
+        "--ascii-mid-drift": `${midDrift}px`,
+        "--ascii-color-delay": `${(-seededUnit(key, 61) * 8).toFixed(2)}s`,
+      };
     },
     isActiveHashSpark(value, lineIndex, charIndex) {
       if (value !== "#") return false;
