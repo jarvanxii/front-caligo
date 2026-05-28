@@ -2,14 +2,7 @@
   <AppHeader v-if="!$route.meta.hideHeader" />
   <AppSidebar v-if="!$route.meta.hideHeader && !$route.meta.hideSidebar" />
   <main
-    :class="[
-      'app-shell',
-      {
-        'app-shell--with-header': !$route.meta.hideHeader,
-        'app-shell--with-sidebar': !$route.meta.hideHeader && !$route.meta.hideSidebar,
-        'app-shell--auth': $route.meta.authLayout,
-      },
-    ]"
+    :class="appShellClasses"
   >
     <router-view v-slot="{ Component, route }">
       <KeepAlive v-if="shouldCacheRoute(route)">
@@ -35,9 +28,62 @@ export default {
     AppSidebar,
     PrivacyFooter,
   },
+  computed: {
+    appShellClasses() {
+      return [
+        "app-shell",
+        this.activeModuleClass,
+        {
+          "app-shell--with-header": !this.$route.meta.hideHeader,
+          "app-shell--with-sidebar": !this.$route.meta.hideHeader && !this.$route.meta.hideSidebar,
+          "app-shell--auth": this.$route.meta.authLayout,
+        },
+      ];
+    },
+    activeModuleClass() {
+      const key = this.activeModuleKey();
+      if (!key) {
+        return "";
+      }
+      return `app-shell--module-${this.toKebabCase(key)}`;
+    },
+  },
   methods: {
     shouldCacheRoute(route) {
       return !route.meta.authLayout && this.$store.getters.isAuthenticated;
+    },
+    activeModuleKey() {
+      if (this.$route.meta.authLayout || this.$route.name === "home") {
+        return "";
+      }
+
+      if (this.$route.meta?.moduleKey) {
+        return this.$route.meta.moduleKey;
+      }
+
+      const path = this.$route.path || "";
+      const categories = [
+        ["/urls", "reconocimiento"],
+        ["/nmap", "reconocimiento"],
+        ["/openvas", "reconocimiento"],
+        ["/reconocimiento", "reconocimiento"],
+        ["/osint", "osint"],
+        ["/metasploit", "vulnerabilidades"],
+        ["/fuerza-bruta", "vulnerabilidades"],
+        ["/vulnerabilidades", "vulnerabilidades"],
+        ["/contrasenas", "contrasenas"],
+        ["/codificacion", "codificacion"],
+        ["/esteganografia", "esteganografia"],
+        ["/redes-utilidades", "redesUtilidades"],
+      ];
+      return categories.find(([prefix]) => path.startsWith(prefix))?.[1] || this.$route.name || "";
+    },
+    toKebabCase(value) {
+      return String(value)
+        .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+        .replace(/[^a-zA-Z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .toLowerCase();
     },
   },
 };

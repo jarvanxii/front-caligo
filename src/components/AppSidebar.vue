@@ -1,5 +1,5 @@
 <template>
-  <aside v-if="currentPage" class="app-sidebar" aria-label="Utilidades de la vista">
+  <aside v-if="currentPage" class="app-sidebar" :class="sidebarThemeClass" aria-label="Utilidades de la vista">
     <div class="app-sidebar__top">
       <span class="app-sidebar__kicker">Utilidades</span>
       <strong>{{ currentPage.navLabel }}</strong>
@@ -127,16 +127,27 @@ export default {
         type: "utility",
       }));
     },
+    sidebarThemeClass() {
+      const moduleKey = this.$route.meta?.moduleKey || this.currentPage?.key || this.$route.name;
+      const themeByModule = {
+        reconocimiento: "blue",
+        osint: "blue",
+        vulnerabilidades: "orange",
+        contrasenas: "amber",
+        codificacion: "green",
+        esteganografia: "violet",
+        redesUtilidades: "blue",
+      };
+      return `app-sidebar--${themeByModule[moduleKey] || this.currentPage?.accent || "green"}`;
+    },
   },
   watch: {
     "$route.fullPath"() {
       this.syncActiveHash();
-      this.openActiveSection();
     },
   },
   mounted() {
     this.syncActiveHash();
-    this.openActiveSection();
     window.addEventListener("hashchange", this.syncActiveHash);
   },
   beforeUnmount() {
@@ -161,24 +172,12 @@ export default {
         return this.openSections[section.id];
       }
 
-      return section.defaultOpen || this.isSectionActive(section);
+      return false;
     },
     toggleSection(section) {
       this.openSections = {
         ...this.openSections,
         [section.id]: !this.isSectionOpen(section),
-      };
-    },
-    openActiveSection() {
-      const activeSection = this.navigationItems.find((item) => item.type === "section" && this.isSectionActive(item));
-
-      if (!activeSection) {
-        return;
-      }
-
-      this.openSections = {
-        ...this.openSections,
-        [activeSection.id]: true,
       };
     },
     sectionPanelId(id) {

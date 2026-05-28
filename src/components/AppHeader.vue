@@ -71,7 +71,7 @@
                   Refrescar
                 </button>
                 <button class="settings-updates__close" type="button" aria-label="Cerrar actualizaciones" @click="closeUpdatesModal">
-                  ×
+                  Ã—
                 </button>
               </div>
             </header>
@@ -228,10 +228,10 @@ export default {
         { key: "preferences", label: "Preferencias" },
         { key: "security", label: "Seguridad" },
         { key: "users", label: "Usuarios" },
-        { key: "administration", label: "Administración" },
-        { key: "configuration", label: "Configuración" },
+        { key: "administration", label: "AdministraciÃ³n" },
+        { key: "configuration", label: "ConfiguraciÃ³n" },
         { key: "updates", label: "Actualizaciones" },
-        { key: "logout", label: "Cerrar Sesión", action: "logout" },
+        { key: "logout", label: "Cerrar SesiÃ³n", action: "logout" },
       ],
       updatesModalOpen: false,
       serverTools: [],
@@ -242,7 +242,7 @@ export default {
       updateResult: null,
       serverToolFilter: "",
       activeToolGroup: "all",
-      priorityToolIds: ["metasploit", "hydra", "nmap", "openvas", "john", "hashcat"],
+      priorityToolIds: ["metasploit", "hydra", "nuclei", "searchsploit", "nikto", "sqlmap", "nmap", "openvas", "john", "hashcat"],
     };
   },
   computed: {
@@ -421,3 +421,4 @@ export default {
   },
 };
 </script>
+

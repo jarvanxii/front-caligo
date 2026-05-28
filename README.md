@@ -2,7 +2,7 @@
 
 Frontend Vue 3 de Caligo. La aplicacion funciona como cabina de mando para los modulos de ciberseguridad y se conecta al backend Spring local mediante JWT.
 
-Los modulos mas avanzados ahora mismo estan en **Reconocimiento**, **Vulnerabilidades** y **Contrasenas**. Reconocimiento agrupa URLs, DNS, HTTP/TLS, reputacion, historial publico, Nmap y OpenVAS. Vulnerabilidades agrupa Metasploit y Fuerza Bruta, con una interfaz dedicada para Hydra contra el backend Spring. Contrasenas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor.
+Los modulos mas avanzados ahora mismo estan en **Reconocimiento**, **Vulnerabilidades** y **Contrasenas**. Reconocimiento agrupa Caligo Intel, Nmap y OpenVAS. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto y sqlmap contra el backend Spring. Contrasenas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor.
 
 ## Stack
 
@@ -35,10 +35,12 @@ front-caligo/
       HashIdentifierWorkbench.vue
       PasswordCrackWorkbench.vue
       ScannerWorkbench.vue
+      VulnerabilityToolWorkbench.vue
       WordlistGeneratorWorkbench.vue
       WordlistInventory.vue
     data/
       modulePages.js
+      vulnerabilityTools.js
     router/
       index.js
     services/
@@ -56,6 +58,11 @@ front-caligo/
       MetasploitView.vue
       BruteForceView.vue
       PasswordsView.vue
+      vulnerabilities/
+        NucleiView.vue
+        SearchsploitView.vue
+        NiktoView.vue
+        SqlmapView.vue
       passwords/
         JohnView.vue
         HashcatView.vue
@@ -143,10 +150,11 @@ Orden actual:
 4. Contraseñas
 5. Codificacion
 6. Esteganografia
+7. Redes / Utilidades
 
 `Home` no muestra barra lateral. El resto de vistas muestran una barra lateral contextual con herramientas utiles, sin entrada de resumen o panoramica. La barra lateral soporta secciones desplegables mediante `sidebarSections` en `src/data/modulePages.js`, manteniendo `utilities` como lista plana para las tarjetas internas del modulo.
 
-Las herramientas de `URLs`, `Nmap` y `OpenVAS` cuelgan de `Reconocimiento`; `Metasploit` y `Fuerza Bruta` cuelgan de `Vulnerabilidades` para que el header agrupe dominios de trabajo y no herramientas sueltas. En `Reconocimiento`, `URLs` aparece como apartado desplegable separado de `Escaneo`, donde viven `Nmap` y `OpenVAS`.
+Las herramientas de `URLs`, `Nmap` y `OpenVAS` cuelgan de `Reconocimiento`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto` y `sqlmap` cuelgan de `Vulnerabilidades` para que el header agrupe dominios de trabajo y no herramientas sueltas. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el analisis inteligente.
 
 ## Ajustes y actualizaciones
 
@@ -195,16 +203,9 @@ src/services/caligoApi.js
 
 Utilidades visibles dentro del desplegable `URLs` de la barra lateral de Reconocimiento:
 
-- Analisis inteligente de URLs
-- Resolver DNS
-- Inspector URL
-- Seguridad HTTP
-- TLS
-- Reputacion
-- Historial
-- Archivos publicos
-- Endpoints
-- Herramientas locales
+- Caligo Intel
+
+Las vistas URL individuales siguen existiendo como piezas internas, pero no se muestran en la barra lateral porque `Caligo Intel` ya une DNS, parser, HTTP, TLS, reputacion, historial, archivos publicos, endpoints y herramientas locales.
 
 ## Nmap y OpenVAS dentro de Reconocimiento
 
@@ -275,6 +276,37 @@ La pantalla permite:
 
 Las passwords no se muestran en el preview del comando ni en logs; los resultados encontrados se muestran enmascarados hasta que el usuario decide revelarlos.
 
+## Validacion y Web dentro de Vulnerabilidades
+
+Vistas:
+
+```text
+src/views/vulnerabilities/NucleiView.vue
+src/views/vulnerabilities/SearchsploitView.vue
+src/views/vulnerabilities/NiktoView.vue
+src/views/vulnerabilities/SqlmapView.vue
+src/components/VulnerabilityToolWorkbench.vue
+```
+
+Rutas y endpoints:
+
+| Herramienta | Ruta frontend | Endpoint principal |
+| --- | --- | --- |
+| Nuclei | `/vulnerabilidades/nuclei` | `POST /api/vulnerabilities/nuclei/runs` |
+| Searchsploit | `/vulnerabilidades/searchsploit` | `GET/POST /api/vulnerabilities/searchsploit/search` |
+| Nikto | `/vulnerabilidades/nikto` | `POST /api/vulnerabilities/nikto/runs` |
+| sqlmap | `/vulnerabilidades/sqlmap` | `POST /api/vulnerabilities/sqlmap/runs` |
+
+Endpoints comunes:
+
+| Uso | Endpoint |
+| --- | --- |
+| Capacidades e inventario | `GET /api/vulnerabilities/capabilities` |
+| Historial de Nuclei/Nikto/sqlmap | `GET /api/vulnerabilities/{tool}/runs` |
+| Polling de job persistente | `GET /api/vulnerabilities/{tool}/runs/{id}` |
+
+Nuclei, Nikto y sqlmap crean jobs persistentes en el backend. Searchsploit solo consulta la base local de Exploit-DB y no toca el objetivo. El backend bloquea URLs externas si `CALIGO_VULNERABILITIES_ALLOW_EXTERNAL_TARGETS=false`.
+
 ## Contrasenas
 
 Vistas:
@@ -318,6 +350,35 @@ Endpoints comunes:
 
 La pantalla de John permite elegir formato, pegar hashes y usar wordlists del servidor o una lista temporal. Hashcat permite modo de hash, ataque por diccionario o mascara y formato `user:hash`. Crunch genera diccionarios acotados en el servidor. CeWL genera wordlists desde URLs autorizadas por la politica del backend. El inventario de wordlists solo muestra ficheros bajo raices permitidas.
 
+## Esteganografia
+
+Vistas:
+
+```text
+src/views/steganography/StegoAnalyzeView.vue
+src/views/steganography/StegoMetadataAnalyzeView.vue
+src/views/steganography/StegoMetadataEditorView.vue
+src/views/steganography/StegoEmbedView.vue
+src/views/steganography/StegoExtractView.vue
+src/components/SteganographyWorkbench.vue
+```
+
+Rutas:
+
+| Herramienta | Ruta frontend | Motor |
+| --- | --- | --- |
+| Caligo Analyze | `/esteganografia/analizador` | Browser local |
+| Metadata Analyzer | `/esteganografia/metadatos/analizador` | Browser local |
+| Metadata Editor | `/esteganografia/metadatos/editor` | Browser local |
+| Caligo Embed | `/esteganografia/incrustar` | Browser local |
+| Caligo Extract | `/esteganografia/extraer` | Browser local |
+
+El apartado `Metadatos` de la barra lateral contiene analizador y editor. El
+analizador lee campos visibles de PNG `tEXt/iTXt/zTXt`, JPEG `COM/APP1`, PDF
+Info y nombres de entradas ZIP. El editor escribe metadatos controlados en PNG
+`tEXt`, inserta comentarios `COM` en JPEG o genera un sidecar JSON cuando el
+formato no es seguro de reescribir desde el navegador.
+
 ## Persistencia de ejecuciones
 
 Las herramientas largas no dependen de que la vista siga abierta. El backend guarda los jobs en MariaDB y el frontend recuerda el ultimo id activo por herramienta en `localStorage` usando `src/services/runtimeJobs.js`.
@@ -329,6 +390,9 @@ scanner.nmap
 scanner.openvas
 hydra.run
 metasploit.discovery
+vulnerabilities.nuclei
+vulnerabilities.nikto
+vulnerabilities.sqlmap
 passwords.john
 passwords.hashcat
 passwords.crunch

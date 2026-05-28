@@ -28,9 +28,17 @@ const CrunchView = () => import("@/views/passwords/CrunchView.vue");
 const CewlView = () => import("@/views/passwords/CewlView.vue");
 const WordlistsView = () => import("@/views/passwords/WordlistsView.vue");
 const BruteForceView = () => import("@/views/BruteForceView.vue");
+const NucleiView = () => import("@/views/vulnerabilities/NucleiView.vue");
+const SearchsploitView = () => import("@/views/vulnerabilities/SearchsploitView.vue");
+const NiktoView = () => import("@/views/vulnerabilities/NiktoView.vue");
+const SqlmapView = () => import("@/views/vulnerabilities/SqlmapView.vue");
 const SteganographyView = () => import("@/views/SteganographyView.vue");
+const StegoAnalyzeView = () => import("@/views/steganography/StegoAnalyzeView.vue");
+const StegoMetadataAnalyzeView = () => import("@/views/steganography/StegoMetadataAnalyzeView.vue");
+const StegoMetadataEditorView = () => import("@/views/steganography/StegoMetadataEditorView.vue");
 const StegoEmbedView = () => import("@/views/steganography/StegoEmbedView.vue");
 const StegoExtractView = () => import("@/views/steganography/StegoExtractView.vue");
+const NetworkUtilitiesView = () => import("@/views/NetworkUtilitiesView.vue");
 const EncodingView = () => import("@/views/EncodingView.vue");
 
 const routes = [
@@ -245,9 +253,65 @@ const routes = [
     },
   },
   {
+    path: "/vulnerabilidades/nuclei",
+    name: "vulnerabilidadesNuclei",
+    component: NucleiView,
+    meta: {
+      moduleKey: "vulnerabilidades",
+    },
+  },
+  {
+    path: "/vulnerabilidades/searchsploit",
+    name: "vulnerabilidadesSearchsploit",
+    component: SearchsploitView,
+    meta: {
+      moduleKey: "vulnerabilidades",
+    },
+  },
+  {
+    path: "/vulnerabilidades/nikto",
+    name: "vulnerabilidadesNikto",
+    component: NiktoView,
+    meta: {
+      moduleKey: "vulnerabilidades",
+    },
+  },
+  {
+    path: "/vulnerabilidades/sqlmap",
+    name: "vulnerabilidadesSqlmap",
+    component: SqlmapView,
+    meta: {
+      moduleKey: "vulnerabilidades",
+    },
+  },
+  {
     path: "/esteganografia",
     name: "esteganografia",
     component: SteganographyView,
+    meta: {
+      moduleKey: "esteganografia",
+    },
+  },
+  {
+    path: "/esteganografia/analizador",
+    name: "stegoAnalyze",
+    component: StegoAnalyzeView,
+    meta: {
+      moduleKey: "esteganografia",
+    },
+  },
+  {
+    path: "/esteganografia/metadatos/analizador",
+    name: "stegoMetadataAnalyze",
+    component: StegoMetadataAnalyzeView,
+    meta: {
+      moduleKey: "esteganografia",
+    },
+  },
+  {
+    path: "/esteganografia/metadatos/editor",
+    name: "stegoMetadataEditor",
+    component: StegoMetadataEditorView,
     meta: {
       moduleKey: "esteganografia",
     },
@@ -266,6 +330,14 @@ const routes = [
     component: StegoExtractView,
     meta: {
       moduleKey: "esteganografia",
+    },
+  },
+  {
+    path: "/redes-utilidades",
+    name: "redesUtilidades",
+    component: NetworkUtilitiesView,
+    meta: {
+      moduleKey: "redesUtilidades",
     },
   },
   {

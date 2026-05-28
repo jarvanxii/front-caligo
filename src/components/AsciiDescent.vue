@@ -1,39 +1,18 @@
 <template>
-  <section class="ascii-descent" :class="{ 'is-awakening': booting }" aria-label="Letras ASCII de Caligo">
+  <section class="ascii-descent" :class="{ 'is-awakening': booting, 'is-settling': settling }" aria-label="Letras ASCII de Caligo">
     <div class="ascii-descent__frame">
       <div class="ascii-descent__meta ascii-descent__meta--top" aria-hidden="true">
         <span>CALIGO / SEC-LAB</span>
         <span>AUTHORIZED RANGE</span>
       </div>
-      <div class="control-illusion" aria-hidden="true">
-        <div class="control-illusion__rain">
-          <span
-            v-for="column in rainColumns"
-            :key="column.id"
-            class="control-illusion__drop"
-            :style="column.style"
-          >{{ column.value }}</span>
-        </div>
-        <div class="control-illusion__phrase" aria-hidden="true">
-          <span
-            v-for="letter in controlLetters"
-            :key="letter.id"
-            class="control-illusion__letter"
-            :class="{ 'is-space': letter.value === ' ' }"
-            :style="letter.style"
-          >{{ letter.value === " " ? "\u00A0" : letter.value }}</span>
-        </div>
-      </div>
+      <canvas v-if="matrixVisible" ref="matrixCanvas" class="ascii-descent__matrix-canvas"></canvas>
       <div class="ascii-descent__lockup" aria-hidden="true">
-        <div v-if="booting" class="ascii-descent__streams">
-          <span
-            v-for="stream in matrixStreams"
-            :key="stream.id"
-            class="ascii-descent__stream"
-            :style="stream.style"
-          >{{ stream.value }}</span>
-        </div>
         <pre class="ascii-descent__art ascii-descent__word" @animationend.self="finishBoot">{{ wordText }}</pre>
+        <div class="control-illusion" aria-hidden="true">
+          <div class="control-illusion__phrase" aria-hidden="true">
+            {{ controlPhrase }}
+          </div>
+        </div>
         <span
           v-if="activeSparkStyle"
           class="ascii-descent__spark-overlay"
@@ -80,16 +59,19 @@ const WORD_LINES = [
   String.raw``,
 ];
 const WORD_WIDTH = Math.max(...WORD_LINES.map((line) => line.length));
+const HASH_COORDINATES = WORD_LINES.flatMap((line, lineIndex) =>
+  Array.from(line).flatMap((value, charIndex) => (value === "#" ? [{ lineIndex, charIndex }] : [])),
+);
 const HASH_POSITIONS = WORD_LINES.flatMap((line, lineIndex) =>
   Array.from(line).flatMap((value, charIndex) => (value === "#" ? [`${lineIndex}-${charIndex}`] : [])),
 );
+const MATRIX_GLYPHS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ\uFF8A\uFF90\uFF8B\uFF70\uFF73\uFF7C\uFF85\uFF93\uFF86\uFF7B\uFF9C\uFF82\uFF75\uFF98\uFF71\uFF8E\uFF83\uFF8F\uFF79\uFF92\uFF74\uFF76\uFF77\uFF91\uFF95\uFF97\uFF7E\uFF88\uFF7D\uFF80\uFF87\uFF8D";
+const MATRIX_FRAME_MS = 50;
+const MATRIX_CELL_SIZE = 11;
+const ASCII_BUILD_MS = 8600;
+const MATRIX_SETTLE_MS = 1100;
 const SPARK_INTERVAL_MS = 360;
 const CONTROL_PHRASE = "CONTROL IS AN ILLUSION";
-const SIGNAL_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/_-+*:=|";
-const RAIN_COLUMN_COUNT = 24;
-const MATRIX_STREAM_COUNT = 15;
-const MATRIX_STREAM_ROWS = 14;
-const CONTROL_FAULT_ZONES = [2, 0, 4, 1, 3, 2];
 
 function seededUnit(index, salt) {
   const value = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43758.5453;
@@ -101,11 +83,12 @@ export default {
   data() {
     return {
       booting: true,
+      settling: false,
+      matrixVisible: true,
       activeHashSpark: "",
+      controlPhrase: CONTROL_PHRASE,
       hashSparkTimer: null,
-      matrixStreams: this.buildMatrixStreams(),
-      rainColumns: this.buildRainColumns(),
-      controlLetters: this.buildControlLetters(),
+      settleTimer: null,
     };
   },
   computed: {
@@ -126,112 +109,239 @@ export default {
   mounted() {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       this.finishBoot();
+      return;
     }
+    this.$nextTick(this.startMatrixRain);
   },
   beforeUnmount() {
+    this.stopMatrixRain();
     window.clearInterval(this.hashSparkTimer);
+    window.clearTimeout(this.settleTimer);
   },
   methods: {
     finishBoot(event) {
-      if (event?.animationName && event.animationName !== "asciiWordMaterialize") return;
+      if (event?.animationName && event.animationName !== "asciiWordMatrixBuild") return;
       if (!this.booting) return;
       this.booting = false;
-      this.jumpHashSpark();
-      this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
-    },
-    buildMatrixStreams() {
-      const coordinates = HASH_POSITIONS.map((position) => {
-        const [lineIndex, charIndex] = position.split("-").map(Number);
-        return { lineIndex, charIndex };
-      });
-
-      return Array.from({ length: MATRIX_STREAM_COUNT }, (_, index) => {
-        const minX = Math.floor((index / MATRIX_STREAM_COUNT) * WORD_WIDTH);
-        const maxX = Math.ceil(((index + 1) / MATRIX_STREAM_COUNT) * WORD_WIDTH);
-        const candidates = coordinates.filter(({ charIndex }) => charIndex >= minX && charIndex < maxX);
-        const pool = candidates.length ? candidates : coordinates;
-        const landing = pool[Math.floor(seededUnit(index, 89) * pool.length)];
-        const value = this.matrixStreamValue(index);
-        const top = (landing.lineIndex - MATRIX_STREAM_ROWS + 1) * 0.82;
-        const delay = 0.2 + seededUnit(index, 97) * 2.2;
-        const duration = 12.8 + seededUnit(index, 101) * 3.6;
-        const fall = 190 + seededUnit(index, 103) * 120;
-        const drift = Math.round((seededUnit(index, 107) - 0.5) * 38);
-
-        return {
-          id: `matrix-stream-${index}`,
-          value,
-          style: {
-            "--stream-x": `${landing.charIndex}ch`,
-            "--stream-y": `${top.toFixed(2)}em`,
-            "--stream-delay": `${delay.toFixed(2)}s`,
-            "--stream-duration": `${duration.toFixed(2)}s`,
-            "--stream-fall": `-${Math.round(fall)}px`,
-            "--stream-drift": `${drift}px`,
-            "--stream-drift-mid": `${Math.round(drift * 0.62)}px`,
-            "--stream-drift-low": `${Math.round(drift * 0.28)}px`,
-          },
-        };
-      });
-    },
-    matrixStreamValue(streamIndex) {
-      return Array.from({ length: MATRIX_STREAM_ROWS }, (_, rowIndex) => {
-        if (rowIndex === MATRIX_STREAM_ROWS - 1) return "#";
-        const glyphIndex = (streamIndex * 13 + rowIndex * 7) % SIGNAL_GLYPHS.length;
-        return SIGNAL_GLYPHS[glyphIndex];
-      }).join("\n");
-    },
-    buildControlLetters() {
-      const chars = Array.from(CONTROL_PHRASE);
-      const revealOrder = chars
-        .map((_, index) => ({ index, sort: seededUnit(index, 41) }))
-        .sort((left, right) => left.sort - right.sort);
-      const revealRankByIndex = new Map(revealOrder.map((entry, rank) => [entry.index, rank]));
-
-      return chars.map((value, index) => {
-        const revealRank = revealRankByIndex.get(index) ?? index;
-        const zone = CONTROL_FAULT_ZONES[Math.floor((index / Math.max(1, chars.length)) * CONTROL_FAULT_ZONES.length)];
-        const letterDelay = 1.75 + revealRank * 0.13 + seededUnit(index, 7) * 0.85;
-        const faultDelay = 18 + zone * 5.8 + seededUnit(index, 13) * 2.6;
-        const faultCycle = 46 + zone * 7 + seededUnit(index, 19) * 9;
-        const fallDrift = Math.round((seededUnit(index, 23) - 0.5) * 32);
-
-        return {
-          id: `control-${index}`,
-          value,
-          style: {
-            "--letter-delay": `${letterDelay.toFixed(2)}s`,
-            "--fault-delay": `${faultDelay.toFixed(2)}s`,
-            "--fault-cycle": `${faultCycle.toFixed(2)}s`,
-            "--fall-drift": `${fallDrift}px`,
-          },
-        };
-      });
-    },
-    buildRainColumns() {
-      return Array.from({ length: RAIN_COLUMN_COUNT }, (_, index) => {
-        const glyphs = Array.from({ length: 7 + (index % 4) }, (_, glyphIndex) =>
-          SIGNAL_GLYPHS[(index * 7 + glyphIndex * 3) % SIGNAL_GLYPHS.length],
-        ).join("\n");
-        const x = Math.round((4 + seededUnit(index, 2) * 92) * 100) / 100;
-        const delay = 0.2 + seededUnit(index, 5) * 3.1;
-        const duration = 3.8 + seededUnit(index, 8) * 2.4;
-        const drift = Math.round((seededUnit(index, 13) - 0.5) * 38);
-        return {
-          id: `signal-${index}`,
-          value: glyphs,
-          style: {
-            "--drop-x": `${x}%`,
-            "--drop-delay": `${delay.toFixed(2)}s`,
-            "--drop-duration": `${duration.toFixed(2)}s`,
-            "--drop-drift": `${drift}px`,
-          },
-        };
-      });
+      this.settling = true;
+      this.settleTimer = window.setTimeout(() => {
+        this.settling = false;
+        this.matrixVisible = false;
+        this.stopMatrixRain();
+        this.jumpHashSpark();
+        this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
+      }, MATRIX_SETTLE_MS);
     },
     jumpHashSpark() {
       const nextIndex = Math.floor(Math.random() * HASH_POSITIONS.length);
       this.activeHashSpark = HASH_POSITIONS[nextIndex];
+    },
+    startMatrixRain() {
+      const canvas = this.$refs.matrixCanvas;
+      if (!canvas) return;
+
+      this.matrixCanvas = canvas;
+      this.matrixContext = canvas.getContext("2d", { alpha: true });
+      if (!this.matrixContext) return;
+
+      this.matrixBootStartedAt = performance.now();
+      this.resizeMatrixRain();
+      this.matrixResizeObserver = new ResizeObserver(this.resizeMatrixRain);
+      this.matrixResizeObserver.observe(canvas);
+      this.matrixLastFrame = 0;
+      this.matrixFrame = window.requestAnimationFrame(this.renderMatrixRain);
+    },
+    stopMatrixRain() {
+      if (this.matrixFrame) {
+        window.cancelAnimationFrame(this.matrixFrame);
+        this.matrixFrame = 0;
+      }
+      this.matrixResizeObserver?.disconnect();
+      this.matrixResizeObserver = null;
+      this.matrixColumns = [];
+      this.matrixTargetCells = [];
+      this.matrixContext = null;
+      this.matrixCanvas = null;
+    },
+    resizeMatrixRain() {
+      const canvas = this.matrixCanvas || this.$refs.matrixCanvas;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.max(1, Math.round(rect.width * dpr));
+      const height = Math.max(1, Math.round(rect.height * dpr));
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      const columns = Math.max(8, Math.ceil(rect.width / MATRIX_CELL_SIZE));
+      const rows = Math.max(6, Math.ceil(rect.height / MATRIX_CELL_SIZE));
+      this.matrixCellSize = MATRIX_CELL_SIZE * dpr;
+      this.matrixRows = rows;
+      this.matrixTargetCells = this.buildMatrixTargetCells(canvas);
+
+      if (!this.matrixColumns || this.matrixColumns.length !== columns) {
+        this.matrixColumns = Array.from({ length: columns }, (_, index) => ({
+          y: -Math.floor(seededUnit(index, 151) * rows),
+          speed: 0.72 + seededUnit(index, 157) * 0.74,
+          length: 5 + Math.floor(seededUnit(index, 163) * 9),
+          resetChance: 0.025 + seededUnit(index, 167) * 0.03,
+        }));
+      }
+
+      const context = this.matrixContext;
+      if (context) {
+        context.setTransform(dpr, 0, 0, dpr, 0, 0);
+        context.clearRect(0, 0, rect.width, rect.height);
+      }
+    },
+    buildMatrixTargetCells(canvas) {
+      const word = canvas.parentElement?.querySelector(".ascii-descent__word");
+      if (!word) return [];
+
+      const canvasRect = canvas.getBoundingClientRect();
+      const wordRect = word.getBoundingClientRect();
+      const wordStyle = window.getComputedStyle(word);
+      const fontSize = Number.parseFloat(wordStyle.fontSize) || 7.24;
+      const lineHeight = Number.parseFloat(wordStyle.lineHeight) || fontSize * 0.82;
+      const charWidth = wordRect.width / Math.max(1, WORD_WIDTH);
+      const originX = wordRect.left - canvasRect.left;
+      const originY = wordRect.top - canvasRect.top;
+
+      const asciiCells = HASH_COORDINATES.map(({ lineIndex, charIndex }, index) => {
+        const vertical = lineIndex / Math.max(1, WORD_LINES.length - 1);
+        const lateral = Math.abs(charIndex / Math.max(1, WORD_WIDTH - 1) - 0.5);
+        return {
+          value: "#",
+          x: originX + charIndex * charWidth,
+          y: originY + lineIndex * lineHeight,
+          fontSize,
+          lineHeight,
+          revealAt: 0.08 + vertical * 0.66 + lateral * 0.06 + seededUnit(index, 211) * 0.16,
+          flicker: seededUnit(index, 223),
+        };
+      });
+      const phraseCells = this.buildMatrixPhraseCells(canvas, asciiCells.length);
+      return [...asciiCells, ...phraseCells];
+    },
+    buildMatrixPhraseCells(canvas, offset) {
+      const phrase = canvas.parentElement?.querySelector(".control-illusion__phrase");
+      if (!phrase) return [];
+
+      const canvasRect = canvas.getBoundingClientRect();
+      const phraseRect = phrase.getBoundingClientRect();
+      const phraseStyle = window.getComputedStyle(phrase);
+      const fontSize = Number.parseFloat(phraseStyle.fontSize) || 11;
+      const lineHeight = Number.parseFloat(phraseStyle.lineHeight) || fontSize;
+      const chars = Array.from(CONTROL_PHRASE);
+      const charWidth = phraseRect.width / Math.max(1, chars.length);
+      const originX = phraseRect.left - canvasRect.left;
+      const originY = phraseRect.top - canvasRect.top;
+
+      return chars.flatMap((value, index) => {
+        if (value === " ") return [];
+        return {
+          value,
+          x: originX + index * charWidth + charWidth * 0.06,
+          y: originY,
+          fontSize,
+          lineHeight,
+          revealAt: 0.76 + seededUnit(index, 239) * 0.14,
+          flicker: seededUnit(index + offset, 241),
+        };
+      });
+    },
+    renderMatrixRain(timestamp) {
+      if (!this.matrixVisible || !this.matrixContext || !this.matrixCanvas) return;
+
+      this.matrixFrame = window.requestAnimationFrame(this.renderMatrixRain);
+      if (timestamp - this.matrixLastFrame < MATRIX_FRAME_MS) return;
+      this.matrixLastFrame = timestamp;
+
+      const context = this.matrixContext;
+      const canvas = this.matrixCanvas;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      if (!width || !height) return;
+
+      context.fillStyle = "rgba(1, 7, 6, 0.18)";
+      context.fillRect(0, 0, width, height);
+      context.font = `900 ${MATRIX_CELL_SIZE}px "Cascadia Mono", Consolas, monospace`;
+      context.textAlign = "center";
+      context.textBaseline = "top";
+
+      this.matrixColumns.forEach((column, columnIndex) => {
+        const x = columnIndex * MATRIX_CELL_SIZE + MATRIX_CELL_SIZE * 0.5;
+
+        for (let tailIndex = 0; tailIndex < column.length; tailIndex += 1) {
+          const row = Math.floor(column.y - tailIndex);
+          if (row < 0 || row > this.matrixRows) continue;
+
+          const alpha = Math.max(0, 1 - tailIndex / column.length);
+          if (tailIndex === 0) {
+            context.fillStyle = "rgba(232, 255, 238, 0.95)";
+            context.shadowColor = "rgba(210, 255, 220, 0.55)";
+            context.shadowBlur = 8;
+          } else {
+            context.fillStyle = `rgba(0, 255, 65, ${Math.max(0.08, alpha * 0.52).toFixed(3)})`;
+            context.shadowColor = "rgba(0, 255, 65, 0.24)";
+            context.shadowBlur = 4;
+          }
+
+          context.fillText(this.randomMatrixGlyph(), x, row * MATRIX_CELL_SIZE);
+        }
+
+        column.y += column.speed;
+        if (column.y - column.length > this.matrixRows && Math.random() < column.resetChance) {
+          column.y = -Math.floor(Math.random() * this.matrixRows * 0.6);
+          column.speed = 0.72 + Math.random() * 0.74;
+          column.length = 5 + Math.floor(Math.random() * 9);
+        }
+      });
+
+      this.renderMatrixAsciiBuild(context, timestamp);
+      context.shadowBlur = 0;
+    },
+    renderMatrixAsciiBuild(context, timestamp) {
+      if (!this.matrixTargetCells?.length) return;
+
+      const progress = Math.min(1, (timestamp - this.matrixBootStartedAt) / ASCII_BUILD_MS);
+      let activeFontSize = 0;
+
+      context.textAlign = "left";
+      context.textBaseline = "top";
+      context.shadowColor = "rgba(0, 255, 95, 0.48)";
+      context.shadowBlur = 7;
+
+      this.matrixTargetCells.forEach((cell) => {
+        const age = progress - cell.revealAt;
+        if (age < 0) {
+          if (age > -0.035 && cell.flicker > 0.74) {
+            if (cell.fontSize !== activeFontSize) {
+              activeFontSize = cell.fontSize;
+              context.font = `900 ${cell.fontSize}px "Cascadia Mono", Consolas, monospace`;
+            }
+            context.fillStyle = "rgba(185, 255, 205, 0.42)";
+            context.fillText(this.randomMatrixGlyph(), cell.x, cell.y);
+          }
+          return;
+        }
+
+        if (cell.fontSize !== activeFontSize) {
+          activeFontSize = cell.fontSize;
+          context.font = `900 ${cell.fontSize}px "Cascadia Mono", Consolas, monospace`;
+        }
+
+        const alpha = Math.min(1, age / 0.09);
+        const pulse = 0.82 + Math.sin((progress * 36 + cell.flicker * 8) * Math.PI) * 0.08;
+        context.fillStyle = `rgba(0, 255, 95, ${(alpha * pulse).toFixed(3)})`;
+        context.fillText(cell.value, cell.x, cell.y - cell.lineHeight * 0.04);
+      });
+    },
+    randomMatrixGlyph() {
+      return MATRIX_GLYPHS[Math.floor(Math.random() * MATRIX_GLYPHS.length)];
     },
   },
 };

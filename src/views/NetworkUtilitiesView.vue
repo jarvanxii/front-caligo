@@ -7,14 +7,15 @@ import ModuleWorkspace from "@/components/ModuleWorkspace.vue";
 import { modulePages } from "@/data/modulePages";
 
 export default {
-  name: "SteganographyView",
+  name: "NetworkUtilitiesView",
   components: {
     ModuleWorkspace,
   },
   data() {
     return {
-      page: modulePages.esteganografia,
+      page: modulePages.redesUtilidades,
     };
   },
 };
 </script>
+

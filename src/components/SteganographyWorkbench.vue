@@ -50,6 +50,95 @@
           </div>
         </form>
 
+        <form v-else-if="toolKey === 'metadata-analyze'" class="stego-panel stego-console" @submit.prevent="analyzeMetadata">
+          <header class="stego-panel__head">
+            <span>Entrada</span>
+            <strong>METADATA</strong>
+          </header>
+
+          <label>
+            Fichero a inspeccionar
+            <input type="file" accept="*/*" @change="handleMetadataAnalyzeFile" />
+          </label>
+
+          <div v-if="metadataAnalyze.file" class="stego-file-pill">
+            <strong>{{ metadataAnalyze.file.name }}</strong>
+            <span>{{ formatBytes(metadataAnalyze.file.size) }} / {{ metadataAnalyze.file.type || "application/octet-stream" }}</span>
+          </div>
+
+          <div class="stego-actions">
+            <button type="submit" :disabled="busy || !metadataAnalyze.file">{{ busy ? "Inspeccionando" : "Analizar metadatos" }}</button>
+            <button type="button" @click="clearMetadataAnalyze">Limpiar</button>
+          </div>
+        </form>
+
+        <form v-else-if="toolKey === 'metadata-edit'" class="stego-panel stego-console" @submit.prevent="writeMetadata">
+          <header class="stego-panel__head">
+            <span>Editor</span>
+            <strong>WRITE</strong>
+          </header>
+
+          <label>
+            Fichero base
+            <input type="file" accept="*/*" @change="handleMetadataEditFile" />
+          </label>
+
+          <div v-if="metadataEdit.file" class="stego-file-pill">
+            <strong>{{ metadataEdit.file.name }}</strong>
+            <span>{{ formatBytes(metadataEdit.file.size) }} / {{ metadataEdit.file.type || "application/octet-stream" }}</span>
+          </div>
+
+          <div class="stego-field-grid">
+            <label>
+              Modo
+              <select v-model="metadataEdit.mode">
+                <option value="auto">Auto</option>
+                <option value="png-text">PNG tEXt</option>
+                <option value="jpeg-comment">JPEG COM</option>
+                <option value="sidecar-json">Sidecar JSON</option>
+              </select>
+            </label>
+
+            <label>
+              Perfil
+              <select v-model="metadataEdit.profile">
+                <option value="forense">Forense</option>
+                <option value="limpio">Minimo</option>
+                <option value="personalizado">Personalizado</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="stego-field-grid">
+            <label>
+              Titulo
+              <input v-model.trim="metadataEdit.title" type="text" autocomplete="off" spellcheck="false" placeholder="Caligo sample" />
+            </label>
+
+            <label>
+              Autor
+              <input v-model.trim="metadataEdit.author" type="text" autocomplete="off" spellcheck="false" placeholder="Caligo Lab" />
+            </label>
+          </div>
+
+          <label>
+            Descripcion / comentario
+            <textarea v-model="metadataEdit.description" rows="5" spellcheck="false" placeholder="Nota operativa visible para el laboratorio"></textarea>
+          </label>
+
+          <label>
+            Etiquetas
+            <input v-model.trim="metadataEdit.keywords" type="text" autocomplete="off" spellcheck="false" placeholder="lab, stego, evidence" />
+          </label>
+
+          <div class="stego-actions">
+            <button type="submit" :disabled="busy || !metadataEdit.file">{{ busy ? "Escribiendo" : "Generar artefacto" }}</button>
+            <button type="button" @click="fillMetadataExample">Ejemplo</button>
+            <button type="button" @click="clearMetadataEdit">Limpiar</button>
+            <a v-if="metadataEdit.downloadUrl" :href="metadataEdit.downloadUrl" :download="metadataEdit.downloadName">Descargar</a>
+          </div>
+        </form>
+
         <form v-else-if="toolKey === 'embed'" class="stego-panel stego-console" @submit.prevent="embedPayload">
           <header class="stego-panel__head">
             <span>Portador</span>
@@ -183,13 +272,33 @@ const CRC_TABLE = buildCrcTable();
 const TOOLS = [
   {
     key: "analyze",
-    routeName: "esteganografia",
-    code: "META",
+    routeName: "stegoAnalyze",
+    code: "ANL",
     label: "Analizador",
     eyebrow: "Esteganografia / Analisis",
     title: "Analizador de muestras",
     summary: "Inspeccion local de magic bytes, entropia, cadenas visibles, metadatos basicos, bytes anexos y paquetes Caligo.",
     empty: "Carga una muestra para obtener un perfil forense rapido.",
+  },
+  {
+    key: "metadata-analyze",
+    routeName: "stegoMetadataAnalyze",
+    code: "META",
+    label: "Metadatos",
+    eyebrow: "Esteganografia / Metadatos",
+    title: "Analizador de metadatos",
+    summary: "Inventario local de metadatos visibles en PNG, JPEG, PDF y contenedores sin enviar la muestra fuera del navegador.",
+    empty: "Carga una muestra para mapear metadatos, segmentos y campos visibles.",
+  },
+  {
+    key: "metadata-edit",
+    routeName: "stegoMetadataEditor",
+    code: "EDIT",
+    label: "Editor",
+    eyebrow: "Esteganografia / Metadatos",
+    title: "Editor de metadatos",
+    summary: "Inserta metadatos controlados en PNG tEXt, JPEG COM o genera un sidecar JSON para formatos no editables desde navegador.",
+    empty: "Selecciona un fichero y prepara una marca de laboratorio descargable.",
   },
   {
     key: "embed",
@@ -230,6 +339,20 @@ export default {
       analyze: {
         file: null,
       },
+      metadataAnalyze: {
+        file: null,
+      },
+      metadataEdit: {
+        file: null,
+        mode: "auto",
+        profile: "forense",
+        title: "",
+        author: "",
+        description: "",
+        keywords: "",
+        downloadUrl: "",
+        downloadName: "",
+      },
       embed: {
         carrier: null,
         payloadFile: null,
@@ -262,12 +385,24 @@ export default {
     },
   },
   beforeUnmount() {
+    this.revokeMetadataDownload();
     this.revokeEmbedDownload();
     this.revokeExtractDownload();
   },
   methods: {
     handleAnalyzeFile(event) {
       this.analyze.file = event.target.files?.[0] || null;
+      this.result = null;
+      this.error = "";
+    },
+    handleMetadataAnalyzeFile(event) {
+      this.metadataAnalyze.file = event.target.files?.[0] || null;
+      this.result = null;
+      this.error = "";
+    },
+    handleMetadataEditFile(event) {
+      this.metadataEdit.file = event.target.files?.[0] || null;
+      this.revokeMetadataDownload();
       this.result = null;
       this.error = "";
     },
@@ -348,6 +483,123 @@ export default {
         };
       } catch (error) {
         this.error = error.message || "No se pudo analizar la muestra";
+      } finally {
+        this.busy = false;
+      }
+    },
+    async analyzeMetadata() {
+      if (!this.metadataAnalyze.file) return;
+      this.busy = true;
+      this.error = "";
+      try {
+        const file = this.metadataAnalyze.file;
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const type = detectFileType(bytes, file);
+        const profile = buildMetadataProfile(bytes, type, file);
+        const hash = await sha256Hex(bytes);
+        const suspicious = profile.entries.filter((entry) => /gps|location|author|creator|software|history|comment/i.test(entry.key));
+        const tone = suspicious.length ? "warning" : profile.entries.length ? "success" : "neutral";
+
+        this.result = {
+          verdict: suspicious.length ? "REVISAR" : profile.entries.length ? "VISIBLE" : "LIMPIO",
+          tone: tone === "warning" ? "warning" : "success",
+          badge: type.label,
+          title: suspicious.length ? "Metadatos sensibles visibles" : profile.entries.length ? "Metadatos detectados" : "Sin metadatos simples",
+          body: suspicious.length
+            ? "La muestra expone campos que conviene revisar antes de compartirla."
+            : profile.entries.length
+              ? "Se han localizado campos legibles desde el navegador."
+              : "No hay campos simples visibles en los parsers locales de Caligo.",
+          metrics: [
+            { label: "Tipo", value: type.label, note: type.family },
+            { label: "Campos", value: String(profile.entries.length), note: "visibles" },
+            { label: "Estructura", value: String(profile.structure.length), note: "bloques" },
+            { label: "SHA-256", value: hash.slice(0, 12), note: "huella" },
+          ],
+          panels: [
+            { title: "Campos", badge: "meta", content: listText(profile.entries.length ? profile.entries.map(formatMetadataEntry) : ["Sin campos editables o visibles."]) },
+            { title: "Estructura", badge: "map", content: listText(profile.structure.length ? profile.structure : ["Sin estructura interpretada."]) },
+            { title: "Riesgo", badge: "risk", content: listText([
+              suspicious.length ? `Campos sensibles: ${suspicious.map((entry) => entry.key).join(", ")}` : "No se detectan nombres de campo sensibles.",
+              profile.editModes.length ? `Edicion local disponible: ${profile.editModes.join(", ")}` : "Edicion directa no disponible para este formato.",
+              `Nombre: ${file.name}`,
+              `MIME navegador: ${file.type || "N/D"}`,
+            ]) },
+            { title: "JSON", badge: "json", content: JSON.stringify(profile.entries, null, 2), copyValue: JSON.stringify(profile, null, 2) },
+          ],
+        };
+      } catch (error) {
+        this.error = error.message || "No se pudieron analizar los metadatos";
+      } finally {
+        this.busy = false;
+      }
+    },
+    async writeMetadata() {
+      if (!this.metadataEdit.file) return;
+      this.busy = true;
+      this.error = "";
+      try {
+        this.revokeMetadataDownload();
+        const file = this.metadataEdit.file;
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const type = detectFileType(bytes, file);
+        const fields = metadataFields(this.metadataEdit, file);
+        const mode = resolveMetadataMode(this.metadataEdit.mode, type);
+        let outputBytes = null;
+        let outputBlob = null;
+        let outputName = "";
+        let notes = [];
+
+        if (mode === "png-text") {
+          if (type.label !== "PNG") throw new Error("PNG tEXt requiere un fichero PNG valido.");
+          outputBytes = writePngMetadata(bytes, fields);
+          outputBlob = new Blob([outputBytes], { type: "image/png" });
+          outputName = outputFileName(file.name, "caligo-meta", "png");
+          notes = ["Se insertaron chunks tEXt antes de IEND.", "La imagen no se recomprime."];
+        } else if (mode === "jpeg-comment") {
+          if (type.label !== "JPEG") throw new Error("JPEG COM requiere un fichero JPEG valido.");
+          outputBytes = writeJpegComment(bytes, fields);
+          outputBlob = new Blob([outputBytes], { type: file.type || "image/jpeg" });
+          outputName = outputFileName(file.name, "caligo-meta", extensionFromName(file.name) || "jpg");
+          notes = ["Se inserto un segmento COM tras SOI.", "No se reescriben pixeles ni EXIF binario."];
+        } else {
+          const sidecar = JSON.stringify({
+            source: {
+              name: file.name,
+              size: file.size,
+              mime: file.type || "application/octet-stream",
+              detectedType: type.label,
+            },
+            metadata: fields,
+          }, null, 2);
+          outputBytes = textToBytes(sidecar);
+          outputBlob = new Blob([outputBytes], { type: "application/json;charset=utf-8" });
+          outputName = outputFileName(file.name, "metadata", "json");
+          notes = ["Formato no editado directamente; se genero sidecar JSON.", "Util para evidencia o carga posterior en herramientas nativas."];
+        }
+
+        this.metadataEdit.downloadUrl = URL.createObjectURL(outputBlob);
+        this.metadataEdit.downloadName = outputName;
+        this.result = {
+          verdict: "OK",
+          tone: "success",
+          badge: mode,
+          title: "Artefacto generado",
+          body: `Se preparo ${outputName} con metadatos controlados de laboratorio.`,
+          metrics: [
+            { label: "Modo", value: mode, note: this.metadataEdit.mode === "auto" ? "auto" : "manual" },
+            { label: "Entrada", value: type.label, note: formatBytes(file.size) },
+            { label: "Salida", value: formatBytes(outputBytes.length), note: outputName },
+            { label: "Campos", value: String(Object.keys(fields).length), note: this.metadataEdit.profile },
+          ],
+          panels: [
+            { title: "Campos escritos", badge: "meta", content: listText(Object.entries(fields).map(([key, value]) => `${key}: ${value}`)) },
+            { title: "Operacion", badge: "ops", content: listText(notes) },
+            { title: "JSON", badge: "json", content: JSON.stringify(fields, null, 2), copyValue: JSON.stringify(fields, null, 2) },
+          ],
+        };
+      } catch (error) {
+        this.error = error.message || "No se pudieron escribir los metadatos";
       } finally {
         this.busy = false;
       }
@@ -538,6 +790,30 @@ export default {
       this.result = null;
       this.error = "";
     },
+    clearMetadataAnalyze() {
+      this.metadataAnalyze.file = null;
+      this.result = null;
+      this.error = "";
+    },
+    clearMetadataEdit() {
+      this.revokeMetadataDownload();
+      this.metadataEdit.file = null;
+      this.metadataEdit.mode = "auto";
+      this.metadataEdit.profile = "forense";
+      this.metadataEdit.title = "";
+      this.metadataEdit.author = "";
+      this.metadataEdit.description = "";
+      this.metadataEdit.keywords = "";
+      this.result = null;
+      this.error = "";
+    },
+    fillMetadataExample() {
+      this.metadataEdit.profile = "forense";
+      this.metadataEdit.title = "Caligo lab sample";
+      this.metadataEdit.author = "Caligo";
+      this.metadataEdit.description = "Artefacto generado para laboratorio controlado.";
+      this.metadataEdit.keywords = "caligo, stego, lab, evidence";
+    },
     clearEmbed() {
       this.revokeEmbedDownload();
       this.embed.carrier = null;
@@ -552,6 +828,11 @@ export default {
       this.extract.file = null;
       this.result = null;
       this.error = "";
+    },
+    revokeMetadataDownload() {
+      if (this.metadataEdit.downloadUrl) URL.revokeObjectURL(this.metadataEdit.downloadUrl);
+      this.metadataEdit.downloadUrl = "";
+      this.metadataEdit.downloadName = "";
     },
     revokeEmbedDownload() {
       if (this.embed.downloadUrl) URL.revokeObjectURL(this.embed.downloadUrl);
@@ -631,6 +912,150 @@ function collectContainerHints(bytes, type) {
   const appendedBytes = Math.max(0, bytes.length - endOffset);
   if (appendedBytes > 0) indicators.push("Contenido despues del final logico del contenedor.");
   return { metadataLines, formatLines, indicators, appendedBytes };
+}
+
+function buildMetadataProfile(bytes, type, file) {
+  const entries = [];
+  const structure = [
+    `Nombre: ${file?.name || "sin_nombre"}`,
+    `MIME navegador: ${file?.type || "N/D"}`,
+    `Tamano: ${formatBytes(file?.size || bytes.length)}`,
+    `Magic bytes: ${bytesToHex(bytes.slice(0, 16))}`,
+  ];
+  const editModes = [];
+
+  if (type.label === "PNG") {
+    editModes.push("png-text");
+    const chunks = parsePngChunks(bytes);
+    const ihdr = chunks.find((chunk) => chunk.type === "IHDR");
+    if (ihdr?.data?.length >= 8) {
+      structure.push(`Dimensiones PNG: ${readUint32(ihdr.data, 0)}x${readUint32(ihdr.data, 4)}`);
+    }
+    structure.push(`Chunks PNG: ${chunks.map((chunk) => `${chunk.type}(${chunk.data.length})`).join(", ")}`);
+    for (const chunk of chunks) {
+      if (!["tEXt", "iTXt", "zTXt"].includes(chunk.type)) continue;
+      entries.push(...parsePngMetadataChunk(chunk));
+    }
+  }
+
+  if (type.label === "JPEG") {
+    editModes.push("jpeg-comment");
+    const segments = parseJpegSegments(bytes);
+    structure.push(`Segmentos JPEG: ${segments.map((segment) => `0x${segment.marker.toString(16)}(${segment.data.length})`).join(", ") || "sin segmentos interpretables"}`);
+    for (const segment of segments) {
+      if (segment.marker === 0xfe) {
+        entries.push({ group: "JPEG COM", key: "Comment", value: cleanMetadataValue(bytesToLatin1(segment.data)) });
+      }
+      if (segment.marker === 0xe1) {
+        const app1 = bytesToLatin1(segment.data.slice(0, Math.min(segment.data.length, 500)));
+        entries.push({
+          group: "JPEG APP1",
+          key: app1.startsWith("Exif") ? "EXIF" : app1.includes("xmpmeta") ? "XMP" : "APP1",
+          value: app1.startsWith("Exif") ? "Bloque EXIF binario detectado" : cleanMetadataValue(app1).slice(0, 260),
+        });
+      }
+    }
+  }
+
+  if (type.label === "PDF") {
+    const text = bytesToLatin1(bytes.slice(0, Math.min(bytes.length, 20000)));
+    const fields = ["Title", "Author", "Subject", "Creator", "Producer", "CreationDate", "ModDate", "Keywords"];
+    for (const field of fields) {
+      const match = text.match(new RegExp(`/${field}\\s*(\\((?:\\\\.|[^)]){0,500}\\)|<[^>]{1,500}>)`));
+      if (match) entries.push({ group: "PDF Info", key: field, value: decodePdfMetadataValue(match[1]) });
+    }
+    structure.push("PDF Info: lectura heuristica local");
+  }
+
+  if (type.label === "ZIP") {
+    const names = zipCentralDirectoryNames(bytes);
+    structure.push(`ZIP entries visibles: ${names.length}`);
+    entries.push(...names.slice(0, 40).map((name) => ({ group: "ZIP", key: "Entry", value: name })));
+  }
+
+  if (!editModes.length) editModes.push("sidecar-json");
+  return { entries, structure, editModes };
+}
+
+function parsePngMetadataChunk(chunk) {
+  const text = decodeTextChunk(chunk.data);
+  if (chunk.type === "zTXt") {
+    const keyword = text.split(" ")[0] || "zTXt";
+    return [{ group: "PNG zTXt", key: keyword, value: "Texto comprimido detectado; no se descomprime en navegador." }];
+  }
+  const separator = chunk.data.indexOf(0);
+  if (separator > 0) {
+    const key = bytesToLatin1(chunk.data.slice(0, separator)).trim() || chunk.type;
+    const value = decodeTextChunk(chunk.data.slice(separator + 1));
+    return [{ group: `PNG ${chunk.type}`, key, value: cleanMetadataValue(value) }];
+  }
+  return [{ group: `PNG ${chunk.type}`, key: chunk.type, value: cleanMetadataValue(text) }];
+}
+
+function formatMetadataEntry(entry) {
+  return `[${entry.group}] ${entry.key}: ${entry.value}`;
+}
+
+function cleanMetadataValue(value) {
+  return String(value || "").replace(/\s+/g, " ").trim().slice(0, 700);
+}
+
+function decodePdfMetadataValue(value) {
+  const text = String(value || "");
+  if (text.startsWith("<")) {
+    const hex = text.replace(/[<>\s]/g, "");
+    const bytes = new Uint8Array((hex.match(/.{1,2}/g) || []).map((item) => parseInt(item, 16)).filter((item) => Number.isFinite(item)));
+    return cleanMetadataValue(bytesToLatin1(bytes));
+  }
+  return cleanMetadataValue(text.slice(1, -1).replace(/\\([()\\])/g, "$1"));
+}
+
+function resolveMetadataMode(mode, type) {
+  if (mode !== "auto") return mode;
+  if (type.label === "PNG") return "png-text";
+  if (type.label === "JPEG") return "jpeg-comment";
+  return "sidecar-json";
+}
+
+function metadataFields(form, file) {
+  const fields = {};
+  if (form.title) fields.Title = form.title;
+  if (form.author) fields.Author = form.author;
+  if (form.description) fields.Description = form.description;
+  if (form.keywords) fields.Keywords = form.keywords;
+  if (form.profile !== "limpio") {
+    fields.CaligoProfile = form.profile;
+    fields.CaligoSource = file?.name || "unknown";
+    fields.CaligoEditedAt = new Date().toISOString();
+  }
+  if (!Object.keys(fields).length) {
+    throw new Error("Introduce al menos un campo de metadatos o usa el ejemplo.");
+  }
+  return fields;
+}
+
+function writePngMetadata(bytes, fields) {
+  const chunks = parsePngChunks(bytes);
+  const iend = chunks.find((chunk) => chunk.type === "IEND");
+  if (!iend) throw new Error("PNG sin chunk IEND.");
+  const metadataChunks = Object.entries(fields).map(([key, value]) => makePngTextChunk(key, value));
+  return concatBytes(bytes.slice(0, iend.offset), ...metadataChunks, bytes.slice(iend.offset));
+}
+
+function makePngTextChunk(key, value) {
+  const safeKey = String(key || "Caligo").replace(/[^\x20-\x7e]/g, "").slice(0, 79) || "Caligo";
+  const data = concatBytes(textToLatin1(safeKey), new Uint8Array([0]), textToLatin1(String(value || "")));
+  return makePngChunk("tEXt", data);
+}
+
+function writeJpegComment(bytes, fields) {
+  if (bytes[0] !== 0xff || bytes[1] !== 0xd8) throw new Error("JPEG sin marcador SOI.");
+  const comment = Object.entries(fields).map(([key, value]) => `${key}: ${value}`).join("\n");
+  const data = textToLatin1(comment);
+  if (data.length > 65531) throw new Error("El comentario JPEG supera el tamano maximo del segmento COM.");
+  const length = data.length + 2;
+  const segment = concatBytes(new Uint8Array([0xff, 0xfe, (length >>> 8) & 255, length & 255]), data);
+  return concatBytes(bytes.slice(0, 2), segment, bytes.slice(2));
 }
 
 async function analyzeImageLsb(file, type) {
