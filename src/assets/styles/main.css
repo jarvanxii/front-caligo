@@ -1424,7 +1424,13 @@ select {
   content: "";
   mix-blend-mode: screen;
   transform: translateX(-210%);
-  animation: asciiSweep 7.5s ease-in-out infinite;
+  opacity: 0;
+  animation: asciiSweep 26s ease-in-out 4s infinite;
+}
+
+.ascii-descent.is-awakening::before {
+  opacity: 0;
+  animation: none;
 }
 
 .ascii-descent::after {
@@ -1524,8 +1530,8 @@ select {
   opacity: 0;
   text-align: center;
   text-shadow:
-    0 0 9px rgba(94, 234, 212, 0.32),
-    0 0 18px rgba(148, 163, 184, 0.16);
+    0 0 7px rgba(94, 234, 212, 0.28),
+    0 0 14px rgba(148, 163, 184, 0.12);
   transform: translate(-50%, -132%) translateX(var(--drop-drift));
   white-space: pre-line;
   animation: controlSignalDrop var(--drop-duration) cubic-bezier(0.12, 0.68, 0.18, 1) var(--drop-delay) both;
@@ -1654,10 +1660,12 @@ select {
   display: block;
 }
 
+.ascii-descent__space {
+  white-space: pre;
+}
+
 .ascii-descent__char {
   display: inline-block;
-  width: 1ch;
-  min-width: 1ch;
   transform-origin: 50% 76%;
   vertical-align: top;
 }
@@ -1719,10 +1727,8 @@ select {
 }
 
 .ascii-descent.is-awakening .ascii-descent__char--falling {
-  animation:
-    asciiCharacterDescend var(--ascii-drop-duration) cubic-bezier(0.12, 0.78, 0.18, 1) var(--ascii-delay) both,
-    asciiColorDrift 9s ease-in-out var(--ascii-tone-delay, var(--ascii-color-delay, 0s)) infinite;
-  will-change: opacity, filter, transform, color, text-shadow;
+  animation: asciiCharacterDescend var(--ascii-drop-duration) cubic-bezier(0.12, 0.78, 0.18, 1) var(--ascii-delay) both;
+  will-change: opacity, transform;
 }
 
 .ascii-descent__char--spark {
@@ -6941,23 +6947,23 @@ p {
 @keyframes controlSignalDrop {
   0% {
     opacity: 0;
-    filter: blur(2px);
+    filter: blur(0.6px);
     transform: translate(-50%, -138%) translateX(var(--drop-drift)) scaleY(1.72);
   }
 
   22% {
     opacity: 0.5;
-    filter: blur(1px);
+    filter: blur(0.35px);
   }
 
   62% {
     opacity: 0.34;
-    filter: blur(0.4px);
+    filter: blur(0);
   }
 
   100% {
     opacity: 0;
-    filter: blur(1.2px);
+    filter: blur(0.5px);
     transform: translate(-50%, 142%) translateX(0) scaleY(1);
   }
 }
@@ -7008,7 +7014,7 @@ p {
 @keyframes controlLetterFall {
   0% {
     color: rgba(120, 143, 151, 0);
-    filter: blur(6px);
+    filter: blur(1.1px);
     opacity: 0;
     text-shadow: none;
     transform: translateY(-68px) translateX(var(--fall-drift)) scaleY(2.32);
@@ -7016,14 +7022,14 @@ p {
 
   18% {
     color: rgba(143, 169, 177, 0.32);
-    filter: blur(2.1px);
+    filter: blur(0.8px);
     opacity: 0.34;
     transform: translateY(-24px) translateX(var(--fall-drift)) scaleY(1.52);
   }
 
   36% {
     color: rgba(184, 247, 239, 0.78);
-    filter: blur(0.85px);
+    filter: blur(0.44px);
     opacity: 0.82;
     text-shadow:
       0 0 10px rgba(184, 247, 239, 0.32),
@@ -7111,31 +7117,31 @@ p {
 
 @keyframes asciiCharacterDescend {
   0% {
-    filter: blur(7px);
+    filter: blur(0.9px);
     opacity: 0;
     transform: translate3d(var(--ascii-drift), var(--ascii-fall-start), 0) scaleY(2.45);
   }
 
   18% {
-    filter: blur(5.2px);
+    filter: blur(0.65px);
     opacity: 0.2;
     transform: translate3d(var(--ascii-drift), var(--ascii-fall-high), 0) scaleY(2);
   }
 
   44% {
-    filter: blur(2.5px);
+    filter: blur(0.42px);
     opacity: 0.52;
     transform: translate3d(var(--ascii-mid-drift), var(--ascii-fall-mid), 0) scaleY(1.34);
   }
 
   68% {
-    filter: blur(1.1px);
+    filter: blur(0.2px);
     opacity: 0.78;
     transform: translate3d(0, -12px, 0) scaleY(1.08);
   }
 
   86% {
-    filter: blur(0.42px);
+    filter: blur(0);
     opacity: 0.96;
     transform: translate3d(0, 3px, 0) scaleY(0.92);
   }

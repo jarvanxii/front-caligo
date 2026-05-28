@@ -26,23 +26,25 @@
       </div>
       <div class="ascii-descent__lockup" aria-hidden="true">
         <pre class="ascii-descent__art ascii-descent__word"><span
-          v-for="(line, lineIndex) in renderedWordLines"
-          :key="`word-line-${lineIndex}`"
+          v-for="line in wordLines"
+          :key="line.id"
           class="ascii-descent__line"
+        ><template
+          v-for="segment in line.segments"
+          :key="segment.id"
         ><span
-          v-for="(char, charIndex) in line"
-          :key="`word-char-${lineIndex}-${charIndex}`"
+          v-if="segment.visible"
           :class="[
             'ascii-descent__char',
-            `ascii-descent__char--${char.tone}`,
+            `ascii-descent__char--${segment.tone}`,
             {
-              'ascii-descent__char--falling': char.falling,
-              'ascii-descent__char--spark': char.spark,
-              'ascii-descent__char--spark-orange': char.spark && char.sparkTone === 'orange',
+              'ascii-descent__char--falling': segment.falling,
+              'ascii-descent__char--spark': segment.positions.includes(activeHashSpark),
+              'ascii-descent__char--spark-orange': segment.positions.includes(activeHashSpark) && activeHashSparkTone === 'orange',
             },
           ]"
-          :style="char.style"
-        >{{ char.value }}</span></span></pre>
+          :style="segment.style"
+        >{{ booting ? segment.introValue : segment.value }}</span><span v-else class="ascii-descent__space">{{ segment.value }}</span></template></span></pre>
       </div>
       <div class="ascii-descent__meta ascii-descent__meta--bottom" aria-hidden="true">
         <span>TRACE ENABLED</span>
@@ -91,7 +93,7 @@ const HASH_POSITIONS = WORD_LINES.flatMap((line, lineIndex) =>
 const SPARK_INTERVAL_MS = 360;
 const BOOT_DIM_MS = 19000;
 const CONTROL_PHRASE = "CONTROL IS AN ILLUSION";
-const SIGNAL_GLYPHS = "01#/_-+*:=|CALIGO";
+const SIGNAL_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/_-+*:=|";
 const RAIN_COLUMN_COUNT = 54;
 const CONTROL_FAULT_ZONES = [2, 0, 4, 1, 3, 2];
 
@@ -109,23 +111,10 @@ export default {
       activeHashSparkTone: "orange",
       hashSparkTimer: null,
       bootTimer: null,
+      wordLines: this.buildWordLines(),
       rainColumns: this.buildRainColumns(),
       controlLetters: this.buildControlLetters(),
     };
-  },
-  computed: {
-    renderedWordLines() {
-      return WORD_LINES.map((line, lineIndex) =>
-        Array.from(line.padEnd(WORD_WIDTH)).map((value, charIndex) => ({
-          value,
-          tone: this.toneForWordCharacter(value, charIndex),
-          falling: value !== " ",
-          style: this.styleForWordCharacter(value, lineIndex, charIndex),
-          spark: this.isActiveHashSpark(value, lineIndex, charIndex),
-          sparkTone: this.activeHashSparkTone,
-        })),
-      );
-    },
   },
   mounted() {
     this.bootTimer = window.setTimeout(() => {
@@ -139,6 +128,72 @@ export default {
     window.clearTimeout(this.bootTimer);
   },
   methods: {
+    buildWordLines() {
+      return WORD_LINES.map((line, lineIndex) => ({
+        id: `word-line-${lineIndex}`,
+        segments: this.buildWordLineSegments(line.padEnd(WORD_WIDTH), lineIndex),
+      }));
+    },
+    buildWordLineSegments(line, lineIndex) {
+      const segments = [];
+      let pendingSpaces = "";
+      let pendingStart = 0;
+
+      const flushSpaces = () => {
+        if (!pendingSpaces) return;
+        segments.push({
+          id: `word-space-${lineIndex}-${pendingStart}`,
+          value: pendingSpaces,
+          visible: false,
+        });
+        pendingSpaces = "";
+      };
+
+      const chars = Array.from(line);
+      let charIndex = 0;
+
+      while (charIndex < chars.length) {
+        const value = chars[charIndex];
+        if (value === " ") {
+          if (!pendingSpaces) pendingStart = charIndex;
+          pendingSpaces += value;
+          charIndex += 1;
+          continue;
+        }
+
+        flushSpaces();
+        let visibleRunLength = 0;
+        while (chars[charIndex + visibleRunLength] && chars[charIndex + visibleRunLength] !== " ") {
+          visibleRunLength += 1;
+        }
+        const chunkLength = Math.min(
+          2 + Math.floor(seededUnit(lineIndex * WORD_WIDTH + charIndex, 73) * 4),
+          visibleRunLength,
+        );
+        const chunk = chars.slice(charIndex, charIndex + chunkLength).join("");
+        const positions = Array.from({ length: chunk.length }, (_, offset) => `${lineIndex}-${charIndex + offset}`);
+        segments.push({
+          id: `word-char-${lineIndex}-${charIndex}`,
+          value: chunk,
+          introValue: this.matrixGlyphsForChunk(lineIndex, charIndex, chunk.length),
+          visible: true,
+          positions,
+          tone: this.toneForWordCharacter(value, charIndex),
+          falling: true,
+          style: this.styleForWordCharacter(value, lineIndex, charIndex),
+        });
+        charIndex += chunkLength;
+      }
+
+      flushSpaces();
+      return segments;
+    },
+    matrixGlyphsForChunk(lineIndex, charIndex, length) {
+      return Array.from({ length }, (_, offset) => {
+        const glyphIndex = (lineIndex * 17 + (charIndex + offset) * 11) % SIGNAL_GLYPHS.length;
+        return SIGNAL_GLYPHS[glyphIndex];
+      }).join("");
+    },
     buildControlLetters() {
       const chars = Array.from(CONTROL_PHRASE);
       const revealOrder = chars
@@ -213,10 +268,6 @@ export default {
         "--ascii-mid-drift": `${midDrift}px`,
         "--ascii-color-delay": `${(-seededUnit(key, 61) * 8).toFixed(2)}s`,
       };
-    },
-    isActiveHashSpark(value, lineIndex, charIndex) {
-      if (value !== "#") return false;
-      return `${lineIndex}-${charIndex}` === this.activeHashSpark;
     },
     jumpHashSpark() {
       const nextIndex = Math.floor(Math.random() * HASH_POSITIONS.length);
