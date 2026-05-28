@@ -25,26 +25,20 @@
         </div>
       </div>
       <div class="ascii-descent__lockup" aria-hidden="true">
-        <pre class="ascii-descent__art ascii-descent__word"><span
-          v-for="line in wordLines"
-          :key="line.id"
-          class="ascii-descent__line"
-        ><template
-          v-for="segment in line.segments"
-          :key="segment.id"
-        ><span
-          v-if="segment.visible"
-          :class="[
-            'ascii-descent__char',
-            `ascii-descent__char--${segment.tone}`,
-            {
-              'ascii-descent__char--falling': segment.falling,
-              'ascii-descent__char--spark': segment.positions.includes(activeHashSpark),
-              'ascii-descent__char--spark-orange': segment.positions.includes(activeHashSpark) && activeHashSparkTone === 'orange',
-            },
-          ]"
-          :style="segment.style"
-        >{{ booting ? segment.introValue : segment.value }}</span><span v-else class="ascii-descent__space">{{ segment.value }}</span></template></span></pre>
+        <div v-if="booting" class="ascii-descent__streams">
+          <span
+            v-for="stream in matrixStreams"
+            :key="stream.id"
+            class="ascii-descent__stream"
+            :style="stream.style"
+          >{{ stream.value }}</span>
+        </div>
+        <pre class="ascii-descent__art ascii-descent__word" @animationend.self="finishBoot">{{ wordText }}</pre>
+        <span
+          v-if="activeSparkStyle"
+          class="ascii-descent__spark-overlay"
+          :style="activeSparkStyle"
+        >#</span>
       </div>
       <div class="ascii-descent__meta ascii-descent__meta--bottom" aria-hidden="true">
         <span>TRACE ENABLED</span>
@@ -55,7 +49,6 @@
 </template>
 
 <script>
-const WORD_BAND_WIDTH = 38;
 const WORD_LINES = [
   String.raw``,
   String.raw``,
@@ -91,10 +84,11 @@ const HASH_POSITIONS = WORD_LINES.flatMap((line, lineIndex) =>
   Array.from(line).flatMap((value, charIndex) => (value === "#" ? [`${lineIndex}-${charIndex}`] : [])),
 );
 const SPARK_INTERVAL_MS = 360;
-const BOOT_DIM_MS = 19000;
 const CONTROL_PHRASE = "CONTROL IS AN ILLUSION";
 const SIGNAL_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/_-+*:=|";
-const RAIN_COLUMN_COUNT = 54;
+const RAIN_COLUMN_COUNT = 24;
+const MATRIX_STREAM_COUNT = 15;
+const MATRIX_STREAM_ROWS = 14;
 const CONTROL_FAULT_ZONES = [2, 0, 4, 1, 3, 2];
 
 function seededUnit(index, salt) {
@@ -108,91 +102,84 @@ export default {
     return {
       booting: true,
       activeHashSpark: "",
-      activeHashSparkTone: "orange",
       hashSparkTimer: null,
-      bootTimer: null,
-      wordLines: this.buildWordLines(),
+      matrixStreams: this.buildMatrixStreams(),
       rainColumns: this.buildRainColumns(),
       controlLetters: this.buildControlLetters(),
     };
   },
+  computed: {
+    wordText() {
+      return WORD_LINES.join("\n");
+    },
+    activeSparkStyle() {
+      if (!this.activeHashSpark) return null;
+      const [lineIndex, charIndex] = this.activeHashSpark.split("-").map(Number);
+      if (!Number.isFinite(lineIndex) || !Number.isFinite(charIndex)) return null;
+
+      return {
+        "--spark-x": `${charIndex}ch`,
+        "--spark-y": `${(lineIndex * 0.82).toFixed(2)}em`,
+      };
+    },
+  },
   mounted() {
-    this.bootTimer = window.setTimeout(() => {
-      this.booting = false;
-      this.jumpHashSpark();
-      this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
-    }, BOOT_DIM_MS);
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      this.finishBoot();
+    }
   },
   beforeUnmount() {
     window.clearInterval(this.hashSparkTimer);
-    window.clearTimeout(this.bootTimer);
   },
   methods: {
-    buildWordLines() {
-      return WORD_LINES.map((line, lineIndex) => ({
-        id: `word-line-${lineIndex}`,
-        segments: this.buildWordLineSegments(line.padEnd(WORD_WIDTH), lineIndex),
-      }));
+    finishBoot(event) {
+      if (event?.animationName && event.animationName !== "asciiWordMaterialize") return;
+      if (!this.booting) return;
+      this.booting = false;
+      this.jumpHashSpark();
+      this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
     },
-    buildWordLineSegments(line, lineIndex) {
-      const segments = [];
-      let pendingSpaces = "";
-      let pendingStart = 0;
+    buildMatrixStreams() {
+      const coordinates = HASH_POSITIONS.map((position) => {
+        const [lineIndex, charIndex] = position.split("-").map(Number);
+        return { lineIndex, charIndex };
+      });
 
-      const flushSpaces = () => {
-        if (!pendingSpaces) return;
-        segments.push({
-          id: `word-space-${lineIndex}-${pendingStart}`,
-          value: pendingSpaces,
-          visible: false,
-        });
-        pendingSpaces = "";
-      };
+      return Array.from({ length: MATRIX_STREAM_COUNT }, (_, index) => {
+        const minX = Math.floor((index / MATRIX_STREAM_COUNT) * WORD_WIDTH);
+        const maxX = Math.ceil(((index + 1) / MATRIX_STREAM_COUNT) * WORD_WIDTH);
+        const candidates = coordinates.filter(({ charIndex }) => charIndex >= minX && charIndex < maxX);
+        const pool = candidates.length ? candidates : coordinates;
+        const landing = pool[Math.floor(seededUnit(index, 89) * pool.length)];
+        const value = this.matrixStreamValue(index);
+        const top = (landing.lineIndex - MATRIX_STREAM_ROWS + 1) * 0.82;
+        const delay = 0.2 + seededUnit(index, 97) * 2.2;
+        const duration = 12.8 + seededUnit(index, 101) * 3.6;
+        const fall = 190 + seededUnit(index, 103) * 120;
+        const drift = Math.round((seededUnit(index, 107) - 0.5) * 38);
 
-      const chars = Array.from(line);
-      let charIndex = 0;
-
-      while (charIndex < chars.length) {
-        const value = chars[charIndex];
-        if (value === " ") {
-          if (!pendingSpaces) pendingStart = charIndex;
-          pendingSpaces += value;
-          charIndex += 1;
-          continue;
-        }
-
-        flushSpaces();
-        let visibleRunLength = 0;
-        while (chars[charIndex + visibleRunLength] && chars[charIndex + visibleRunLength] !== " ") {
-          visibleRunLength += 1;
-        }
-        const chunkLength = Math.min(
-          2 + Math.floor(seededUnit(lineIndex * WORD_WIDTH + charIndex, 73) * 4),
-          visibleRunLength,
-        );
-        const chunk = chars.slice(charIndex, charIndex + chunkLength).join("");
-        const positions = Array.from({ length: chunk.length }, (_, offset) => `${lineIndex}-${charIndex + offset}`);
-        segments.push({
-          id: `word-char-${lineIndex}-${charIndex}`,
-          value: chunk,
-          introValue: this.matrixGlyphsForChunk(lineIndex, charIndex, chunk.length),
-          visible: true,
-          positions,
-          tone: this.toneForWordCharacter(value, charIndex),
-          falling: true,
-          style: this.styleForWordCharacter(value, lineIndex, charIndex),
-        });
-        charIndex += chunkLength;
-      }
-
-      flushSpaces();
-      return segments;
+        return {
+          id: `matrix-stream-${index}`,
+          value,
+          style: {
+            "--stream-x": `${landing.charIndex}ch`,
+            "--stream-y": `${top.toFixed(2)}em`,
+            "--stream-delay": `${delay.toFixed(2)}s`,
+            "--stream-duration": `${duration.toFixed(2)}s`,
+            "--stream-fall": `-${Math.round(fall)}px`,
+            "--stream-drift": `${drift}px`,
+            "--stream-drift-mid": `${Math.round(drift * 0.62)}px`,
+            "--stream-drift-low": `${Math.round(drift * 0.28)}px`,
+          },
+        };
+      });
     },
-    matrixGlyphsForChunk(lineIndex, charIndex, length) {
-      return Array.from({ length }, (_, offset) => {
-        const glyphIndex = (lineIndex * 17 + (charIndex + offset) * 11) % SIGNAL_GLYPHS.length;
+    matrixStreamValue(streamIndex) {
+      return Array.from({ length: MATRIX_STREAM_ROWS }, (_, rowIndex) => {
+        if (rowIndex === MATRIX_STREAM_ROWS - 1) return "#";
+        const glyphIndex = (streamIndex * 13 + rowIndex * 7) % SIGNAL_GLYPHS.length;
         return SIGNAL_GLYPHS[glyphIndex];
-      }).join("");
+      }).join("\n");
     },
     buildControlLetters() {
       const chars = Array.from(CONTROL_PHRASE);
@@ -205,8 +192,8 @@ export default {
         const revealRank = revealRankByIndex.get(index) ?? index;
         const zone = CONTROL_FAULT_ZONES[Math.floor((index / Math.max(1, chars.length)) * CONTROL_FAULT_ZONES.length)];
         const letterDelay = 1.75 + revealRank * 0.13 + seededUnit(index, 7) * 0.85;
-        const faultDelay = 12 + zone * 4.6 + seededUnit(index, 13) * 1.4;
-        const faultDuration = 150 + zone * 12 + seededUnit(index, 19) * 8;
+        const faultDelay = 18 + zone * 5.8 + seededUnit(index, 13) * 2.6;
+        const faultCycle = 46 + zone * 7 + seededUnit(index, 19) * 9;
         const fallDrift = Math.round((seededUnit(index, 23) - 0.5) * 32);
 
         return {
@@ -215,7 +202,7 @@ export default {
           style: {
             "--letter-delay": `${letterDelay.toFixed(2)}s`,
             "--fault-delay": `${faultDelay.toFixed(2)}s`,
-            "--fault-duration": `${faultDuration.toFixed(2)}s`,
+            "--fault-cycle": `${faultCycle.toFixed(2)}s`,
             "--fall-drift": `${fallDrift}px`,
           },
         };
@@ -242,37 +229,9 @@ export default {
         };
       });
     },
-    toneForWordCharacter(value, charIndex) {
-      if (value === " ") return "space";
-      return `word-${Math.min(5, Math.floor(charIndex / WORD_BAND_WIDTH))}`;
-    },
-    styleForWordCharacter(value, lineIndex, charIndex) {
-      if (value === " ") return null;
-
-      const key = lineIndex * WORD_WIDTH + charIndex;
-      const vertical = lineIndex / Math.max(1, WORD_LINES.length - 1);
-      const lateral = Math.abs(charIndex / Math.max(1, WORD_WIDTH - 1) - 0.5);
-      const drift = Math.round((seededUnit(key, 47) - 0.5) * 52);
-      const midDrift = Math.round(drift * (0.3 + seededUnit(key, 53) * 0.24));
-      const fall = Math.round(130 + seededUnit(key, 43) * 122 + vertical * 32);
-      const delay = 0.12 + seededUnit(key, 31) * 1.9 + vertical * 0.65 + lateral * 0.28;
-      const duration = 10.5 + seededUnit(key, 37) * 4.2;
-
-      return {
-        "--ascii-delay": `${delay.toFixed(2)}s`,
-        "--ascii-drop-duration": `${duration.toFixed(2)}s`,
-        "--ascii-fall-start": `-${fall}px`,
-        "--ascii-fall-high": `-${Math.round(fall * 0.72)}px`,
-        "--ascii-fall-mid": `-${Math.round(fall * 0.34)}px`,
-        "--ascii-drift": `${drift}px`,
-        "--ascii-mid-drift": `${midDrift}px`,
-        "--ascii-color-delay": `${(-seededUnit(key, 61) * 8).toFixed(2)}s`,
-      };
-    },
     jumpHashSpark() {
       const nextIndex = Math.floor(Math.random() * HASH_POSITIONS.length);
       this.activeHashSpark = HASH_POSITIONS[nextIndex];
-      this.activeHashSparkTone = "orange";
     },
   },
 };
