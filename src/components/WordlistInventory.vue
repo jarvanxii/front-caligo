@@ -1,19 +1,16 @@
-<template>
+﻿<template>
   <section class="password-lab password-lab--wordlists" aria-labelledby="wordlists-title">
     <div class="password-lab__shell">
-      <header class="password-lab__header password-lab__header--compact">
-        <div>
-          <span class="eyebrow">Contraseñas / Diccionarios</span>
-          <h1 id="wordlists-title">Wordlists</h1>
-          <p>Inventario de listas permitidas en el servidor para auditorías offline y pruebas de laboratorio.</p>
-        </div>
-
-        <aside class="password-lab__engine is-ready">
-          <span>Repositorio</span>
-          <strong>{{ filteredWordlists.length }}</strong>
-          <small>listas visibles</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        tool-id="wordlists"
+        title="Wordlists"
+        eyebrow="Contraseñas / Diccionarios"
+        summary="Inventario de listas permitidas en el servidor para auditorías offline y pruebas de laboratorio."
+        title-id="wordlists-title"
+        :logo-tools="['wordlists', 'john', 'hashcat', 'hydra']"
+        :meta="heroMeta"
+        compact
+      />
 
       <section class="password-results password-results--inventory">
         <header>
@@ -47,9 +44,13 @@
 
 <script>
 import { caligoApi } from "@/services/caligoApi";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
 
 export default {
   name: "WordlistInventory",
+  components: {
+    ToolHeroHeader,
+  },
   data() {
     return {
       wordlists: [],
@@ -64,13 +65,23 @@ export default {
       if (!needle) return this.wordlists;
       return this.wordlists.filter((item) => `${item.label} ${item.path}`.toLowerCase().includes(needle));
     },
+    heroMeta() {
+      return [
+        { label: "Repositorio", value: "SecLists" },
+        { label: "Listas", value: this.filteredWordlists.length },
+        { label: "Estado", value: this.loading ? "Leyendo" : "Preparado" },
+      ];
+    },
   },
   mounted() {
     this.loadWordlists();
   },
   methods: {
     async ensureSession() {
-      if (!this.$store.getters.isAuthenticated) {
+      if (this.$store.getters.isPortfolioMode) {
+        throw new Error("Modo portfolio activo: inicia sesión con credenciales para ejecutar herramientas.");
+      }
+      if (!this.$store.getters.hasAppAccess) {
         this.$router.push({ name: "login" });
         throw new Error("Inicia sesión para consultar wordlists");
       }

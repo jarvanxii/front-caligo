@@ -1,19 +1,14 @@
 <template>
   <section class="scanner-workspace" :class="`scanner-workspace--${tool}`" aria-labelledby="scanner-title">
     <div class="scanner-workspace__shell">
-      <header class="scanner-workspace__header">
-        <div>
-          <span class="eyebrow">{{ copy.eyebrow }}</span>
-          <h1 id="scanner-title">{{ copy.title }}</h1>
-          <p>{{ copy.summary }}</p>
-        </div>
-
-        <aside class="scanner-engine" :class="{ 'is-ready': engineReady }" aria-label="Estado del motor">
-          <span>{{ engineLabel }}</span>
-          <strong>{{ engineReady ? "Operativo" : "Pendiente" }}</strong>
-          <small>{{ engineMessage }}</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        :tool-id="tool"
+        :title="copy.title"
+        :eyebrow="copy.eyebrow"
+        :summary="copy.summary"
+        title-id="scanner-title"
+        :meta="heroMeta"
+      />
 
       <div class="scanner-layout">
         <form class="scanner-console" @submit.prevent="startScan">
@@ -312,9 +307,13 @@
 <script>
 import { caligoApi } from "@/services/caligoApi";
 import { forgetRuntimeJob, isRuntimeJobRunning, rememberedRuntimeJob, rememberRuntimeJob } from "@/services/runtimeJobs";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
 
 export default {
   name: "ScannerWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   props: {
     tool: {
       type: String,
@@ -382,6 +381,13 @@ export default {
     engineMessage() {
       if (!this.capabilities) return "Comprobando motor";
       return this.capabilities.message || this.capabilities.setupState || this.capabilities.binary || "Listo";
+    },
+    heroMeta() {
+      return [
+        { label: "Estado", value: this.engineReady ? "Operativo" : "Pendiente" },
+        { label: "Canal", value: this.engineLabel },
+        { label: "Detalle", value: this.engineMessage },
+      ];
     },
     canStart() {
       return this.engineReady && this.form.target && !this.isRunning;
@@ -507,7 +513,10 @@ export default {
       };
     },
     async ensureSession() {
-      if (!this.$store.getters.isAuthenticated) {
+      if (this.$store.getters.isPortfolioMode) {
+        throw new Error("Modo portfolio activo: inicia sesión con credenciales para ejecutar herramientas.");
+      }
+      if (!this.$store.getters.hasAppAccess) {
         this.$router.push({ name: "login" });
         throw new Error("Inicia sesión para ejecutar herramientas");
       }

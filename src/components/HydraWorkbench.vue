@@ -1,19 +1,15 @@
 <template>
   <section class="hydra-workbench" aria-labelledby="hydra-title">
     <div class="hydra-workbench__shell">
-      <header class="hydra-topline">
-        <div>
-          <span class="eyebrow">Vulnerabilidades / Fuerza bruta</span>
-          <h1 id="hydra-title">Hydra</h1>
-          <p>Orquestador de credenciales para servicios de laboratorio con alcance privado, wordlists del servidor y progreso en vivo.</p>
-        </div>
-
-        <aside class="hydra-status" :class="{ 'is-ready': engineReady }">
-          <span>Motor</span>
-          <strong>{{ engineReady ? "Operativo" : "Pendiente" }}</strong>
-          <small>{{ engineMessage }}</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        tool-id="hydra"
+        title="Hydra"
+        eyebrow="Vulnerabilidades / Fuerza bruta"
+        summary="Orquestador de credenciales para servicios de laboratorio con alcance privado, wordlists del servidor y progreso en vivo."
+        title-id="hydra-title"
+        :logo-tools="['hydra', 'wordlists']"
+        :meta="heroMeta"
+      />
 
       <div class="hydra-grid">
         <form class="hydra-console hydra-console--target" @submit.prevent="startRun">
@@ -312,6 +308,7 @@
 <script>
 import { caligoApi } from "@/services/caligoApi";
 import { forgetRuntimeJob, isRuntimeJobRunning, rememberedRuntimeJob, rememberRuntimeJob } from "@/services/runtimeJobs";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
 
 const FALLBACK_SERVICES = [
   "ssh",
@@ -326,6 +323,9 @@ const FALLBACK_SERVICES = [
 
 export default {
   name: "HydraWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   data() {
     return {
       capabilities: null,
@@ -377,6 +377,13 @@ export default {
       if (!this.capabilities) return "Comprobando Hydra";
       const message = this.capabilities.version || this.capabilities.binary || "Hydra listo";
       return String(message).split(" - ")[0].replace(/\(c\).*$/i, "").trim();
+    },
+    heroMeta() {
+      return [
+        { label: "Estado", value: this.engineReady ? "Operativo" : "Pendiente" },
+        { label: "Servicios", value: this.services.length },
+        { label: "Version", value: this.engineMessage },
+      ];
     },
     services() {
       return (this.capabilities?.services || FALLBACK_SERVICES).map((item) => ({
@@ -484,7 +491,10 @@ export default {
   },
   methods: {
     async ensureSession() {
-      if (!this.$store.getters.isAuthenticated) {
+      if (this.$store.getters.isPortfolioMode) {
+        throw new Error("Modo portfolio activo: inicia sesión con credenciales para ejecutar herramientas.");
+      }
+      if (!this.$store.getters.hasAppAccess) {
         this.$router.push({ name: "login" });
         throw new Error("Inicia sesión para ejecutar herramientas");
       }

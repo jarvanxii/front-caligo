@@ -11,6 +11,7 @@
           :key="item.key"
           :class="{ 'is-active': isNavActive(item) }"
           :to="{ name: item.routeName }"
+          :title="item.fullLabel"
         >
           {{ item.label }}
         </RouterLink>
@@ -94,12 +95,13 @@
             </header>
 
             <div class="settings-updates__summary" aria-live="polite">
-              <span>{{ installedToolCount }} instaladas</span>
-              <span>{{ serverTools.length }} registradas</span>
+              <span>{{ installedToolCount }} detectadas</span>
+              <span>{{ updateToolRows.length }} registradas</span>
+              <span>{{ plannedToolCount }} planificadas</span>
               <span v-if="serverToolsGeneratedAt">Lectura {{ formattedGeneratedAt }}</span>
             </div>
 
-            <div v-if="serverTools.length" class="settings-updates__toolbar">
+            <div v-if="updateToolRows.length" class="settings-updates__toolbar">
               <label>
                 <span>Filtrar</span>
                 <input v-model.trim="serverToolFilter" type="search" placeholder="Hydra, Metasploit, Nmap..." />
@@ -154,19 +156,26 @@
                   v-for="tool in criticalServerTools"
                   :key="tool.id"
                   class="settings-updates__priority-tool"
+                  :style="toolCssVars(tool)"
                   :class="{ 'is-missing': !tool.installed, 'is-updating': updatingToolId === tool.id }"
                 >
-                  <div>
-                    <span>{{ displayToolGroup(tool.group) }}</span>
-                    <strong>{{ tool.label }}</strong>
-                    <small>{{ tool.version || (tool.installed ? "Sin versión detectada" : "No instalada") }}</small>
+                  <div class="settings-updates__priority-main">
+                    <span class="settings-updates__tool-logo" :class="{ 'has-logo': toolLogo(tool) }" aria-hidden="true">
+                      <img v-if="toolLogo(tool)" :src="toolLogo(tool)" alt="" loading="lazy" />
+                      <strong v-else>{{ toolMark(tool) }}</strong>
+                    </span>
+                    <div>
+                      <span>{{ displayToolGroup(tool.group) }}</span>
+                      <strong>{{ tool.label }}</strong>
+                      <small>{{ versionText(tool) }}</small>
+                    </div>
                   </div>
                   <button
                     type="button"
                     :disabled="!tool.updateSupported || Boolean(updatingToolId)"
                     @click="updateServerTool(tool)"
                   >
-                    {{ updatingToolId === tool.id ? "Actualizando..." : "Actualizar" }}
+                    {{ updateButtonLabel(tool) }}
                   </button>
                 </article>
               </div>
@@ -176,7 +185,7 @@
               No hay herramientas que coincidan con el filtro.
             </div>
 
-            <div v-else-if="serverTools.length" class="settings-updates__groups">
+            <div v-else-if="updateToolRows.length" class="settings-updates__groups">
               <div class="settings-updates__list-head">
                 <span>Inventario completo</span>
                 <small>{{ filteredServerTools.length }} visibles</small>
@@ -191,9 +200,14 @@
                   v-for="tool in group.tools"
                   :key="tool.id"
                   class="settings-updates__tool"
+                  :style="toolCssVars(tool)"
                   :class="{ 'is-missing': !tool.installed, 'is-updating': updatingToolId === tool.id }"
                 >
                   <div class="settings-updates__tool-main">
+                    <span class="settings-updates__tool-logo" :class="{ 'has-logo': toolLogo(tool) }" aria-hidden="true">
+                      <img v-if="toolLogo(tool)" :src="toolLogo(tool)" alt="" loading="lazy" />
+                      <strong v-else>{{ toolMark(tool) }}</strong>
+                    </span>
                     <span class="settings-updates__status-dot" aria-hidden="true"></span>
                     <div>
                       <h3>{{ tool.label }}</h3>
@@ -203,8 +217,9 @@
 
                   <div class="settings-updates__version">
                     <span>Versión</span>
-                    <strong>{{ tool.version || (tool.installed ? "Sin versión detectada" : "No instalada") }}</strong>
+                    <strong>{{ versionText(tool) }}</strong>
                     <small v-if="tool.path">{{ tool.path }}</small>
+                    <small v-else>{{ tool.status }}</small>
                   </div>
 
                   <button
@@ -213,7 +228,7 @@
                     :disabled="!tool.updateSupported || Boolean(updatingToolId)"
                     @click="updateServerTool(tool)"
                   >
-                    {{ updatingToolId === tool.id ? "Actualizando..." : "Actualizar" }}
+                    {{ updateButtonLabel(tool) }}
                   </button>
                 </article>
               </section>
@@ -231,6 +246,9 @@
 import GuideModal from "@/components/GuideModal.vue";
 import wordmarkUrl from "@/assets/images/caligo-wordmark.png";
 import { mainModulePages } from "@/data/modulePages";
+import { toolCatalog } from "@/data/toolCatalog";
+import { toolCssVars, toolMark } from "@/data/toolBranding";
+import { toolLogo } from "@/data/toolLogos";
 import { caligoApi } from "@/services/caligoApi";
 import { resolveClientIp, resolveServerIp } from "@/utils/networkIdentity";
 
@@ -244,7 +262,8 @@ export default {
       wordmarkUrl,
       navItems: mainModulePages.map((module) => ({
         key: module.key,
-        label: module.navLabel,
+        label: module.headerLabel || module.navLabel,
+        fullLabel: module.navLabel,
         routeName: module.routeName,
       })),
       settingsOpen: false,
@@ -268,7 +287,7 @@ export default {
       updateResult: null,
       serverToolFilter: "",
       activeToolGroup: "all",
-      priorityToolIds: ["metasploit", "hydra", "nuclei", "searchsploit", "nikto", "sqlmap", "nmap", "openvas", "wireguard", "openvpn", "john", "hashcat"],
+      priorityToolIds: ["nmap", "openvas", "metasploit", "hydra", "nuclei", "searchsploit", "nikto", "sqlmap", "sherlock", "theharvester", "john", "hashcat", "wireguard", "openvpn"],
       networkIdentity: null,
       clientPublicIp: "",
       networkIdentityTimer: null,
@@ -282,8 +301,8 @@ export default {
       return resolveClientIp(this.networkIdentity, this.clientPublicIp) || "...";
     },
     sortedServerTools() {
-      return [...this.serverTools].sort((left, right) => {
-        const groupDiff = this.groupRank(left.group) - this.groupRank(right.group);
+      return [...this.updateToolRows].sort((left, right) => {
+        const groupDiff = this.moduleRank(left.moduleKey) - this.moduleRank(right.moduleKey);
         if (groupDiff !== 0) {
           return groupDiff;
         }
@@ -303,12 +322,12 @@ export default {
       });
     },
     criticalServerTools() {
-      const byId = new Map(this.serverTools.map((tool) => [tool.id, tool]));
+      const byId = new Map(this.updateToolRows.map((tool) => [tool.catalogId || tool.id, tool]));
       return this.priorityToolIds.map((id) => byId.get(id)).filter(Boolean);
     },
     toolGroups() {
       return [...new Set(this.sortedServerTools.map((tool) => tool.group || "Servidor"))]
-        .sort((left, right) => this.groupRank(left) - this.groupRank(right));
+        .sort((left, right) => this.groupNameRank(left) - this.groupNameRank(right));
     },
     groupedServerTools() {
       const groups = new Map();
@@ -322,7 +341,78 @@ export default {
       return Array.from(groups.entries()).map(([name, tools]) => ({ name, tools }));
     },
     installedToolCount() {
-      return this.serverTools.filter((tool) => tool.installed).length;
+      return this.updateToolRows.filter((tool) => tool.installed).length;
+    },
+    plannedToolCount() {
+      return this.updateToolRows.filter((tool) => !tool.serverInventory).length;
+    },
+    updateToolRows() {
+      const serverTools = this.serverTools || [];
+      const coveredServerIndexes = new Set();
+      const catalogRows = toolCatalog.map((tool) => {
+        const match = this.findServerToolForCatalog(tool, serverTools);
+        if (match?.index !== undefined) {
+          coveredServerIndexes.add(match.index);
+        }
+        const serverTool = match?.tool || null;
+        const requiresServer = !/browser/i.test(tool.command || "") && !/backend spring/i.test(tool.command || "");
+        return {
+          id: tool.id,
+          catalogId: tool.id,
+          updateId: serverTool?.id || tool.serverId || tool.id,
+          serverId: tool.serverId || tool.id,
+          label: tool.label,
+          name: tool.label,
+          mark: tool.code,
+          group: tool.moduleLabel || tool.moduleKey,
+          moduleKey: tool.moduleKey,
+          binary: serverTool?.binary || tool.command,
+          description: tool.purpose,
+          routeName: tool.routeName,
+          logoId: tool.logoId || tool.id,
+          serverInventory: Boolean(serverTool),
+          installed: Boolean(serverTool?.installed),
+          version: serverTool?.version || "",
+          path: serverTool?.path || "",
+          updateSupported: Boolean(serverTool?.updateSupported),
+          localOnly: !requiresServer,
+          planned: !serverTool && requiresServer,
+          status: serverTool
+            ? serverTool.status || (serverTool.installed ? "detectada" : "no instalada")
+            : requiresServer
+              ? "pendiente de conector"
+              : "local / backend",
+        };
+      });
+
+      const extraRows = serverTools
+        .map((serverTool, index) => ({ serverTool, index }))
+        .filter(({ index }) => !coveredServerIndexes.has(index))
+        .map(({ serverTool }) => ({
+          id: serverTool.id,
+          catalogId: serverTool.id,
+          updateId: serverTool.id,
+          serverId: serverTool.id,
+          label: serverTool.label || serverTool.id,
+          name: serverTool.label || serverTool.id,
+          mark: String(serverTool.label || serverTool.id).slice(0, 3).toUpperCase(),
+          group: serverTool.group || "Servidor",
+          moduleKey: "servidor",
+          binary: serverTool.binary || serverTool.id,
+          description: serverTool.description || "Herramienta detectada por el inventario del servidor.",
+          routeName: "home",
+          logoId: serverTool.id,
+          serverInventory: true,
+          installed: Boolean(serverTool.installed),
+          version: serverTool.version || "",
+          path: serverTool.path || "",
+          updateSupported: Boolean(serverTool.updateSupported),
+          localOnly: false,
+          planned: false,
+          status: serverTool.status || (serverTool.installed ? "detectada" : "no instalada"),
+        }));
+
+      return [...catalogRows, ...extraRows];
     },
     formattedGeneratedAt() {
       if (!this.serverToolsGeneratedAt) {
@@ -359,6 +449,9 @@ export default {
     },
   },
   methods: {
+    toolCssVars,
+    toolLogo,
+    toolMark,
     async refreshNetworkIdentity() {
       await Promise.allSettled([
         this.loadNetworkIdentity(),
@@ -454,6 +547,12 @@ export default {
       this.serverToolsLoading = true;
       this.serverToolsError = "";
       try {
+        if (!caligoApi.getStoredToken()) {
+          this.serverTools = [];
+          this.serverToolsGeneratedAt = "";
+          this.activeToolGroup = "all";
+          return;
+        }
         const payload = await caligoApi.request("/api/system/tools");
         this.serverTools = payload?.tools || [];
         this.serverToolsGeneratedAt = payload?.generatedAt || "";
@@ -465,14 +564,14 @@ export default {
       }
     },
     async updateServerTool(tool) {
-      if (!tool?.id || this.updatingToolId) {
+      if (!tool?.updateId || this.updatingToolId || !tool.updateSupported) {
         return;
       }
       this.updatingToolId = tool.id;
       this.updateResult = null;
       this.serverToolsError = "";
       try {
-        const payload = await caligoApi.request(`/api/system/tools/${tool.id}/update`, {
+        const payload = await caligoApi.request(`/api/system/tools/${encodeURIComponent(tool.updateId)}/update`, {
           method: "POST",
         });
         this.updateResult = payload;
@@ -491,15 +590,38 @@ export default {
     groupRank(group) {
       return {
         Reconocimiento: 10,
+        OSINT: 15,
         Vulnerabilidades: 20,
         "Fuerza bruta": 30,
         Contrasenas: 40,
         Contraseñas: 40,
-        Redes: 50,
-        Esteganografia: 60,
-        Esteganografía: 60,
+        Codificacion: 45,
+        Codificación: 45,
+        Esteganografia: 50,
+        Esteganografía: 50,
+        Redes: 55,
+        Utilidades: 60,
+        Reversing: 65,
         URLs: 70,
       }[group] ?? 99;
+    },
+    moduleRank(moduleKey) {
+      return {
+        reconocimiento: 10,
+        osint: 15,
+        vulnerabilidades: 20,
+        contrasenas: 30,
+        codificacion: 40,
+        esteganografia: 50,
+        redes: 60,
+        utilidades: 70,
+        reversing: 80,
+        servidor: 90,
+      }[moduleKey] ?? this.groupRank(moduleKey);
+    },
+    groupNameRank(group) {
+      const tool = this.updateToolRows.find((item) => item.group === group);
+      return tool ? this.moduleRank(tool.moduleKey) : this.groupRank(group);
     },
     displayToolGroup(group) {
       return {
@@ -507,6 +629,52 @@ export default {
         Esteganografia: "Esteganografía",
         Codificacion: "Codificación",
       }[group] || group;
+    },
+    versionText(tool) {
+      if (tool.version) return tool.version;
+      if (tool.localOnly) return "Local / sin paquete";
+      if (tool.installed) return "Sin versión detectada";
+      if (tool.serverInventory) return "No instalada";
+      return "Planificada";
+    },
+    updateButtonLabel(tool) {
+      if (this.updatingToolId === tool.id) return "Actualizando...";
+      if (tool.updateSupported) return "Actualizar";
+      if (tool.localOnly) return "Local";
+      if (!tool.serverInventory) return "Pendiente";
+      return "Bloqueada";
+    },
+    findServerToolForCatalog(tool, serverTools, consumedIndexes = new Set()) {
+      const candidates = [
+        tool.id,
+        tool.serverId,
+        tool.command,
+        tool.command?.split("/")[0],
+      ]
+        .filter(Boolean)
+        .map((value) => this.normalizeToolKey(value));
+
+      const exactIndex = serverTools.findIndex((serverTool, index) => {
+        if (consumedIndexes.has(index)) return false;
+        const values = [serverTool.id, serverTool.binary, serverTool.label]
+          .filter(Boolean)
+          .map((value) => this.normalizeToolKey(value));
+        return values.some((value) => candidates.includes(value));
+      });
+
+      if (exactIndex !== -1) {
+        return { tool: serverTools[exactIndex], index: exactIndex };
+      }
+
+      return null;
+    },
+    normalizeToolKey(value) {
+      return String(value)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
     },
     toolRank(id) {
       const index = this.priorityToolIds.indexOf(id);

@@ -1,5 +1,5 @@
 <template>
-  <IdentityWorkbench />
+  <IdentityWorkbench :mode="mode" />
 </template>
 
 <script>
@@ -9,6 +9,12 @@ export default {
   name: "WhoamiView",
   components: {
     IdentityWorkbench,
+  },
+  props: {
+    mode: {
+      type: String,
+      default: "combined",
+    },
   },
 };
 </script>

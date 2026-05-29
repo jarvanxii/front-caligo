@@ -37,13 +37,14 @@
   z-index: 2;
   display: grid;
   width: min(500px, 100%);
-  max-height: calc(100dvh - 54px);
+  max-height: calc(100dvh - 44px);
+  transform: translateY(-8px);
 }
 
 .login-panel {
   display: grid;
-  gap: 8px;
-  padding: clamp(20px, 4vw, 28px);
+  gap: 7px;
+  padding: clamp(18px, 3vw, 26px);
   border: 1px solid rgba(226, 232, 240, 0.16);
   background:
     linear-gradient(180deg, rgba(21, 28, 32, 0.82), rgba(7, 11, 13, 0.92)),
@@ -58,8 +59,8 @@
 .login-logo-stage {
   position: relative;
   display: grid;
-  width: 260px;
-  margin: 0 auto 10px;
+  width: min(228px, 30dvh);
+  margin: -2px auto 8px;
   aspect-ratio: 1;
   place-items: center;
 }
@@ -111,8 +112,8 @@
   position: relative;
   z-index: 1;
   display: block;
-  width: 232px;
-  height: 232px;
+  width: 88%;
+  height: 88%;
   object-fit: contain;
   filter:
     drop-shadow(0 0 12px rgba(94, 234, 212, 0.36))

@@ -1,19 +1,16 @@
-<template>
+﻿<template>
   <section class="password-lab password-lab--identifier" aria-labelledby="hash-id-title">
     <div class="password-lab__shell">
-      <header class="password-lab__header password-lab__header--compact">
-        <div>
-          <span class="eyebrow">Contraseñas / Fingerprint</span>
-          <h1 id="hash-id-title">Identificador de hashes</h1>
-          <p>Clasifica formatos probables con hashID y heurísticas locales antes de lanzar John o Hashcat.</p>
-        </div>
-
-        <aside class="password-lab__engine" :class="{ 'is-ready': engineReady }">
-          <span>hashID</span>
-          <strong>{{ engineReady ? "Operativo" : "Fallback" }}</strong>
-          <small>{{ engineMessage }}</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        tool-id="hashid"
+        title="Identificador de hashes"
+        eyebrow="Contraseñas / Fingerprint"
+        summary="Clasifica formatos probables con hashID y heurísticas locales antes de lanzar John o Hashcat."
+        title-id="hash-id-title"
+        :logo-tools="['hashid', 'john', 'hashcat']"
+        :meta="heroMeta"
+        compact
+      />
 
       <div class="password-lab__grid password-lab__grid--identifier">
         <form class="password-console" @submit.prevent="identify">
@@ -61,9 +58,13 @@
 
 <script>
 import { caligoApi } from "@/services/caligoApi";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
 
 export default {
   name: "HashIdentifierWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   data() {
     return {
       capabilities: null,
@@ -85,6 +86,13 @@ export default {
       if (!this.capabilities) return "Comprobando hashID";
       return this.toolInfo?.version || "Heurísticas locales disponibles";
     },
+    heroMeta() {
+      return [
+        { label: "Estado", value: this.engineReady ? "Operativo" : "Fallback" },
+        { label: "Candidatos", value: this.candidates.length },
+        { label: "Motor", value: this.engineMessage },
+      ];
+    },
     candidates() {
       const seen = new Set();
       return [...(this.result?.candidates || []), ...(this.result?.heuristics || [])].filter((item) => {
@@ -100,7 +108,10 @@ export default {
   },
   methods: {
     async ensureSession() {
-      if (!this.$store.getters.isAuthenticated) {
+      if (this.$store.getters.isPortfolioMode) {
+        throw new Error("Modo portfolio activo: inicia sesión con credenciales para ejecutar herramientas.");
+      }
+      if (!this.$store.getters.hasAppAccess) {
         this.$router.push({ name: "login" });
         throw new Error("Inicia sesión para ejecutar herramientas");
       }

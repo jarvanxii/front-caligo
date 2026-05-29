@@ -54,6 +54,124 @@ select {
   font: inherit;
 }
 
+img,
+svg,
+canvas {
+  -webkit-user-drag: none;
+}
+
+:where(
+  .app-header__nav,
+  .app-header__nav *,
+  .app-header__settings-menu,
+  .app-header__settings-menu *,
+  .app-sidebar,
+  .app-sidebar *,
+  .ascii-descent,
+  .ascii-descent *,
+  .privacy-footer,
+  .privacy-footer *,
+  .login-logo-stage,
+  .login-logo-stage *,
+  .login-wordmark,
+  .home-command__logo-strip,
+  .home-command__logo-strip *,
+  .home-tool-rail,
+  .home-tool-rail *,
+  .home-command-center__metrics,
+  .home-command-center__metrics *,
+  .home-session__head,
+  .home-session__head *,
+  .home-status-board__trace,
+  .home-status-board__trace *,
+  .module-workspace__terminal,
+  .module-workspace__terminal *,
+  .module-workspace__stats,
+  .module-workspace__stats *,
+  .portfolio-access-notice,
+  .portfolio-access-notice *
+) {
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+:where(
+  a,
+  button,
+  summary,
+  label,
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="range"],
+  .app-sidebar__link,
+  .app-sidebar__section-toggle,
+  .app-header__settings,
+  .app-header__settings-item,
+  .home-guide__tool-link,
+  .home-command__logo-strip a,
+  .home-tool-rail a
+) {
+  cursor: pointer;
+}
+
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+  textarea,
+  pre,
+  code,
+  kbd,
+  samp,
+  .settings-updates__output,
+  .settings-updates__output *,
+  .scanner-command,
+  .scanner-command *,
+  .scanner-log,
+  .scanner-log *,
+  .scanner-table,
+  .scanner-table *,
+  .hydra-command,
+  .hydra-command *,
+  .hydra-log,
+  .hydra-log *,
+  .hydra-table,
+  .hydra-table *,
+  .password-command,
+  .password-command *,
+  .password-log,
+  .password-log *,
+  .password-table,
+  .password-table *,
+  .wordlist-output,
+  .wordlist-output *,
+  .vuln-result-list,
+  .vuln-result-list *,
+  .osint-result-list,
+  .osint-result-list *,
+  .identity-raw-grid,
+  .identity-raw-grid *,
+  .msf-command,
+  .msf-command *,
+  .msf-remote-console pre,
+  .msf-file-preview,
+  .msf-file-preview *,
+  .stego-output pre,
+  .stego-output code,
+  .urls-result,
+  .urls-result *,
+  .urls-table,
+  .urls-table *
+) {
+  cursor: auto;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.ascii-descent__art {
+  caret-color: transparent;
+}
+
 .app-shell {
   min-height: 100vh;
   padding-bottom: 30px;

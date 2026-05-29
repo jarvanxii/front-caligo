@@ -5,13 +5,17 @@
     :class="`urls-workspace--${tool.mode}`"
     aria-labelledby="url-tool-title"
   >
-    <div class="urls-workspace__hero">
-      <div class="urls-workspace__copy">
-        <span class="eyebrow">{{ tool.eyebrow }}</span>
-        <h1 id="url-tool-title">{{ tool.title }}</h1>
-        <p>{{ tool.summary }}</p>
-      </div>
-
+    <div class="urls-workspace__hero urls-workspace__hero--tool">
+      <ToolHeroHeader
+        :tool-id="catalogToolId"
+        :tool="tool"
+        :title="tool.title"
+        :eyebrow="tool.eyebrow"
+        :summary="tool.summary"
+        title-id="url-tool-title"
+        :logo-tools="heroLogos"
+        :meta="heroMeta"
+      />
       <form class="urls-console" @submit.prevent="runTool">
         <template v-if="!tool.noTarget">
           <label for="url-target">Objetivo</label>
@@ -232,9 +236,39 @@
 <script>
 import { caligoApi } from "@/services/caligoApi";
 import { urlTools } from "@/data/urlTools";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
+
+const URL_TOOL_LOGOS = {
+  intelligent: ["caligo-intel", "httpx", "testssl", "gau"],
+  dns: ["caligo-intel", "dnsrecon", "dnsenum"],
+  inspector: ["caligo-intel", "httpx"],
+  http: ["httpx", "whatweb", "wafw00f"],
+  tls: ["testssl", "openssl"],
+  reputation: ["caligo-intel", "urlhaus"],
+  history: ["gau", "waybackurls"],
+  publicFiles: ["httpx", "katana"],
+  endpoints: ["katana", "gau"],
+  localTools: ["caligo-intel"],
+};
+
+const URL_CATALOG_TOOL = {
+  intelligent: "caligo-intel",
+  dns: "caligo-intel",
+  inspector: "caligo-intel",
+  http: "caligo-intel",
+  tls: "caligo-intel",
+  reputation: "caligo-intel",
+  history: "caligo-intel",
+  publicFiles: "caligo-intel",
+  endpoints: "caligo-intel",
+  localTools: "caligo-intel",
+};
 
 export default {
   name: "UrlToolWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   props: {
     toolKey: {
       type: String,
@@ -262,6 +296,19 @@ export default {
   computed: {
     tool() {
       return urlTools[this.toolKey];
+    },
+    catalogToolId() {
+      return URL_CATALOG_TOOL[this.toolKey] || "caligo-intel";
+    },
+    heroLogos() {
+      return URL_TOOL_LOGOS[this.toolKey] || [this.catalogToolId];
+    },
+    heroMeta() {
+      return [
+        { label: "Modo", value: this.tool.mode },
+        { label: "Entrada", value: this.tool.noTarget ? "Inventario" : "URL / dominio" },
+        { label: "Salida", value: this.tool.facts?.[1]?.[1] || "Informe" },
+      ];
     },
     normalizedRows() {
       const normalized = this.result?.normalized;
@@ -329,7 +376,10 @@ export default {
   },
   methods: {
     async ensureSession() {
-      if (!this.$store.getters.isAuthenticated) {
+      if (this.$store.getters.isPortfolioMode) {
+        throw new Error("Modo portfolio activo: inicia sesión con credenciales para ejecutar herramientas.");
+      }
+      if (!this.$store.getters.hasAppAccess) {
         this.$router.push({ name: "login" });
         throw new Error("Inicia sesión para ejecutar herramientas");
       }

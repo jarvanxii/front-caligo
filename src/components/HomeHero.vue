@@ -3,32 +3,38 @@
     <AsciiDescent />
 
     <div class="home-command" aria-labelledby="home-title">
-      <div class="home-command__copy">
+      <section class="home-command__copy">
         <span class="eyebrow">Centro operativo</span>
-        <h1 id="home-title">Superficie, acceso y evidencia bajo control.</h1>
+        <h1 id="home-title">Herramientas reales. Presentación segura. Evidencia trazable.</h1>
         <p>
-          Una cabina local para lanzar herramientas de seguridad desde el servidor,
-          revisar resultados y moverte entre fases sin perder trazabilidad.
+          Un laboratorio black hat controlado para enseñar arquitectura, operación y criterio técnico: backend con motores
+          reales, frontend navegable, trabajos persistentes y salida preparada para auditoría.
         </p>
+
+        <nav class="home-command__logo-strip" aria-label="Accesos rápidos a herramientas principales">
+          <RouterLink
+            v-for="tool in toolHighlights"
+            :key="tool.id"
+            :style="toolCssVars(tool)"
+            :title="tool.label"
+            :to="{ name: tool.routeName }"
+          >
+            <span aria-hidden="true">{{ toolMark(tool) }}</span>
+            <strong>{{ tool.label }}</strong>
+          </RouterLink>
+        </nav>
+
         <div class="home-command__stats" aria-label="Resumen del laboratorio">
-          <span><strong>22</strong> herramientas</span>
-          <span><strong>JWT</strong> activo</span>
+          <span><strong>{{ guideToolCount }}</strong> herramientas</span>
+          <span><strong>{{ sessionMode }}</strong> acceso</span>
           <span><strong>LAN</strong> backend</span>
         </div>
-        <div class="home-command__actions">
-          <RouterLink class="home-action home-action--primary" :to="{ name: 'reconocimiento' }">
-            Abrir reconocimiento
-          </RouterLink>
-          <RouterLink class="home-action" :to="{ name: 'vulnerabilidades' }">
-            Validar hallazgos
-          </RouterLink>
-        </div>
-      </div>
+      </section>
 
       <aside class="home-status-board" aria-label="Estado del laboratorio">
         <div class="home-status-board__top">
           <span>caligo://runtime</span>
-          <strong>Operativo</strong>
+          <strong>{{ runtimeState }}</strong>
         </div>
 
         <div class="home-status-board__grid">
@@ -42,7 +48,7 @@
           </div>
           <div>
             <span>Modo</span>
-            <strong>Authorized lab</strong>
+            <strong>{{ labMode }}</strong>
           </div>
           <div>
             <span>Salida</span>
@@ -50,15 +56,13 @@
           </div>
         </div>
 
-        <ol class="home-status-board__flow" aria-label="Flujo de trabajo">
-          <li v-for="step in workflow" :key="step.code">
-            <span>{{ step.code }}</span>
-            <div>
-              <strong>{{ step.title }}</strong>
-              <small>{{ step.detail }}</small>
-            </div>
-          </li>
-        </ol>
+        <div class="home-status-board__modules" aria-label="Módulos principales">
+          <RouterLink v-for="module in moduleLinks" :key="module.id" :to="{ name: module.routeName }">
+            <span>{{ module.tools.length }}</span>
+            <strong>{{ module.title }}</strong>
+            <small>{{ module.eyebrow }}</small>
+          </RouterLink>
+        </div>
 
         <div class="home-status-board__trace">
           <span>scope.locked</span>
@@ -72,6 +76,8 @@
 
 <script>
 import AsciiDescent from "@/components/AsciiDescent.vue";
+import { guideToolCount, platformGuide, toolLogoRail } from "@/data/platformGuide";
+import { toolCssVars, toolMark } from "@/data/toolBranding";
 
 export default {
   name: "HomeHero",
@@ -85,13 +91,29 @@ export default {
     currentUser() {
       return this.$store.state.user?.username || "sin sesión";
     },
-    workflow() {
-      return [
-        { code: "01", title: "Reconocimiento", detail: "URLs, DNS, Nmap y OpenVAS." },
-        { code: "02", title: "Validación", detail: "Metasploit e Hydra bajo alcance." },
-        { code: "03", title: "Evidencia", detail: "Resultados, trazas e informes." },
-      ];
+    guideToolCount() {
+      return guideToolCount;
     },
+    labMode() {
+      return this.$store.getters.isPortfolioMode ? "Portfolio seguro" : "Authorized lab";
+    },
+    moduleLinks() {
+      return platformGuide;
+    },
+    runtimeState() {
+      return this.$store.getters.isPortfolioMode ? "Demo segura" : "Operativo";
+    },
+    sessionMode() {
+      return this.$store.getters.isPortfolioMode ? "Demo" : "JWT";
+    },
+    toolHighlights() {
+      const ids = ["nmap", "openvas", "metasploit", "hydra", "nuclei", "sqlmap", "hashcat", "wireguard"];
+      return ids.map((id) => toolLogoRail.find((tool) => tool.id === id)).filter(Boolean);
+    },
+  },
+  methods: {
+    toolCssVars,
+    toolMark,
   },
 };
 </script>

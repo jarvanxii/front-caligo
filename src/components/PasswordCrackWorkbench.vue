@@ -1,19 +1,15 @@
-<template>
+﻿<template>
   <section class="password-lab" :class="`password-lab--${tool}`" aria-labelledby="password-crack-title">
     <div class="password-lab__shell">
-      <header class="password-lab__header">
-        <div>
-          <span class="eyebrow">{{ copy.eyebrow }}</span>
-          <h1 id="password-crack-title">{{ copy.title }}</h1>
-          <p>{{ copy.summary }}</p>
-        </div>
-
-        <aside class="password-lab__engine" :class="{ 'is-ready': engineReady }">
-          <span>Motor</span>
-          <strong>{{ engineReady ? "Operativo" : "Pendiente" }}</strong>
-          <small>{{ engineMessage }}</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        :tool-id="tool"
+        :title="copy.title"
+        :eyebrow="copy.eyebrow"
+        :summary="copy.summary"
+        title-id="password-crack-title"
+        :logo-tools="[tool, 'wordlists']"
+        :meta="heroMeta"
+      />
 
       <div class="password-lab__grid">
         <form class="password-console password-console--input" @submit.prevent="startRun">
@@ -176,9 +172,13 @@
 <script>
 import { caligoApi } from "@/services/caligoApi";
 import { forgetRuntimeJob, isRuntimeJobRunning, rememberedRuntimeJob, rememberRuntimeJob } from "@/services/runtimeJobs";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
 
 export default {
   name: "PasswordCrackWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   props: {
     tool: {
       type: String,
@@ -237,6 +237,13 @@ export default {
     engineMessage() {
       if (!this.capabilities) return "Comprobando motor";
       return this.toolInfo?.version || this.toolInfo?.label || "Disponible";
+    },
+    heroMeta() {
+      return [
+        { label: "Estado", value: this.engineReady ? "Operativo" : "Pendiente" },
+        { label: "Hashes", value: this.hashCount || "0" },
+        { label: "Version", value: this.engineMessage },
+      ];
     },
     johnFormats() {
       return this.capabilities?.johnFormats || [{ value: "auto", label: "Auto" }];
@@ -318,7 +325,10 @@ export default {
       this.form.usernameFormat = false;
     },
     async ensureSession() {
-      if (!this.$store.getters.isAuthenticated) {
+      if (this.$store.getters.isPortfolioMode) {
+        throw new Error("Modo portfolio activo: inicia sesión con credenciales para ejecutar herramientas.");
+      }
+      if (!this.$store.getters.hasAppAccess) {
         this.$router.push({ name: "login" });
         throw new Error("Inicia sesión para ejecutar herramientas");
       }

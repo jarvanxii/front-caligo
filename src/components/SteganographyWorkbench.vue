@@ -1,19 +1,16 @@
-<template>
+﻿<template>
   <section class="stego-workspace" :class="`stego-workspace--${toolKey}`" aria-labelledby="stego-title">
     <div class="stego-shell">
-      <header class="stego-header">
-        <div>
-          <span class="eyebrow">{{ activeTool.eyebrow }}</span>
-          <h1 id="stego-title">{{ activeTool.title }}</h1>
-          <p>{{ activeTool.summary }}</p>
-        </div>
-
-        <aside class="stego-status" aria-label="Estado del laboratorio">
-          <span>Caligo Stego</span>
-          <strong>Local</strong>
-          <small>Sin subir ficheros a terceros. El navegador procesa las muestras.</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        :tool-id="catalogToolId"
+        :tool="activeTool"
+        :title="activeTool.title"
+        :eyebrow="activeTool.eyebrow"
+        :summary="activeTool.summary"
+        title-id="stego-title"
+        :logo-tools="heroLogos"
+        :meta="heroMeta"
+      />
 
       <div class="stego-layout">
         <form v-if="toolKey === 'analyze'" class="stego-panel stego-console" @submit.prevent="analyzeFile">
@@ -90,7 +87,7 @@
             <label>
               Perfil
               <select v-model="metadataEdit.profile">
-                <option value="forense">Forense</option>
+                <option value="completo">Completo</option>
                 <option value="limpio">Mínimo</option>
                 <option value="personalizado">Personalizado</option>
               </select>
@@ -252,6 +249,8 @@
 </template>
 
 <script>
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
+
 const MAGIC_TEXT = "CALIGO_STEGO_V1";
 const MAGIC_BYTES = textToBytes(MAGIC_TEXT);
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
@@ -266,7 +265,7 @@ const TOOLS = [
     eyebrow: "Esteganografía / Análisis",
     title: "Analizador de muestras",
     summary: "Inspección local de magic bytes, entropía, cadenas visibles, metadatos básicos, bytes anexos y paquetes Caligo.",
-    empty: "Carga una muestra para obtener un perfil forense rápido.",
+    empty: "Carga una muestra para obtener un perfil técnico rápido.",
   },
   {
     key: "metadata-analyze",
@@ -312,6 +311,9 @@ const TOOLS = [
 
 export default {
   name: "SteganographyWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   props: {
     toolKey: {
       type: String,
@@ -333,7 +335,7 @@ export default {
       metadataEdit: {
         file: null,
         mode: "auto",
-        profile: "forense",
+        profile: "completo",
         title: "",
         author: "",
         description: "",
@@ -361,6 +363,28 @@ export default {
   computed: {
     activeTool() {
       return this.tools.find((tool) => tool.key === this.toolKey) || this.tools[0];
+    },
+    catalogToolId() {
+      const map = {
+        analyze: "stego-analyze",
+        "metadata-analyze": "metadata-analyzer",
+        "metadata-edit": "metadata-editor",
+        embed: "stego-embed",
+        extract: "stego-extract",
+      };
+      return map[this.toolKey] || "stego-analyze";
+    },
+    heroLogos() {
+      if (this.toolKey.startsWith("metadata")) return [this.catalogToolId, "exiftool"];
+      if (this.toolKey === "analyze") return [this.catalogToolId, "zsteg", "pngcheck"];
+      return [this.catalogToolId, "steghide"];
+    },
+    heroMeta() {
+      return [
+        { label: "Motor", value: this.toolKey.startsWith("metadata") ? "Browser / ExifTool" : "Browser" },
+        { label: "Modo", value: this.activeTool.code },
+        { label: "Estado", value: this.busy ? "Procesando" : "Local" },
+      ];
     },
     payloadPlaceholder() {
       if (this.embed.payloadSource === "json") {
@@ -787,7 +811,7 @@ export default {
       this.revokeMetadataDownload();
       this.metadataEdit.file = null;
       this.metadataEdit.mode = "auto";
-      this.metadataEdit.profile = "forense";
+      this.metadataEdit.profile = "completo";
       this.metadataEdit.title = "";
       this.metadataEdit.author = "";
       this.metadataEdit.description = "";
@@ -796,7 +820,7 @@ export default {
       this.error = "";
     },
     fillMetadataExample() {
-      this.metadataEdit.profile = "forense";
+      this.metadataEdit.profile = "completo";
       this.metadataEdit.title = "Caligo lab sample";
       this.metadataEdit.author = "Caligo";
       this.metadataEdit.description = "Artefacto generado para laboratorio controlado.";

@@ -68,6 +68,7 @@
   --category-panel: rgba(16, 10, 29, 0.86);
 }
 
+.app-shell--module-redes,
 .app-shell--module-redes-utilidades {
   --category-accent: #00ff5f;
   --category-accent-2: #38bdf8;
@@ -76,6 +77,26 @@
   --category-bg-a: rgba(3, 18, 10, 0.98);
   --category-bg-b: rgba(2, 8, 10, 0.995);
   --category-panel: rgba(3, 18, 12, 0.86);
+}
+
+.app-shell--module-utilidades {
+  --category-accent: #67e8f9;
+  --category-accent-2: #a7f3d0;
+  --category-accent-rgb: 103, 232, 249;
+  --category-accent-2-rgb: 167, 243, 208;
+  --category-bg-a: rgba(3, 14, 19, 0.98);
+  --category-bg-b: rgba(2, 7, 12, 0.995);
+  --category-panel: rgba(4, 15, 18, 0.86);
+}
+
+.app-shell--module-reversing {
+  --category-accent: #f97316;
+  --category-accent-2: #f43f5e;
+  --category-accent-rgb: 249, 115, 22;
+  --category-accent-2-rgb: 244, 63, 94;
+  --category-bg-a: rgba(23, 10, 4, 0.98);
+  --category-bg-b: rgba(10, 4, 3, 0.995);
+  --category-panel: rgba(24, 11, 5, 0.86);
 }
 
 .app-sidebar--reconocimiento {
@@ -114,10 +135,23 @@
   --sidebar-accent-rgb: 192, 132, 252;
 }
 
+.app-sidebar--redes,
 .app-sidebar--redes-utilidades {
   --sidebar-accent: #00ff5f;
   --sidebar-accent-2: #38bdf8;
   --sidebar-accent-rgb: 0, 255, 95;
+}
+
+.app-sidebar--utilidades {
+  --sidebar-accent: #67e8f9;
+  --sidebar-accent-2: #a7f3d0;
+  --sidebar-accent-rgb: 103, 232, 249;
+}
+
+.app-sidebar--reversing {
+  --sidebar-accent: #f97316;
+  --sidebar-accent-2: #f43f5e;
+  --sidebar-accent-rgb: 249, 115, 22;
 }
 
 .app-shell--module-reconocimiento :is(.module-workspace, .urls-workspace, .scanner-workspace),
@@ -126,7 +160,16 @@
 .app-shell--module-contrasenas :is(.module-workspace, .password-lab),
 .app-shell--module-codificacion :is(.module-workspace),
 .app-shell--module-esteganografia :is(.module-workspace, .stego-workspace),
-.app-shell--module-redes-utilidades :is(.module-workspace, .identity-workbench, .vpn-workbench) {
+.app-shell--module-redes :is(.module-workspace, .vpn-workbench, .catalog-tool),
+.app-shell--module-utilidades :is(.module-workspace, .identity-workbench, .catalog-tool),
+.app-shell--module-redes-utilidades :is(.module-workspace, .identity-workbench, .vpn-workbench, .catalog-tool),
+.app-shell--module-reversing :is(.module-workspace, .catalog-tool),
+.app-shell--module-reconocimiento :is(.catalog-tool),
+.app-shell--module-osint :is(.catalog-tool),
+.app-shell--module-vulnerabilidades :is(.catalog-tool),
+.app-shell--module-contrasenas :is(.catalog-tool),
+.app-shell--module-codificacion :is(.catalog-tool),
+.app-shell--module-esteganografia :is(.catalog-tool) {
   --module-accent: var(--category-accent);
   --module-accent-soft: rgba(var(--category-accent-rgb), 0.1);
   background:
@@ -142,7 +185,16 @@
 .app-shell--module-contrasenas :is(.module-workspace, .password-lab)::before,
 .app-shell--module-codificacion :is(.module-workspace)::before,
 .app-shell--module-esteganografia :is(.module-workspace, .stego-workspace)::before,
-.app-shell--module-redes-utilidades :is(.module-workspace, .identity-workbench, .vpn-workbench)::before {
+.app-shell--module-redes :is(.module-workspace, .vpn-workbench, .catalog-tool)::before,
+.app-shell--module-utilidades :is(.module-workspace, .identity-workbench, .catalog-tool)::before,
+.app-shell--module-redes-utilidades :is(.module-workspace, .identity-workbench, .vpn-workbench, .catalog-tool)::before,
+.app-shell--module-reversing :is(.module-workspace, .catalog-tool)::before,
+.app-shell--module-reconocimiento :is(.catalog-tool)::before,
+.app-shell--module-osint :is(.catalog-tool)::before,
+.app-shell--module-vulnerabilidades :is(.catalog-tool)::before,
+.app-shell--module-contrasenas :is(.catalog-tool)::before,
+.app-shell--module-codificacion :is(.catalog-tool)::before,
+.app-shell--module-esteganografia :is(.catalog-tool)::before {
   background:
     linear-gradient(90deg, rgba(226, 232, 240, 0.032) 1px, transparent 1px),
     linear-gradient(180deg, rgba(var(--category-accent-rgb), 0.026) 1px, transparent 1px),
@@ -156,7 +208,16 @@
 .app-shell--module-contrasenas :is(.module-workspace__frame, .password-lab__header > div, .password-lab__engine, .password-console, .password-run, .password-results, .password-history),
 .app-shell--module-codificacion :is(.module-workspace__frame),
 .app-shell--module-esteganografia :is(.module-workspace__frame, .stego-header > div, .stego-status, .stego-panel),
-.app-shell--module-redes-utilidades :is(.module-workspace__frame, .identity-head, .identity-panel, .identity-card, .vpn-profile-card) {
+.app-shell--module-redes :is(.module-workspace__frame, .vpn-profile-card, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-utilidades :is(.module-workspace__frame, .identity-head, .identity-panel, .identity-card, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-redes-utilidades :is(.module-workspace__frame, .identity-head, .identity-panel, .identity-card, .vpn-profile-card, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-reversing :is(.module-workspace__frame, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-reconocimiento :is(.catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-osint :is(.catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-vulnerabilidades :is(.catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-contrasenas :is(.catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-codificacion :is(.catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-esteganografia :is(.catalog-tool__head, .catalog-tool__panel) {
   border-color: rgba(var(--category-accent-rgb), 0.18);
   background:
     linear-gradient(135deg, rgba(var(--category-accent-rgb), 0.055), transparent 44%),

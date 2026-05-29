@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="ARJUN">
+  <defs>
+    <radialGradient id="g" cx="35%" cy="16%" r="78%">
+      <stop offset="0" stop-color="#fb923c" stop-opacity="0.42"/>
+      <stop offset="0.52" stop-color="#fb923c" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#020607" stop-opacity="1"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="96" height="96" rx="12" fill="#020607"/>
+  <rect x="5" y="5" width="86" height="86" rx="10" fill="url(#g)" stroke="#fb923c" stroke-opacity="0.55"/>
+  <path d="M18 30h60M18 66h60M30 18v60M66 18v60" stroke="#fb923c" stroke-opacity="0.13" stroke-width="1"/>
+  <path d="M18 48h12l6-10 9 20 8-17 5 7h20" fill="none" stroke="#fb923c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+  <text x="48" y="54" text-anchor="middle" dominant-baseline="middle" fill="#f8fafc" filter="url(#glow)" font-family="Cascadia Mono, Consolas, monospace" font-size="20" font-weight="900" letter-spacing="0">ARJ</text>
+  <text x="48" y="78" text-anchor="middle" fill="#fb923c" font-family="Cascadia Mono, Consolas, monospace" font-size="7" font-weight="800" letter-spacing="0">CALIGO</text>
+</svg>

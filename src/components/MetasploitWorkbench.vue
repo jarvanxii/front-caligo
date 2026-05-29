@@ -1,33 +1,15 @@
-<template>
+﻿<template>
   <section class="msf-workbench" aria-labelledby="msf-title">
     <div class="msf-shell">
-      <header class="msf-topbar">
-        <div class="msf-title-block">
-          <span class="eyebrow">Vulnerabilidades / Metasploit</span>
-          <h1 id="msf-title">Mesa de operación</h1>
-          <p>Descubre servicios, selecciona módulos, lanza payloads en laboratorio y controla sesiones activas desde un solo panel.</p>
-        </div>
-
-        <aside class="msf-status-strip" aria-label="Estado operativo">
-          <article class="msf-rpc" :class="{ 'is-ready': rpcReady }" aria-label="Estado de Metasploit RPC">
-            <span>MSF RPC</span>
-            <strong>{{ rpcReady ? "Operativo" : "Pendiente" }}</strong>
-            <small>{{ rpcMessage }}</small>
-          </article>
-
-          <article>
-            <span>Objetivo</span>
-            <strong>{{ selectedTarget || execution.target || discovery.target }}</strong>
-            <small>{{ selectedModuleLabel }}</small>
-          </article>
-
-          <article>
-            <span>Control</span>
-            <strong>{{ sessionCount }} sesiones</strong>
-            <small>{{ ownedHostCount }} hosts con payload</small>
-          </article>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        tool-id="metasploit"
+        title="Mesa de operación"
+        eyebrow="Vulnerabilidades / Metasploit"
+        summary="Descubre servicios, selecciona módulos, lanza payloads en laboratorio y controla sesiones activas desde un solo panel."
+        title-id="msf-title"
+        :logo-tools="['metasploit', 'nmap']"
+        :meta="heroMeta"
+      />
 
       <div class="msf-dashboard">
         <form class="msf-panel msf-discovery" @submit.prevent="startDiscovery">
@@ -439,12 +421,16 @@
 <script>
 import { caligoApi } from "@/services/caligoApi";
 import { forgetRuntimeJob, isRuntimeJobRunning, rememberedRuntimeJob, rememberRuntimeJob } from "@/services/runtimeJobs";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
 
 const PRIVATE_TARGET = "192.168.0.50";
 const DEFAULT_PORTS = "21,22,80,139,445,3306,5432,8000,8080,8443";
 
 export default {
   name: "MetasploitWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   data() {
     return {
       capabilities: null,
@@ -533,6 +519,13 @@ export default {
       if (!this.capabilities) return "Comprobando servicio";
       return this.capabilities.message || "RPC listo para laboratorio";
     },
+    heroMeta() {
+      return [
+        { label: "RPC", value: this.rpcReady ? "Operativo" : "Pendiente" },
+        { label: "Objetivo", value: this.selectedTarget || this.execution.target || this.discovery.target },
+        { label: "Sesiones", value: `${this.sessionCount} / ${this.ownedHostCount} hosts` },
+      ];
+    },
     payloadOptions() {
       const dynamicPayloads = this.modulePayloadOptions();
       return dynamicPayloads.length ? dynamicPayloads : this.capabilities?.payloads || [];
@@ -588,7 +581,10 @@ export default {
   },
   methods: {
     async ensureSession() {
-      if (!this.$store.getters.isAuthenticated) {
+      if (this.$store.getters.isPortfolioMode) {
+        throw new Error("Modo portfolio activo: inicia sesión con credenciales para ejecutar herramientas.");
+      }
+      if (!this.$store.getters.hasAppAccess) {
         this.$router.push({ name: "login" });
         throw new Error("Inicia sesión para usar Metasploit");
       }

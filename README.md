@@ -2,7 +2,7 @@
 
 Frontend Vue 3 de Caligo. La aplicación funciona como cabina de mando para los módulos de ciberseguridad y se conecta al backend Spring local mediante JWT.
 
-Los módulos más avanzados ahora mismo están en **Reconocimiento**, **OSINT**, **Vulnerabilidades**, **Contraseñas** y **Redes / Utilidades**. Reconocimiento agrupa Caligo Intel, Nmap y OpenVAS. OSINT integra Caligo People, Sherlock, Maigret, Social Analyzer, Holehe y theHarvester contra endpoints JWT. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto y sqlmap contra el backend Spring. Contraseñas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor. Redes / Utilidades integra WHOAMI e interfaz VPN del servidor.
+Los módulos más avanzados ahora mismo están en **Reconocimiento**, **OSINT**, **Vulnerabilidades**, **Contraseñas**, **Redes** y **Utilidades**. Reconocimiento agrupa Caligo Intel, Nmap, OpenVAS y reconocimiento web/TLS. OSINT integra Caligo People, Sherlock, Maigret, Social Analyzer, Holehe, theHarvester y utilidades de exposición autorizada para contacto, brechas y documentos públicos contra endpoints JWT. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto, sqlmap, Medusa/Ncrack y laboratorios AD/Cloud. Contraseñas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor. Redes queda para VPNs, captura, tráfico, pivoting, WiFi y Bluetooth; Utilidades queda para identidad local/servidor, conectividad básica y sockets.
 
 ## Stack
 
@@ -36,12 +36,14 @@ front-caligo/
       PasswordCrackWorkbench.vue
       ScannerWorkbench.vue
       OsintToolWorkbench.vue
+      OsintExposureWorkbench.vue
       VulnerabilityToolWorkbench.vue
       WordlistGeneratorWorkbench.vue
       WordlistInventory.vue
     data/
       modulePages.js
       osintTools.js
+      osintExposureTools.js
       vulnerabilityTools.js
     router/
       index.js
@@ -66,6 +68,13 @@ front-caligo/
         SocialAnalyzerView.vue
         HoleheView.vue
         TheHarvesterView.vue
+        EmailExposureView.vue
+        PhoneLookupView.vue
+        DomainContactsView.vue
+        EmailBreachView.vue
+        PasswordExposureView.vue
+        MetadataExposureView.vue
+        PublicFilesExposureView.vue
       vulnerabilidades/
         VulnerabilitiesView.vue
         MetasploitView.vue
@@ -91,10 +100,12 @@ front-caligo/
         StegoMetadataEditorView.vue
         StegoEmbedView.vue
         StegoExtractView.vue
-      redes-utilidades/
-        NetworkUtilitiesView.vue
-        WhoamiView.vue
+      redes/
+        NetworksView.vue
         VpnsView.vue
+      utilidades/
+        UtilitiesView.vue
+        WhoamiView.vue
 ```
 
 ## Ejecución local
@@ -173,11 +184,13 @@ Orden actual:
 4. Contraseñas
 5. Codificación
 6. Esteganografía
-7. Redes / Utilidades
+7. Redes
+8. Utilidades
+9. Reversing
 
 `Home` no muestra barra lateral. El resto de vistas muestran una barra lateral contextual con herramientas útiles, sin entrada de resumen o panorámica. La barra lateral soporta secciones desplegables mediante `sidebarSections` en `src/data/modulePages.js`, manteniendo `utilities` como lista plana para las tarjetas internas del módulo.
 
-Las herramientas de `URLs`, `Nmap` y `OpenVAS` cuelgan de `Reconocimiento`; `Caligo People`, `Sherlock`, `Maigret`, `Social Analyzer`, `Holehe` y `theHarvester` cuelgan de `OSINT`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto` y `sqlmap` cuelgan de `Vulnerabilidades`; `WHOAMI` y `VPNs` cuelgan de `Redes / Utilidades`. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el análisis inteligente.
+Las herramientas de `URLs`, `Nmap`, `OpenVAS` y `testssl.sh` cuelgan de `Reconocimiento`; `Caligo People`, `Sherlock`, `Maigret`, `Social Analyzer`, `Holehe`, `theHarvester`, `Email Exposure`, `Phone Lookup`, `Domain Contacts`, `Email Breach`, `Password Exposure`, `Metadata Exposure` y `Public Files` cuelgan de `OSINT`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto`, `sqlmap`, `Medusa`, `Ncrack`, `Impacket`, `NetExec`, `BloodHound`, `Certipy`, `Kerbrute` y `enum4linux-ng` cuelgan de `Vulnerabilidades`; `WireGuard`, `OpenVPN`, captura de tráfico, pivoting, proxies, WiFi y Bluetooth cuelgan de `Redes`; `WHOAMI`, `Ping`, `Traceroute`, `MTR`, `Netcat` y `Socat` cuelgan de `Utilidades`. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el análisis inteligente.
 
 El header muestra, junto a la ruleta de ajustes, dos lecturas de identidad:
 
@@ -250,8 +263,17 @@ src/views/osint/MaigretView.vue
 src/views/osint/SocialAnalyzerView.vue
 src/views/osint/HoleheView.vue
 src/views/osint/TheHarvesterView.vue
+src/views/osint/EmailExposureView.vue
+src/views/osint/PhoneLookupView.vue
+src/views/osint/DomainContactsView.vue
+src/views/osint/EmailBreachView.vue
+src/views/osint/PasswordExposureView.vue
+src/views/osint/MetadataExposureView.vue
+src/views/osint/PublicFilesExposureView.vue
 src/components/OsintToolWorkbench.vue
+src/components/OsintExposureWorkbench.vue
 src/data/osintTools.js
+src/data/osintExposureTools.js
 ```
 
 Rutas:
@@ -264,8 +286,17 @@ Rutas:
 | Social Analyzer | `/osint/social-analyzer` |
 | Holehe | `/osint/holehe` |
 | theHarvester | `/osint/theharvester` |
+| Email Exposure | `/osint/contacto/email-exposure` |
+| Phone Lookup | `/osint/contacto/phone-lookup` |
+| Domain Contacts | `/osint/contacto/domain-contacts` |
+| Email Breach | `/osint/brechas/email` |
+| Password Exposure | `/osint/brechas/password` |
+| Metadata Exposure | `/osint/documentos/metadatos` |
+| Public Files | `/osint/documentos/archivos-publicos` |
 
 `Caligo People` acepta nombre real, pista opcional y plataformas para devolver candidatos públicos de LinkedIn y redes sociales. Las herramientas CLI se ejecutan en el servidor y usan jobs persistentes: puedes cambiar de vista y volver a la herramienta para recuperar progreso, logs y resultados.
+
+Las herramientas de exposición autorizada usan `OsintExposureWorkbench`: cada vista tiene formulario propio, confirmación de alcance, salida persistente en `localStorage` y render de hallazgos, recursos, consultas y recomendaciones. No están diseñadas para descubrir datos privados de terceros: trabajan con datos aportados por el usuario, dominios autorizados o comprobaciones defensivas de exposición.
 
 Endpoints usados:
 
@@ -279,15 +310,22 @@ Endpoints usados:
 | Holehe | `POST /api/osint/holehe/runs` |
 | theHarvester | `POST /api/osint/theharvester/runs` |
 | Estado job | `GET /api/osint/{tool}/runs/{id}` |
+| Capacidades de exposición | `GET /api/osint/exposure/capabilities` |
+| Email Exposure | `POST /api/osint/exposure/email` |
+| Phone Lookup | `POST /api/osint/exposure/phone` |
+| Domain Contacts | `POST /api/osint/exposure/domain-contacts` |
+| Email Breach | `POST /api/osint/exposure/email-breach` |
+| Password Exposure | `POST /api/osint/exposure/password` |
+| Metadata Exposure | `POST /api/osint/exposure/metadata` |
+| Public Files | `POST /api/osint/exposure/public-files` |
 
-## Redes / Utilidades
+## Redes
 
 Vistas:
 
 ```text
-src/views/network/WhoamiView.vue
-src/views/network/VpnsView.vue
-src/components/IdentityWorkbench.vue
+src/views/redes/NetworksView.vue
+src/views/redes/VpnsView.vue
 src/components/VpnWorkbench.vue
 ```
 
@@ -295,17 +333,34 @@ Rutas:
 
 | Vista | Ruta |
 | --- | --- |
-| WHOAMI | `/redes-utilidades/identidad/whoami` |
-| VPNs | `/redes-utilidades/identidad/vpns` |
+| Redes | `/redes` |
+| WireGuard | `/redes/vpns/wireguard` |
+| OpenVPN | `/redes/vpns/openvpn` |
 
-`WHOAMI` adapta la utilidad de **La Identidad de Gollum** al estilo Caligo:
-navegador, sistema, permisos, storage, cookies, scripts, WebGL, media devices,
-geolocalización opcional, IP pública del navegador, IP observada por el backend,
-IP pública del servidor y estado VPN.
-
-`VPNs` lee perfiles WireGuard/OpenVPN del servidor, permite elegir perfil por
+`Redes` concentra operativa de salida y tráfico: VPNs, captura, análisis PCAP,
+proxies, pivoting, WiFi y Bluetooth. `VPNs` lee perfiles WireGuard/OpenVPN del servidor, permite elegir perfil por
 proveedor/país/ciudad si los metadatos existen, conecta/desconecta mediante el
 backend y refresca automáticamente las IPs del header al cambiar el túnel.
+
+## Utilidades
+
+Vistas:
+
+```text
+src/views/utilidades/UtilitiesView.vue
+src/views/utilidades/WhoamiView.vue
+src/components/IdentityWorkbench.vue
+```
+
+Rutas:
+
+| Vista | Ruta |
+| --- | --- |
+| Utilidades | `/utilidades` |
+| WHOAMI Local | `/utilidades/identidad/whoami-local` |
+| WHOAMI Server | `/utilidades/identidad/whoami-server` |
+
+`WHOAMI` adapta la utilidad de **La Identidad de Gollum** al estilo Caligo y queda separada en dos lecturas: la local mide navegador, pantalla, permisos, storage, cookies, WebGL, media devices e IP pública del cliente; la de servidor mide IP pública del backend, interfaces, cabeceras observadas, sistema y estado VPN. Las utilidades de conectividad (`Ping`, `Traceroute`, `MTR`, `Netcat`, `Socat`) se mantienen como vistas de catálogo hasta conectar endpoints específicos.
 
 Endpoints usados:
 
@@ -507,9 +562,12 @@ passwords.john
 passwords.hashcat
 passwords.crunch
 passwords.cewl
+caligo.osint.exposure.<tool>
 ```
 
 Al volver a una vista, Caligo consulta el job recordado y reengancha el polling si sigue en `QUEUED` o `RUNNING`.
+
+Las herramientas OSINT server-side que no son jobs guardan último formulario no sensible y último resultado en `localStorage`; los campos marcados como sensibles, como la contraseña de `Password Exposure`, no se persisten.
 
 ### Análisis inteligente de URLs
 

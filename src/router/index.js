@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { catalogToolRoutes } from "@/data/toolCatalog";
 import { getStoredToken } from "@/services/caligoApi";
 import store from "@/store";
 
@@ -24,6 +25,13 @@ const MaigretView = () => import("@/views/osint/MaigretView.vue");
 const SocialAnalyzerView = () => import("@/views/osint/SocialAnalyzerView.vue");
 const HoleheView = () => import("@/views/osint/HoleheView.vue");
 const TheHarvesterView = () => import("@/views/osint/TheHarvesterView.vue");
+const EmailExposureView = () => import("@/views/osint/EmailExposureView.vue");
+const PhoneLookupView = () => import("@/views/osint/PhoneLookupView.vue");
+const DomainContactsView = () => import("@/views/osint/DomainContactsView.vue");
+const EmailBreachView = () => import("@/views/osint/EmailBreachView.vue");
+const PasswordExposureView = () => import("@/views/osint/PasswordExposureView.vue");
+const MetadataExposureView = () => import("@/views/osint/MetadataExposureView.vue");
+const PublicFilesExposureView = () => import("@/views/osint/PublicFilesExposureView.vue");
 const VulnerabilitiesView = () => import("@/views/vulnerabilidades/VulnerabilitiesView.vue");
 const MetasploitView = () => import("@/views/vulnerabilidades/MetasploitView.vue");
 const BruteForceView = () => import("@/views/vulnerabilidades/BruteForceView.vue");
@@ -45,9 +53,12 @@ const StegoMetadataAnalyzeView = () => import("@/views/esteganografia/StegoMetad
 const StegoMetadataEditorView = () => import("@/views/esteganografia/StegoMetadataEditorView.vue");
 const StegoEmbedView = () => import("@/views/esteganografia/StegoEmbedView.vue");
 const StegoExtractView = () => import("@/views/esteganografia/StegoExtractView.vue");
-const NetworkUtilitiesView = () => import("@/views/redes-utilidades/NetworkUtilitiesView.vue");
-const WhoamiView = () => import("@/views/redes-utilidades/WhoamiView.vue");
-const VpnsView = () => import("@/views/redes-utilidades/VpnsView.vue");
+const NetworksView = () => import("@/views/redes/NetworksView.vue");
+const UtilitiesView = () => import("@/views/utilidades/UtilitiesView.vue");
+const WhoamiView = () => import("@/views/utilidades/WhoamiView.vue");
+const VpnsView = () => import("@/views/redes/VpnsView.vue");
+const ModuleCatalogView = () => import("@/views/tools/ModuleCatalogView.vue");
+const CatalogToolView = () => import("@/views/tools/CatalogToolView.vue");
 
 const routes = [
   {
@@ -237,6 +248,62 @@ const routes = [
     },
   },
   {
+    path: "/osint/contacto/email-exposure",
+    name: "osintEmailExposure",
+    component: EmailExposureView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/contacto/phone-lookup",
+    name: "osintPhoneLookup",
+    component: PhoneLookupView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/contacto/domain-contacts",
+    name: "osintDomainContacts",
+    component: DomainContactsView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/brechas/email",
+    name: "osintEmailBreach",
+    component: EmailBreachView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/brechas/password",
+    name: "osintPasswordExposure",
+    component: PasswordExposureView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/documentos/metadatos",
+    name: "osintMetadataExposure",
+    component: MetadataExposureView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/osint/documentos/archivos-publicos",
+    name: "osintPublicFiles",
+    component: PublicFilesExposureView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
     path: "/vulnerabilidades",
     name: "vulnerabilidades",
     component: VulnerabilitiesView,
@@ -391,61 +458,164 @@ const routes = [
   {
     path: "/redes-utilidades",
     name: "redesUtilidades",
-    component: NetworkUtilitiesView,
+    redirect: { name: "redes" },
     meta: {
-      moduleKey: "redesUtilidades",
+      moduleKey: "redes",
+    },
+  },
+  {
+    path: "/redes",
+    name: "redes",
+    component: NetworksView,
+    meta: {
+      moduleKey: "redes",
+    },
+  },
+  {
+    path: "/utilidades",
+    name: "utilidades",
+    component: UtilitiesView,
+    meta: {
+      moduleKey: "utilidades",
+    },
+  },
+  {
+    path: "/utilidades/identidad/whoami",
+    name: "networkWhoami",
+    redirect: { name: "networkWhoamiLocal" },
+    meta: {
+      moduleKey: "utilidades",
     },
   },
   {
     path: "/redes-utilidades/identidad/whoami",
-    name: "networkWhoami",
-    component: WhoamiView,
+    redirect: { name: "networkWhoamiLocal" },
     meta: {
-      moduleKey: "redesUtilidades",
+      moduleKey: "utilidades",
+    },
+  },
+  {
+    path: "/utilidades/identidad/whoami-local",
+    name: "networkWhoamiLocal",
+    component: WhoamiView,
+    props: {
+      mode: "local",
+    },
+    meta: {
+      moduleKey: "utilidades",
+    },
+  },
+  {
+    path: "/redes-utilidades/identidad/whoami-local",
+    redirect: { name: "networkWhoamiLocal" },
+    meta: {
+      moduleKey: "utilidades",
+    },
+  },
+  {
+    path: "/utilidades/identidad/whoami-server",
+    name: "networkWhoamiServer",
+    component: WhoamiView,
+    props: {
+      mode: "server",
+    },
+    meta: {
+      moduleKey: "utilidades",
+    },
+  },
+  {
+    path: "/redes-utilidades/identidad/whoami-server",
+    redirect: { name: "networkWhoamiServer" },
+    meta: {
+      moduleKey: "utilidades",
+    },
+  },
+  {
+    path: "/redes/vpns",
+    name: "networkVpns",
+    redirect: { name: "networkVpnsWireguard" },
+    meta: {
+      moduleKey: "redes",
     },
   },
   {
     path: "/redes-utilidades/identidad/vpns",
-    name: "networkVpns",
     redirect: { name: "networkVpnsWireguard" },
     meta: {
-      moduleKey: "redesUtilidades",
+      moduleKey: "redes",
     },
   },
   {
     path: "/redes-utilidades/vpns",
     redirect: { name: "networkVpnsWireguard" },
     meta: {
-      moduleKey: "redesUtilidades",
+      moduleKey: "redes",
     },
   },
   {
-    path: "/redes-utilidades/vpns/wireguard",
+    path: "/redes/vpns/wireguard",
     name: "networkVpnsWireguard",
     component: VpnsView,
     props: {
       initialProtocol: "wireguard",
     },
     meta: {
-      moduleKey: "redesUtilidades",
+      moduleKey: "redes",
     },
   },
   {
-    path: "/redes-utilidades/vpns/openvpn",
+    path: "/redes-utilidades/vpns/wireguard",
+    redirect: { name: "networkVpnsWireguard" },
+    meta: {
+      moduleKey: "redes",
+    },
+  },
+  {
+    path: "/redes/vpns/openvpn",
     name: "networkVpnsOpenvpn",
     component: VpnsView,
     props: {
       initialProtocol: "openvpn",
     },
     meta: {
-      moduleKey: "redesUtilidades",
+      moduleKey: "redes",
+    },
+  },
+  {
+    path: "/redes-utilidades/vpns/openvpn",
+    redirect: { name: "networkVpnsOpenvpn" },
+    meta: {
+      moduleKey: "redes",
     },
   },
   {
     path: "/codificacion",
     name: "codificacion",
     component: EncodingView,
+    meta: {
+      moduleKey: "codificacion",
+    },
   },
+  {
+    path: "/reversing",
+    name: "reversing",
+    component: ModuleCatalogView,
+    meta: {
+      moduleKey: "reversing",
+    },
+  },
+  ...catalogToolRoutes.map((tool) => ({
+    path: tool.path,
+    name: tool.routeName,
+    component: CatalogToolView,
+    props: {
+      toolId: tool.id,
+    },
+    meta: {
+      moduleKey: tool.moduleKey,
+      toolId: tool.id,
+    },
+  })),
 ];
 
 const router = createRouter({
@@ -457,7 +627,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const hasSession = Boolean(store.state.token || getStoredToken());
+  const hasSession = Boolean(store.getters.hasAppAccess || getStoredToken());
   if (to.name === "login") {
     return hasSession ? { name: "home" } : true;
   }

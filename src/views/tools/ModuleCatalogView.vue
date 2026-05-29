@@ -7,15 +7,14 @@ import ModuleWorkspace from "@/components/ModuleWorkspace.vue";
 import { modulePages } from "@/data/modulePages";
 
 export default {
-  name: "NetworkUtilitiesView",
+  name: "ModuleCatalogView",
   components: {
     ModuleWorkspace,
   },
-  data() {
-    return {
-      page: modulePages.redesUtilidades,
-    };
+  computed: {
+    page() {
+      return modulePages[this.$route.meta?.moduleKey] || modulePages.reconocimiento;
+    },
   },
 };
 </script>
-

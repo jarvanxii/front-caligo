@@ -1,19 +1,16 @@
 <template>
   <section class="osint-workbench" :class="`osint-workbench--${tool.key}`" aria-labelledby="osint-tool-title">
     <div class="osint-workbench__shell">
-      <header class="osint-tool-head">
-        <div>
-          <span class="eyebrow">{{ tool.eyebrow }}</span>
-          <h1 id="osint-tool-title">{{ tool.title }}</h1>
-          <p>{{ tool.summary }}</p>
-        </div>
-
-        <aside class="osint-tool-status" :class="{ 'is-ready': toolAvailable }">
-          <span>{{ tool.command }}</span>
-          <strong>{{ toolAvailable ? "Operativo" : "Pendiente" }}</strong>
-          <small>{{ toolVersion || "Inventario del servidor" }}</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        :tool-id="catalogToolId"
+        :tool="tool"
+        :title="tool.title"
+        :eyebrow="tool.eyebrow"
+        :summary="tool.summary"
+        title-id="osint-tool-title"
+        :logo-tools="heroLogos"
+        :meta="heroMeta"
+      />
 
       <div class="osint-grid">
         <form class="osint-panel osint-console" @submit.prevent="submit">
@@ -203,9 +200,22 @@
 import { caligoApi } from "@/services/caligoApi";
 import { forgetRuntimeJob, isRuntimeJobRunning, rememberedRuntimeJob, rememberRuntimeJob } from "@/services/runtimeJobs";
 import { osintTools } from "@/data/osintTools";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
+
+const OSINT_CATALOG_TOOL = {
+  profileSearch: "caligo-people",
+  sherlock: "sherlock",
+  maigret: "maigret",
+  socialAnalyzer: "social-analyzer",
+  holehe: "holehe",
+  theharvester: "theharvester",
+};
 
 export default {
   name: "OsintToolWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
   props: {
     toolKey: {
       type: String,
@@ -242,6 +252,12 @@ export default {
     tool() {
       return osintTools[this.toolKey];
     },
+    catalogToolId() {
+      return OSINT_CATALOG_TOOL[this.toolKey] || this.tool.key;
+    },
+    heroLogos() {
+      return this.tool.mode === "search" ? ["caligo-people", "sherlock", "maigret"] : [this.catalogToolId];
+    },
     toolCapability() {
       return (this.capabilities?.tools || []).find((item) => item.id === this.tool.key) || {};
     },
@@ -250,6 +266,13 @@ export default {
     },
     toolVersion() {
       return this.toolCapability.version || "";
+    },
+    heroMeta() {
+      return [
+        { label: "Estado", value: this.toolAvailable ? "Operativo" : "Pendiente" },
+        { label: "Consulta", value: this.tool.inputType || this.tool.mode },
+        { label: "Version", value: this.toolVersion || "Inventario servidor" },
+      ];
     },
     platforms() {
       return this.capabilities?.platforms || ["linkedin", "github", "x", "instagram", "facebook", "tiktok", "reddit", "youtube"];

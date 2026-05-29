@@ -136,7 +136,10 @@ export default {
         contrasenas: "contrasenas",
         codificacion: "codificacion",
         esteganografia: "esteganografia",
-        redesUtilidades: "redes-utilidades",
+        redes: "redes",
+        utilidades: "utilidades",
+        redesUtilidades: "redes",
+        reversing: "reversing",
       };
       return `app-sidebar--${themeByModule[moduleKey] || this.currentPage?.accent || "green"}`;
     },

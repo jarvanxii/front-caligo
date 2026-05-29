@@ -1,9 +1,20 @@
 const API_BASE_URL = import.meta.env.VITE_CALIGO_API_BASE_URL || "http://192.168.0.253:8080";
 const TOKEN_KEY = "caligo.jwt";
 const USER_KEY = "caligo.user";
+const ACCESS_MODE_KEY = "caligo.accessMode";
+
+const PORTFOLIO_USER = {
+  username: "Portfolio",
+  displayName: "Acceso sin usuario",
+  role: "portfolio",
+};
 
 export function getStoredToken() {
   return localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredAccessMode() {
+  return localStorage.getItem(ACCESS_MODE_KEY) || (getStoredToken() ? "authenticated" : "");
 }
 
 export function getStoredUser() {
@@ -18,16 +29,40 @@ export function getStoredUser() {
 
 export function storeSession(session) {
   if (!session?.accessToken) return;
+  localStorage.setItem(ACCESS_MODE_KEY, "authenticated");
   localStorage.setItem(TOKEN_KEY, session.accessToken);
   localStorage.setItem(USER_KEY, JSON.stringify(session.user || null));
 }
 
+export function storePortfolioSession() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.setItem(ACCESS_MODE_KEY, "portfolio");
+  localStorage.setItem(USER_KEY, JSON.stringify(PORTFOLIO_USER));
+  return {
+    accessMode: "portfolio",
+    accessToken: null,
+    user: PORTFOLIO_USER,
+  };
+}
+
 export function clearSession() {
+  localStorage.removeItem(ACCESS_MODE_KEY);
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
 }
 
+export function isPortfolioSession() {
+  return getStoredAccessMode() === "portfolio";
+}
+
+function assertOperationalAccess() {
+  if (isPortfolioSession()) {
+    throw new Error("Modo portfolio activo: las herramientas reales están bloqueadas hasta iniciar sesión con credenciales.");
+  }
+}
+
 export async function apiRequest(path, options = {}) {
+  assertOperationalAccess();
   const headers = {
     Accept: "application/json",
     ...(options.body ? { "Content-Type": "application/json" } : {}),
@@ -53,6 +88,7 @@ export async function apiRequest(path, options = {}) {
 }
 
 export async function downloadApiFile(path, filename) {
+  assertOperationalAccess();
   const headers = {
     Accept: "application/pdf",
   };
@@ -99,6 +135,7 @@ export async function login(username, password) {
 }
 
 export async function ensureLocalSession() {
+  assertOperationalAccess();
   if (getStoredToken()) {
     return {
       accessToken: getStoredToken(),
@@ -115,6 +152,9 @@ export const caligoApi = {
   request: apiRequest,
   download: downloadApiFile,
   clearSession,
+  getStoredAccessMode,
   getStoredToken,
   getStoredUser,
+  isPortfolioSession,
+  storePortfolioSession,
 };

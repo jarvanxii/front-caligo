@@ -1,13 +1,1 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap");
-
-@import "/src/assets/styles/00-base.css";
-@import "/src/assets/styles/01-header.css";
-@import "/src/assets/styles/02-sidebar.css";
-@import "/src/assets/styles/03-home.css";
-@import "/src/assets/styles/04-module-pages.css";
-@import "/src/assets/styles/05-tool-workspaces.css";
-@import "/src/assets/styles/06-login.css";
-@import "/src/assets/styles/07-home-ascii.css";
-@import "/src/assets/styles/08-network-identity.css";
-@import "/src/assets/styles/09-platform-guide.css";
-@import "/src/assets/styles/90-category-themes.css";

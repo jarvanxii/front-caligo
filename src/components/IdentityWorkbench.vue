@@ -1,22 +1,15 @@
-<template>
+﻿<template>
   <section class="identity-workbench" aria-labelledby="identity-title">
     <div class="identity-workbench__shell">
-      <header class="identity-head">
-        <div>
-          <span class="eyebrow">Redes / Identidad</span>
-          <h1 id="identity-title">WHOAMI</h1>
-          <p>
-            Lectura combinada del navegador, la sesión local y el servidor Caligo para comparar
-            superficie cliente, cabeceras observadas, IP pública del backend y estado VPN.
-          </p>
-        </div>
-
-        <aside class="identity-status" :class="{ 'is-ready': !loading }">
-          <span>Caligo identity</span>
-          <strong>{{ loading ? "Leyendo" : "Preparado" }}</strong>
-          <small>{{ statusMessage }}</small>
-        </aside>
-      </header>
+      <ToolHeroHeader
+        :tool-id="catalogToolId"
+        :title="title"
+        :eyebrow="identityEyebrow"
+        :summary="summary"
+        title-id="identity-title"
+        :logo-tools="heroLogos"
+        :meta="heroMeta"
+      />
 
       <div class="identity-actions">
         <button type="button" :disabled="loading" @click="refreshAll">
@@ -28,7 +21,7 @@
         <button type="button" :disabled="!reportText" @click="downloadJson">
           Descargar JSON
         </button>
-        <button type="button" :disabled="geoLoading" @click="requestGeoLocation">
+        <button v-if="showLocalPanels" type="button" :disabled="geoLoading" @click="requestGeoLocation">
           {{ geoLoading ? "Geolocalizando" : "Reintentar ubicación" }}
         </button>
       </div>
@@ -42,7 +35,7 @@
       </section>
 
       <section class="identity-split">
-        <article class="identity-panel identity-panel--wide">
+        <article v-if="showLocalPanels" class="identity-panel identity-panel--wide">
           <header>
             <span>Cliente</span>
             <strong>Huella local</strong>
@@ -56,7 +49,7 @@
           </div>
         </article>
 
-        <article class="identity-panel">
+        <article v-if="showLocalPanels" class="identity-panel">
           <header>
             <span>Servidor</span>
             <strong>Salida Caligo</strong>
@@ -70,8 +63,8 @@
         </article>
       </section>
 
-      <section class="identity-split">
-        <article class="identity-panel">
+      <section v-if="showLocalPanels" class="identity-split">
+        <article v-if="showLocalPanels" class="identity-panel">
           <header>
             <span>Red</span>
             <strong>Privacidad y conectividad</strong>
@@ -85,7 +78,7 @@
           </div>
         </article>
 
-        <article class="identity-panel">
+        <article v-if="showServerPanels" class="identity-panel">
           <header>
             <span>Dispositivo</span>
             <strong>Hardware y render</strong>
@@ -101,7 +94,7 @@
       </section>
 
       <section class="identity-split">
-        <article class="identity-panel">
+        <article v-if="showLocalPanels" class="identity-panel">
           <header>
             <span>Permisos</span>
             <strong>Superficie sensible</strong>
@@ -115,7 +108,7 @@
           </div>
         </article>
 
-        <article class="identity-panel">
+        <article v-if="showServerPanels" class="identity-panel">
           <header>
             <span>VPN</span>
             <strong>{{ vpnActive ? "Activa" : "No activa" }}</strong>
@@ -160,6 +153,7 @@
 
 <script>
 import { caligoApi } from "@/services/caligoApi";
+import ToolHeroHeader from "@/components/ToolHeroHeader.vue";
 
 const PERMISSION_MAP = [
   { key: "geolocation", label: "Geolocalización" },
@@ -268,6 +262,16 @@ function emptySnapshot() {
 
 export default {
   name: "IdentityWorkbench",
+  components: {
+    ToolHeroHeader,
+  },
+  props: {
+    mode: {
+      type: String,
+      default: "combined",
+      validator: (value) => ["combined", "local", "server"].includes(value),
+    },
+  },
   data() {
     return {
       loading: false,
@@ -282,6 +286,42 @@ export default {
     };
   },
   computed: {
+    title() {
+      if (this.mode === "local") return "WHOAMI Local";
+      if (this.mode === "server") return "WHOAMI Server";
+      return "WHOAMI";
+    },
+    identityEyebrow() {
+      return this.mode === "server" ? "Utilidades / Identidad servidor" : "Utilidades / Identidad local";
+    },
+    catalogToolId() {
+      return this.mode === "server" ? "whoami-server" : "whoami-local";
+    },
+    heroLogos() {
+      return this.mode === "combined" ? ["whoami-local", "whoami-server"] : [this.catalogToolId];
+    },
+    summary() {
+      if (this.mode === "local") {
+        return "Lectura del navegador local: pantalla, viewport, permisos, storage, WebGL, APIs expuestas e IP pública vista desde el cliente.";
+      }
+      if (this.mode === "server") {
+        return "Lectura exclusiva del backend Caligo: IP pública del servidor, cabeceras observadas, interfaces expuestas y estado VPN sin métricas del navegador.";
+      }
+      return "Lectura combinada del navegador, la sesión local y el servidor Caligo para comparar superficie cliente, cabeceras observadas, IP pública del backend y estado VPN.";
+    },
+    heroMeta() {
+      return [
+        { label: "Estado", value: this.loading ? "Leyendo" : "Preparado" },
+        { label: "Cliente", value: this.snapshot.browserPublicIp || "-" },
+        { label: "Servidor", value: this.snapshot.serverPublicIp || "-" },
+      ];
+    },
+    showLocalPanels() {
+      return this.mode !== "server";
+    },
+    showServerPanels() {
+      return this.mode !== "local";
+    },
     vpnActive() {
       return Boolean(this.vpnStatus?.active);
     },
@@ -313,7 +353,7 @@ export default {
       return Object.values(this.permissionState).filter((state) => state === "prompt").length;
     },
     summaryCards() {
-      return [
+      const cards = [
         {
           label: "IP servidor",
           value: this.snapshot.serverPublicIp,
@@ -339,6 +379,13 @@ export default {
           tone: this.exposureScore >= 70 ? "tone-warning" : "tone-neutral",
         },
       ];
+      if (this.mode === "local") {
+        return cards.filter((item) => ["IP cliente", "ExposiciÃ³n local"].includes(item.label));
+      }
+      if (this.mode === "server") {
+        return cards.filter((item) => ["IP servidor", "VPN servidor"].includes(item.label));
+      }
+      return cards;
     },
     identityCards() {
       return [
@@ -407,16 +454,27 @@ export default {
       return interfaces.map((item) => `${item.name}: ${(item.addresses || []).join(", ")}`).join(" | ");
     },
     rawPanels() {
-      return [
+      const panels = [
         { title: "Cliente", badge: "browser", content: this.prettyPrint(this.snapshot) },
         { title: "Servidor", badge: "backend", content: this.prettyPrint(this.serverIdentity || {}) },
         { title: "Permisos", badge: "permissions", content: this.prettyPrint(this.permissionState) },
         { title: "VPN", badge: "vpn", content: this.prettyPrint(this.vpnStatus || {}) },
       ];
+      if (this.mode === "local") {
+        return panels.filter((panel) => ["Cliente", "Permisos"].includes(panel.title));
+      }
+      if (this.mode === "server") {
+        return panels.filter((panel) => ["Servidor", "VPN"].includes(panel.title));
+      }
+      return panels;
     },
   },
   mounted() {
-    this.refreshAll().finally(() => this.requestGeoLocation({ automatic: true }));
+    this.refreshAll().finally(() => {
+      if (this.showLocalPanels) {
+        this.requestGeoLocation({ automatic: true });
+      }
+    });
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("online", this.handleConnectivityChange);
     window.addEventListener("offline", this.handleConnectivityChange);
@@ -431,20 +489,29 @@ export default {
   methods: {
     async refreshAll() {
       this.loading = true;
-      this.statusMessage = "Leyendo cliente y servidor";
+      this.statusMessage = this.mode === "combined" ? "Leyendo cliente y servidor" : `Leyendo ${this.mode === "server" ? "servidor" : "cliente"}`;
       this.snapshot.issues = [];
       this.snapshot.scannedAt = new Date().toLocaleString();
-      this.captureEnvironment();
+      if (this.showLocalPanels) {
+        this.captureEnvironment();
+      }
 
-      await Promise.allSettled([
-        this.fetchBrowserPublicIp(),
-        this.fetchServerIdentity(),
-        this.inspectStorage(),
-        this.inspectPermissions(),
-        this.inspectMediaDevices(),
-        this.inspectBattery(),
-        this.inspectWebGl(),
-      ]);
+      const tasks = [];
+      if (this.showLocalPanels) {
+        tasks.push(
+          this.fetchBrowserPublicIp(),
+          this.inspectStorage(),
+          this.inspectPermissions(),
+          this.inspectMediaDevices(),
+          this.inspectBattery(),
+          this.inspectWebGl(),
+        );
+      }
+      if (this.showServerPanels) {
+        tasks.push(this.fetchServerIdentity());
+      }
+
+      await Promise.allSettled(tasks);
       this.buildReport();
       this.statusMessage = "Lectura actualizada";
       this.loading = false;

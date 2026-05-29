@@ -21,6 +21,13 @@
         <button type="submit" :disabled="loading" :aria-busy="loading.toString()">
           {{ loading ? "Validando" : "Acceder" }}
         </button>
+
+        <div class="login-portfolio-access" aria-label="Acceso de demostración sin usuario">
+          <span>Modo portfolio</span>
+          <button type="button" :disabled="portfolioLoading || loading" @click="enterPortfolio">
+            {{ portfolioLoading ? "Abriendo demostración" : "ACCESO SIN USUARIO" }}
+          </button>
+        </div>
       </form>
     </div>
   </section>
@@ -39,6 +46,7 @@ export default {
       username: "",
       password: "",
       loading: false,
+      portfolioLoading: false,
       error: "",
     };
   },
@@ -59,6 +67,18 @@ export default {
         this.error = error.message || "No se pudo entrar en Caligo";
       } finally {
         this.loading = false;
+      }
+    },
+    async enterPortfolio() {
+      this.portfolioLoading = true;
+      this.error = "";
+      try {
+        await this.$store.dispatch("enterPortfolio");
+        this.$router.push({ name: "home" });
+      } catch (error) {
+        this.error = error.message || "No se pudo abrir el modo portfolio";
+      } finally {
+        this.portfolioLoading = false;
       }
     },
   },
