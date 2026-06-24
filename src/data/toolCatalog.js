@@ -280,16 +280,14 @@ export const catalogGuideSections = Object.entries(groupBy(tools.filter((item) =
       programs: [item.command],
       howToUse: [
         item.usage,
-        "Confirma el alcance autorizado antes de activar ejecución real en backend.",
-        "Cuando el conector está habilitado, Caligo conservará parámetros, estado y salida para poder cambiar de vista sin perder el trabajo.",
+        "Actualmente la vista muestra el estado del apartado sin controles de ejecución.",
       ],
       output: [
         "Estado de disponibilidad del binario en el servidor.",
-        "Parámetros normalizados y comando previsto.",
-        "Salida técnica o evidencia exportable cuando exista conector operativo.",
+        "Aviso claro de desarrollo mientras no exista conector operativo.",
       ],
       notes: [
-        "Vista creada como punto de entrada del laboratorio. La ejecución real debe conectarse con endpoint tokenizado y validación de alcance.",
+        "Pendiente de conector backend funcional.",
       ],
     },
   })),

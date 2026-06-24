@@ -15,7 +15,7 @@
         <article class="catalog-tool__panel catalog-tool__panel--primary">
           <header>
             <span>Operativa</span>
-            <strong>Conector pendiente</strong>
+            <strong>En desarrollo</strong>
           </header>
 
           <p>{{ tool.usage }}</p>
@@ -38,68 +38,38 @@
 
         <article class="catalog-tool__panel catalog-tool__notice">
           <header>
-            <span>En desarrollo</span>
-            <strong>Formulario desactivado</strong>
+            <span>Estado</span>
+            <strong>Controles retirados</strong>
           </header>
 
           <div class="catalog-tool__notice-body">
             <span class="catalog-tool__notice-mark" aria-hidden="true">{{ tool.code }}</span>
             <div>
-              <h2>Este apartado todavía no funciona desde Caligo.</h2>
+              <h2>Apartado en desarrollo</h2>
               <p>
-                La herramienta está registrada en el catálogo, pero aún no tiene un conector operativo,
-                validaciones de alcance ni job persistente en el backend. Para evitar falsas expectativas,
-                el formulario queda apagado hasta completar esa integración.
+                Esta pantalla todavía no ejecuta acciones reales desde Caligo. He quitado los campos
+                y botones hasta que el conector del backend esté listo.
               </p>
             </div>
           </div>
 
           <dl class="catalog-tool__dev-status">
             <div>
+              <dt>Programa</dt>
+              <dd>{{ tool.command }}</dd>
+            </div>
+            <div>
               <dt>Conector</dt>
               <dd>Pendiente</dd>
             </div>
             <div>
-              <dt>Servidor</dt>
+              <dt>Inventario</dt>
               <dd>{{ serverStateLabel }}</dd>
             </div>
           </dl>
+
+          <p class="catalog-tool__server-note">{{ serverHint }}</p>
         </article>
-      </section>
-
-      <section class="catalog-tool__panel catalog-tool__panel--wide">
-        <header>
-          <span>Plan de integración</span>
-          <strong>Bloqueado hasta backend</strong>
-        </header>
-
-        <div class="catalog-tool__execution">
-          <article>
-            <span>Estado visible</span>
-            <strong>Desarrollo activo</strong>
-            <small>El usuario ve una explicación clara en lugar de un formulario que no ejecuta nada real.</small>
-          </article>
-          <article>
-            <span>Backend necesario</span>
-            <strong>Endpoint JWT + job persistente</strong>
-            <small>Validación de alcance, rate limit, redacción de secretos y salida normalizada.</small>
-          </article>
-          <article>
-            <span>Programa servidor</span>
-            <strong>{{ serverStateLabel }}</strong>
-            <small>{{ serverHint }}</small>
-          </article>
-        </div>
-
-        <ol class="catalog-tool__roadmap" aria-label="Siguientes pasos técnicos">
-          <li v-for="item in roadmapItems" :key="item.title">
-            <span>{{ item.step }}</span>
-            <div>
-              <strong>{{ item.title }}</strong>
-              <p>{{ item.copy }}</p>
-            </div>
-          </li>
-        </ol>
       </section>
     </div>
   </section>
@@ -211,31 +181,12 @@ export default {
     serverHint() {
       if (!this.inventoryLoaded) return "Caligo está consultando el inventario del servidor.";
       if (this.serverTool?.installed) {
-        return "El binario existe en el servidor, pero falta exponerlo con una operativa segura.";
+        return "El binario existe en el servidor. La vista se activará cuando tenga operativa real.";
       }
       if (this.serverTool) {
-        return "Primero habrá que instalarlo o declararlo correctamente antes de crear la ejecución.";
+        return "Antes de activar esta pantalla hay que instalar o declarar el programa en el servidor.";
       }
-      return "Esta herramienta aún no está mapeada en el inventario técnico del backend.";
-    },
-    roadmapItems() {
-      return [
-        {
-          step: "01",
-          title: "Contrato de ejecución",
-          copy: `Definir /api/catalog/${this.tool.id}/runs o moverla a un módulo operativo existente.`,
-        },
-        {
-          step: "02",
-          title: "Guardarraíles",
-          copy: "Añadir alcance autorizado, límites de intensidad, auditoría y salida sin secretos.",
-        },
-        {
-          step: "03",
-          title: "Interfaz real",
-          copy: "Reactivar el formulario sólo cuando el job, historial y errores estén conectados al backend.",
-        },
-      ];
+      return "Esta herramienta aún no aparece en el inventario del backend.";
     },
   },
   mounted() {

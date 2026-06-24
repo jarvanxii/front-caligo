@@ -44,7 +44,6 @@
 
 .catalog-tool__identity p,
 .catalog-tool__panel p,
-.catalog-tool__execution small,
 .catalog-tool__facts dd {
   color: rgba(213, 227, 229, 0.78);
 }
@@ -70,8 +69,7 @@
 
 .catalog-tool__status span,
 .catalog-tool__panel header span,
-.catalog-tool__facts dt,
-.catalog-tool__execution span {
+.catalog-tool__facts dt {
   color: color-mix(in srgb, var(--module-accent, #65f2d3) 70%, #ffffff 30%);
   font-family: "Space Grotesk", Inter, sans-serif;
   font-size: 0.72rem;
@@ -99,10 +97,6 @@
   padding: 20px;
   display: grid;
   gap: 18px;
-}
-
-.catalog-tool__panel--wide {
-  min-height: 280px;
 }
 
 .catalog-tool__notice {
@@ -163,7 +157,7 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin: 0;
 }
@@ -192,6 +186,14 @@
   margin-top: 6px;
   color: rgba(248, 252, 255, 0.92);
   font-weight: 800;
+}
+
+.catalog-tool__server-note {
+  position: relative;
+  z-index: 1;
+  padding: 14px 16px;
+  border-left: 3px solid color-mix(in srgb, var(--module-accent, #65f2d3) 72%, white 10%);
+  background: color-mix(in srgb, var(--module-accent, #65f2d3) 10%, rgba(255, 255, 255, 0.025));
 }
 
 .catalog-tool__panel header {
@@ -234,137 +236,6 @@
   word-break: break-word;
 }
 
-.catalog-tool label {
-  display: grid;
-  gap: 8px;
-  color: rgba(239, 246, 247, 0.9);
-  font-weight: 700;
-}
-
-.catalog-tool input,
-.catalog-tool select,
-.catalog-tool textarea {
-  width: 100%;
-  border: 1px solid color-mix(in srgb, var(--module-accent, #65f2d3) 24%, rgba(255, 255, 255, 0.12));
-  background: rgba(0, 0, 0, 0.36);
-  color: rgba(255, 255, 255, 0.94);
-  padding: 12px 14px;
-  font: inherit;
-  outline: none;
-}
-
-.catalog-tool textarea {
-  resize: vertical;
-}
-
-.catalog-tool input:focus,
-.catalog-tool select:focus,
-.catalog-tool textarea:focus {
-  border-color: color-mix(in srgb, var(--module-accent, #65f2d3) 78%, white 22%);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--module-accent, #65f2d3) 20%, transparent);
-}
-
-.catalog-tool__switch {
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-}
-
-.catalog-tool__switch input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--module-accent, #65f2d3);
-}
-
-.catalog-tool button {
-  border: 1px solid color-mix(in srgb, var(--module-accent, #65f2d3) 42%, rgba(255, 255, 255, 0.12));
-  background: linear-gradient(135deg, color-mix(in srgb, var(--module-accent, #65f2d3) 22%, transparent), rgba(255, 255, 255, 0.04));
-  color: rgba(255, 255, 255, 0.94);
-  padding: 13px 16px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.catalog-tool button:disabled {
-  cursor: not-allowed;
-  opacity: 0.46;
-}
-
-.catalog-tool__execution {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.catalog-tool__execution article {
-  min-height: 120px;
-  padding: 16px;
-  display: grid;
-  gap: 8px;
-  align-content: start;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.catalog-tool__execution strong {
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.catalog-tool pre {
-  overflow: auto;
-  min-height: 160px;
-  margin: 0;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.34);
-  color: rgba(201, 255, 235, 0.88);
-  font-size: 0.84rem;
-  line-height: 1.55;
-}
-
-.catalog-tool__roadmap {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.catalog-tool__roadmap li {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 12px;
-  align-items: start;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.catalog-tool__roadmap li > span {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, var(--module-accent, #65f2d3) 34%, rgba(255, 255, 255, 0.12));
-  color: color-mix(in srgb, var(--module-accent, #65f2d3) 72%, white 28%);
-  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 0.72rem;
-  font-weight: 900;
-}
-
-.catalog-tool__roadmap strong {
-  display: block;
-  color: rgba(248, 252, 255, 0.94);
-  font-family: "Space Grotesk", Inter, sans-serif;
-  font-size: 0.98rem;
-  line-height: 1.2;
-}
-
-.catalog-tool__roadmap p {
-  margin: 5px 0 0;
-  color: rgba(213, 227, 229, 0.74);
-  line-height: 1.55;
-}
-
 @media (max-width: 980px) {
   .catalog-tool {
     padding: 22px;
@@ -372,7 +243,6 @@
 
   .catalog-tool__head,
   .catalog-tool__control,
-  .catalog-tool__execution,
   .catalog-tool__facts {
     grid-template-columns: 1fr;
   }

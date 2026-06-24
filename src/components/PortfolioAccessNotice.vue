@@ -7,8 +7,7 @@
     <div class="portfolio-access-notice__copy">
       <span>Acceso sin token</span>
       <p>
-        Vista preparada para revisión técnica y recruiting. Puedes explorar arquitectura, flujos y pantallas, pero la ejecución
-        real de herramientas queda bloqueada hasta iniciar sesión con credenciales.
+        Puedes revisar las pantallas, pero las herramientas reales requieren iniciar sesión con credenciales.
       </p>
     </div>
     <router-link class="portfolio-access-notice__link" :to="{ name: 'home' }">Volver al portfolio</router-link>

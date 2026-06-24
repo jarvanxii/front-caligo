@@ -144,7 +144,7 @@ function guideFor(tool) {
     engine: tool.command,
     input: tool.implemented
       ? "Objetivo, perfil, fichero o parámetros validados por la vista."
-      : "Objetivo autorizado o parámetros propios de la herramienta antes de habilitar el conector.",
+      : "Apartado en desarrollo.",
     purpose: tool.purpose,
     usage: tool.usage,
     guide: {
@@ -155,13 +155,18 @@ function guideFor(tool) {
         "Confirma siempre que el objetivo pertenece al laboratorio o a un alcance autorizado.",
         tool.implemented
           ? "Ejecuta desde la vista dedicada; Caligo conserva estado cuando la herramienta usa jobs persistentes."
-          : "La vista existe como punto de entrada y debe conectarse a un endpoint tokenizado antes de ejecutar acciones reales.",
+          : "Actualmente la vista sólo muestra el estado del apartado.",
       ],
-      output: [
-        "Parámetros normalizados y estado operativo.",
-        "Salida técnica, evidencia o resumen accionable cuando exista conector.",
-        "Errores de validación, permisos o disponibilidad del binario en el servidor.",
-      ],
+      output: tool.implemented
+        ? [
+          "Parámetros normalizados y estado operativo.",
+          "Salida técnica, evidencia o resumen accionable.",
+          "Errores de validación, permisos o disponibilidad del binario en el servidor.",
+        ]
+        : [
+          "Aviso claro de desarrollo.",
+          "Estado del programa en el inventario del servidor.",
+        ],
       notes: [
         tool.implemented ? "Herramienta operativa o parcialmente operativa en Caligo." : "Pendiente de conector backend funcional.",
       ],
