@@ -19,9 +19,13 @@
             <strong>ANALYZE</strong>
           </header>
 
-          <label>
-            Fichero a analizar
-            <input type="file" accept="*/*" @change="handleAnalyzeFile" />
+          <label class="stego-file-field">
+            <span>Fichero a analizar</span>
+            <span class="stego-file-control">
+              <span class="stego-file-button">Seleccionar</span>
+              <span class="stego-file-name">{{ analyze.file?.name || "Sin archivo" }}</span>
+              <input class="stego-file-native" type="file" accept="*/*" @change="handleAnalyzeFile" />
+            </span>
           </label>
 
           <div v-if="analyze.file" class="stego-file-pill">
@@ -41,9 +45,13 @@
             <strong>METADATA</strong>
           </header>
 
-          <label>
-            Fichero a inspeccionar
-            <input type="file" accept="*/*" @change="handleMetadataAnalyzeFile" />
+          <label class="stego-file-field">
+            <span>Fichero a inspeccionar</span>
+            <span class="stego-file-control">
+              <span class="stego-file-button">Seleccionar</span>
+              <span class="stego-file-name">{{ metadataAnalyze.file?.name || "Sin archivo" }}</span>
+              <input class="stego-file-native" type="file" accept="*/*" @change="handleMetadataAnalyzeFile" />
+            </span>
           </label>
 
           <div v-if="metadataAnalyze.file" class="stego-file-pill">
@@ -63,9 +71,13 @@
             <strong>WRITE</strong>
           </header>
 
-          <label>
-            Fichero base
-            <input type="file" accept="*/*" @change="handleMetadataEditFile" />
+          <label class="stego-file-field">
+            <span>Fichero base</span>
+            <span class="stego-file-control">
+              <span class="stego-file-button">Seleccionar</span>
+              <span class="stego-file-name">{{ metadataEdit.file?.name || "Sin archivo" }}</span>
+              <input class="stego-file-native" type="file" accept="*/*" @change="handleMetadataEditFile" />
+            </span>
           </label>
 
           <div v-if="metadataEdit.file" class="stego-file-pill">
@@ -130,9 +142,13 @@
             <strong>EMBED</strong>
           </header>
 
-          <label>
-            Fichero portador
-            <input type="file" accept="*/*" @change="handleEmbedCarrier" />
+          <label class="stego-file-field">
+            <span>Fichero portador</span>
+            <span class="stego-file-control">
+              <span class="stego-file-button">Seleccionar</span>
+              <span class="stego-file-name">{{ embed.carrier?.name || "Sin archivo" }}</span>
+              <input class="stego-file-native" type="file" accept="*/*" @change="handleEmbedCarrier" />
+            </span>
           </label>
 
           <div class="stego-field-grid">
@@ -157,9 +173,13 @@
             </label>
           </div>
 
-          <label v-if="embed.payloadSource === 'file'">
-            Fichero a ocultar
-            <input type="file" accept="*/*" @change="handleEmbedPayloadFile" />
+          <label v-if="embed.payloadSource === 'file'" class="stego-file-field">
+            <span>Fichero a ocultar</span>
+            <span class="stego-file-control">
+              <span class="stego-file-button">Seleccionar</span>
+              <span class="stego-file-name">{{ embed.payloadFile?.name || "Sin archivo" }}</span>
+              <input class="stego-file-native" type="file" accept="*/*" @change="handleEmbedPayloadFile" />
+            </span>
           </label>
 
           <label v-if="embed.payloadSource !== 'file'">
@@ -186,9 +206,13 @@
             <strong>EXTRACT</strong>
           </header>
 
-          <label>
-            Fichero con datos ocultos
-            <input type="file" accept="*/*" @change="handleExtractFile" />
+          <label class="stego-file-field">
+            <span>Fichero con datos ocultos</span>
+            <span class="stego-file-control">
+              <span class="stego-file-button">Seleccionar</span>
+              <span class="stego-file-name">{{ extract.file?.name || "Sin archivo" }}</span>
+              <input class="stego-file-native" type="file" accept="*/*" @change="handleExtractFile" />
+            </span>
           </label>
 
           <div v-if="extract.file" class="stego-file-pill">
@@ -563,17 +587,17 @@ export default {
         let notes = [];
 
         if (mode === "png-text") {
-          if (type.label !== "PNG") throw new Error("PNG tEXt requiere un fichero PNG valido.");
+          if (type.label !== "PNG") throw new Error("PNG tEXt requiere un fichero PNG válido.");
           outputBytes = writePngMetadata(bytes, fields);
           outputBlob = new Blob([outputBytes], { type: "image/png" });
           outputName = outputFileName(file.name, "caligo-meta", "png");
           notes = ["Se insertaron chunks tEXt antes de IEND.", "La imagen no se recomprime."];
         } else if (mode === "jpeg-comment") {
-          if (type.label !== "JPEG") throw new Error("JPEG COM requiere un fichero JPEG valido.");
+          if (type.label !== "JPEG") throw new Error("JPEG COM requiere un fichero JPEG válido.");
           outputBytes = writeJpegComment(bytes, fields);
           outputBlob = new Blob([outputBytes], { type: file.type || "image/jpeg" });
           outputName = outputFileName(file.name, "caligo-meta", extensionFromName(file.name) || "jpg");
-          notes = ["Se inserto un segmento COM tras SOI.", "No se reescriben pixeles ni EXIF binario."];
+          notes = ["Se insertó un segmento COM tras SOI.", "No se reescriben píxeles ni EXIF binario."];
         } else {
           const sidecar = JSON.stringify({
             source: {
@@ -587,7 +611,7 @@ export default {
           outputBytes = textToBytes(sidecar);
           outputBlob = new Blob([outputBytes], { type: "application/json;charset=utf-8" });
           outputName = outputFileName(file.name, "metadata", "json");
-          notes = ["Formato no editado directamente; se genero sidecar JSON.", "Util para evidencia o carga posterior en herramientas nativas."];
+          notes = ["Formato no editado directamente; se generó sidecar JSON.", "Útil para evidencia o carga posterior en herramientas nativas."];
         }
 
         this.metadataEdit.downloadUrl = URL.createObjectURL(outputBlob);
@@ -597,7 +621,7 @@ export default {
           tone: "success",
           badge: mode,
           title: "Artefacto generado",
-          body: `Se preparo ${outputName} con metadatos controlados de laboratorio.`,
+          body: `Se preparó ${outputName} con metadatos controlados de laboratorio.`,
           metrics: [
             { label: "Modo", value: mode, note: this.metadataEdit.mode === "auto" ? "auto" : "manual" },
             { label: "Entrada", value: type.label, note: formatBytes(file.size) },
@@ -650,7 +674,7 @@ export default {
           outputBlob = await canvasToPngBlob(image.canvas);
           outputName = outputFileName(carrier.name, "caligo-lsb", "png");
         } else if (method === "png-text") {
-          if (type.label !== "PNG") throw new Error("PNG tEXt requiere un portador PNG valido.");
+          if (type.label !== "PNG") throw new Error("PNG tEXt requiere un portador PNG válido.");
           outputBytes = insertPngTextPacket(carrierBytes, packet);
           outputBlob = new Blob([outputBytes], { type: "image/png" });
           outputName = outputFileName(carrier.name, "caligo-text", "png");
@@ -667,7 +691,7 @@ export default {
           tone: "success",
           badge: method,
           title: "Payload incrustado",
-          body: `Se genero ${outputName} con formato ${MAGIC_TEXT}.`,
+          body: `Se generó ${outputName} con formato ${MAGIC_TEXT}.`,
           metrics: [
             { label: "Portador", value: type.label, note: carrier.name },
             { label: "Payload", value: formatBytes(payload.bytes.length), note: payload.name },

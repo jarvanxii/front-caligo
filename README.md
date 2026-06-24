@@ -1,8 +1,8 @@
-# Caligo Frontend
+﻿# Caligo Frontend
 
-Frontend Vue 3 de Caligo. La aplicación funciona como cabina de mando para los módulos de ciberseguridad y se conecta al backend Spring local mediante JWT.
+Frontend Vue 3 de Caligo. La aplicaciÃ³n funciona como cabina de mando para los mÃ³dulos de ciberseguridad y se conecta al backend Spring local mediante JWT.
 
-Los módulos más avanzados ahora mismo están en **Reconocimiento**, **OSINT**, **Vulnerabilidades**, **Contraseñas**, **Redes** y **Utilidades**. Reconocimiento agrupa Caligo Intel, Nmap, OpenVAS y reconocimiento web/TLS. OSINT integra Caligo People, Sherlock, Maigret, Social Analyzer, Holehe, theHarvester y utilidades de exposición autorizada para contacto, brechas y documentos públicos contra endpoints JWT. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto, sqlmap, Medusa/Ncrack y laboratorios AD/Cloud. Contraseñas integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor. Redes queda para VPNs, captura, tráfico, pivoting, WiFi y Bluetooth; Utilidades queda para identidad local/servidor, conectividad básica y sockets.
+Los mÃ³dulos mÃ¡s avanzados ahora mismo estÃ¡n en **Reconocimiento**, **OSINT**, **Vulnerabilidades**, **ContraseÃ±as**, **Redes** y **Utilidades**. Reconocimiento agrupa Caligo Intel, Nmap, OpenVAS y reconocimiento web/TLS. OSINT integra Caligo People, Sherlock, Maigret, Social Analyzer, Holehe, theHarvester, git-dumper y utilidades de exposiciÃ³n autorizada para contacto, brechas y documentos pÃºblicos contra endpoints JWT. Vulnerabilidades agrupa Metasploit, Hydra, Nuclei, Searchsploit, Nikto, sqlmap, Medusa/Ncrack y laboratorios AD/Cloud. ContraseÃ±as integra John the Ripper, Hashcat, hashID, Crunch, CeWL e inventario de wordlists del servidor. Redes queda para VPNs, captura, trÃ¡fico, pivoting, WiFi y Bluetooth; Utilidades queda para identidad local/servidor, conectividad bÃ¡sica y sockets.
 
 ## Stack
 
@@ -71,7 +71,6 @@ front-caligo/
         EmailExposureView.vue
         PhoneLookupView.vue
         DomainContactsView.vue
-        EmailBreachView.vue
         PasswordExposureView.vue
         MetadataExposureView.vue
         PublicFilesExposureView.vue
@@ -108,7 +107,7 @@ front-caligo/
         WhoamiView.vue
 ```
 
-## Ejecución local
+## EjecuciÃ³n local
 
 Instalar dependencias:
 
@@ -159,51 +158,51 @@ npm run dev -- --host 0.0.0.0 --port 5174
 
 ## Login local
 
-El login pide usuario y contraseña contra `/api/auth/login`. No hay acceso silencioso ni credenciales por defecto desde el frontend.
+El login pide usuario y contraseÃ±a contra `/api/auth/login`. No hay acceso silencioso ni credenciales por defecto desde el frontend.
 
-En el entorno del servidor 2 existe el usuario bootstrap operativo `Gandalf`; la contraseña no se versiona y su valor en MariaDB se guarda como BCrypt.
+En el entorno del servidor 2 existe el usuario bootstrap operativo `Gandalf`; la contraseÃ±a no se versiona y su valor en MariaDB se guarda como BCrypt.
 
 El JWT se guarda en `localStorage`:
 
 - `caligo.jwt`
 - `caligo.user`
 
-Las peticiones protegidas se envían con:
+Las peticiones protegidas se envÃ­an con:
 
 ```text
 Authorization: Bearer <token>
 ```
 
-## Módulos del header
+## MÃ³dulos del header
 
 Orden actual:
 
 1. Reconocimiento
 2. OSINT
 3. Vulnerabilidades
-4. Contraseñas
-5. Codificación
-6. Esteganografía
+4. ContraseÃ±as
+5. CodificaciÃ³n
+6. EsteganografÃ­a
 7. Redes
 8. Utilidades
 9. Reversing
 
-`Home` no muestra barra lateral. El resto de vistas muestran una barra lateral contextual con herramientas útiles, sin entrada de resumen o panorámica. La barra lateral soporta secciones desplegables mediante `sidebarSections` en `src/data/modulePages.js`, manteniendo `utilities` como lista plana para las tarjetas internas del módulo.
+`Home` no muestra barra lateral. El resto de vistas muestran una barra lateral contextual con herramientas Ãºtiles, sin entrada de resumen o panorÃ¡mica. La barra lateral soporta secciones desplegables mediante `sidebarSections` en `src/data/modulePages.js`, manteniendo `utilities` como lista plana para las tarjetas internas del mÃ³dulo.
 
-Las herramientas de `URLs`, `Nmap`, `OpenVAS` y `testssl.sh` cuelgan de `Reconocimiento`; `Caligo People`, `Sherlock`, `Maigret`, `Social Analyzer`, `Holehe`, `theHarvester`, `Email Exposure`, `Phone Lookup`, `Domain Contacts`, `Email Breach`, `Password Exposure`, `Metadata Exposure` y `Public Files` cuelgan de `OSINT`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto`, `sqlmap`, `Medusa`, `Ncrack`, `Impacket`, `NetExec`, `BloodHound`, `Certipy`, `Kerbrute` y `enum4linux-ng` cuelgan de `Vulnerabilidades`; `WireGuard`, `OpenVPN`, captura de tráfico, pivoting, proxies, WiFi y Bluetooth cuelgan de `Redes`; `WHOAMI`, `Ping`, `Traceroute`, `MTR`, `Netcat` y `Socat` cuelgan de `Utilidades`. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el análisis inteligente.
+Las herramientas de `URLs`, `Nmap`, `OpenVAS` y `testssl.sh` cuelgan de `Reconocimiento`; `Caligo People`, `Sherlock`, `Maigret`, `Social Analyzer`, `Holehe`, `theHarvester`, `Email Exposure`, `Phone Lookup`, `Domain Contacts`, `Password Exposure`, `Metadata Exposure`, `Public Files` y `git-dumper` cuelgan de `OSINT`; `Metasploit`, `Hydra`, `Nuclei`, `Searchsploit`, `Nikto`, `sqlmap`, `Medusa`, `Ncrack`, `Impacket`, `NetExec`, `BloodHound`, `Certipy`, `Kerbrute` y `enum4linux-ng` cuelgan de `Vulnerabilidades`; `WireGuard`, `OpenVPN`, captura de trÃ¡fico, pivoting, proxies, WiFi y Bluetooth cuelgan de `Redes`; `WHOAMI`, `Ping`, `Traceroute`, `MTR`, `Netcat` y `Socat` cuelgan de `Utilidades`. En `Reconocimiento`, `URLs` queda como `Caligo Intel` para evitar duplicar las herramientas que ya ejecuta el anÃ¡lisis inteligente.
 
 El header muestra, junto a la ruleta de ajustes, dos lecturas de identidad:
 
-- `IP SERVIDOR`: IP pública de salida del backend Caligo, leída desde `/api/network/identity`.
-- `IP CLIENTE`: IP pública del navegador si `api.ipify.org` responde; si no, se mantiene la IP observada por el backend.
+- `IP SERVIDOR`: IP pÃºblica de salida del backend Caligo, leÃ­da desde `/api/network/identity`.
+- `IP CLIENTE`: IP pÃºblica del navegador si `api.ipify.org` responde; si no, se mantiene la IP observada por el backend.
 
-La lectura se refresca al cargar, cada 30 segundos y cuando la vista de VPN emite cambios de túnel.
+La lectura se refresca al cargar, cada 30 segundos y cuando la vista de VPN emite cambios de tÃºnel.
 
 ## Ajustes y actualizaciones
 
-La ruleta del header abre el menú de ajustes. La opción **Actualizaciones**
-muestra un modal con el inventario de herramientas del servidor, su versión
-actual y un botón de actualización por herramienta.
+La ruleta del header abre el menÃº de ajustes. La opciÃ³n **Actualizaciones**
+muestra un modal con el inventario de herramientas del servidor, su versiÃ³n
+actual y un botÃ³n de actualizaciÃ³n por herramienta.
 
 Endpoints usados:
 
@@ -212,7 +211,7 @@ Endpoints usados:
 | Inventario versionado | `GET /api/system/tools` |
 | Actualizar herramienta | `POST /api/system/tools/{id}/update` |
 
-El inventario incluye también herramientas de red/VPN cuando el backend las detecta: `wireguard`, `openvpn` y `resolvconf`.
+El inventario incluye tambiÃ©n herramientas de red/VPN cuando el backend las detecta: `wireguard`, `openvpn` y `resolvconf`.
 
 Las actualizaciones se ejecutan en el backend con una allowlist cerrada y
 requieren usuario `ADMIN`. Si el servidor no tiene permisos `sudo -n` para el
@@ -250,7 +249,7 @@ Utilidades visibles dentro del desplegable `URLs` de la barra lateral de Reconoc
 
 - Caligo Intel
 
-Las vistas URL individuales siguen existiendo como piezas internas, pero no se muestran en la barra lateral porque `Caligo Intel` ya une DNS, parser, HTTP, TLS, reputación, historial, archivos públicos, endpoints y herramientas locales.
+Las vistas URL individuales siguen existiendo como piezas internas, pero no se muestran en la barra lateral porque `Caligo Intel` ya une DNS, parser, HTTP, TLS, reputaciÃ³n, historial, archivos pÃºblicos, endpoints y herramientas locales.
 
 ## OSINT
 
@@ -266,10 +265,12 @@ src/views/osint/TheHarvesterView.vue
 src/views/osint/EmailExposureView.vue
 src/views/osint/PhoneLookupView.vue
 src/views/osint/DomainContactsView.vue
-src/views/osint/EmailBreachView.vue
 src/views/osint/PasswordExposureView.vue
 src/views/osint/MetadataExposureView.vue
 src/views/osint/PublicFilesExposureView.vue
+src/views/osint/GitDumperView.vue
+src/views/osint/SpiderFootView.vue
+src/views/osint/TruffleHogView.vue
 src/components/OsintToolWorkbench.vue
 src/components/OsintExposureWorkbench.vue
 src/data/osintTools.js
@@ -289,32 +290,36 @@ Rutas:
 | Email Exposure | `/osint/contacto/email-exposure` |
 | Phone Lookup | `/osint/contacto/phone-lookup` |
 | Domain Contacts | `/osint/contacto/domain-contacts` |
-| Email Breach | `/osint/brechas/email` |
 | Password Exposure | `/osint/brechas/password` |
 | Metadata Exposure | `/osint/documentos/metadatos` |
 | Public Files | `/osint/documentos/archivos-publicos` |
+| git-dumper | `/tool/git-dumper` |
+| SpiderFoot | `/tool/spiderfoot` |
+| TruffleHog | `/tool/trufflehog` |
 
-`Caligo People` acepta nombre real, pista opcional y plataformas para devolver candidatos públicos de LinkedIn y redes sociales. Las herramientas CLI se ejecutan en el servidor y usan jobs persistentes: puedes cambiar de vista y volver a la herramienta para recuperar progreso, logs y resultados.
+`Caligo People` acepta nombre real, pista opcional y plataformas para devolver candidatos pÃºblicos de LinkedIn y redes sociales. `Email Exposure`, `Domain Contacts`, `git-dumper`, `SpiderFoot` y `TruffleHog` tienen interfaz propia, no workbench genÃ©rico: cada una muestra controles, presets, salida y mÃ©tricas adaptadas a su funciÃ³n. Las herramientas CLI se ejecutan en el servidor y usan jobs persistentes: puedes cambiar de vista y volver a la herramienta para recuperar progreso, logs y resultados.
 
-Las herramientas de exposición autorizada usan `OsintExposureWorkbench`: cada vista tiene formulario propio, confirmación de alcance, salida persistente en `localStorage` y render de hallazgos, recursos, consultas y recomendaciones. No están diseñadas para descubrir datos privados de terceros: trabajan con datos aportados por el usuario, dominios autorizados o comprobaciones defensivas de exposición.
+Las herramientas de exposiciÃ³n autorizada usan `OsintExposureWorkbench`: cada vista tiene formulario propio, confirmaciÃ³n de alcance, salida persistente en `localStorage` y render de hallazgos, recursos, consultas y recomendaciones. No estÃ¡n diseÃ±adas para descubrir datos privados de terceros: trabajan con datos aportados por el usuario, dominios autorizados o comprobaciones defensivas de exposiciÃ³n.
 
 Endpoints usados:
 
 | Uso | Endpoint |
 | --- | --- |
 | Inventario OSINT | `GET /api/osint/capabilities` |
-| Búsqueda por nombre | `POST /api/osint/profile-search/search` |
+| BÃºsqueda por nombre | `POST /api/osint/profile-search/search` |
 | Sherlock | `POST /api/osint/sherlock/runs` |
 | Maigret | `POST /api/osint/maigret/runs` |
 | Social Analyzer | `POST /api/osint/social-analyzer/runs` |
 | Holehe | `POST /api/osint/holehe/runs` |
 | theHarvester | `POST /api/osint/theharvester/runs` |
+| git-dumper | `POST /api/osint/git-dumper/runs` |
+| SpiderFoot | `POST /api/osint/spiderfoot/runs` |
+| TruffleHog | `POST /api/osint/trufflehog/runs` |
 | Estado job | `GET /api/osint/{tool}/runs/{id}` |
-| Capacidades de exposición | `GET /api/osint/exposure/capabilities` |
+| Capacidades de exposiciÃ³n | `GET /api/osint/exposure/capabilities` |
 | Email Exposure | `POST /api/osint/exposure/email` |
 | Phone Lookup | `POST /api/osint/exposure/phone` |
 | Domain Contacts | `POST /api/osint/exposure/domain-contacts` |
-| Email Breach | `POST /api/osint/exposure/email-breach` |
 | Password Exposure | `POST /api/osint/exposure/password` |
 | Metadata Exposure | `POST /api/osint/exposure/metadata` |
 | Public Files | `POST /api/osint/exposure/public-files` |
@@ -337,10 +342,10 @@ Rutas:
 | WireGuard | `/redes/vpns/wireguard` |
 | OpenVPN | `/redes/vpns/openvpn` |
 
-`Redes` concentra operativa de salida y tráfico: VPNs, captura, análisis PCAP,
+`Redes` concentra operativa de salida y trÃ¡fico: VPNs, captura, anÃ¡lisis PCAP,
 proxies, pivoting, WiFi y Bluetooth. `VPNs` lee perfiles WireGuard/OpenVPN del servidor, permite elegir perfil por
-proveedor/país/ciudad si los metadatos existen, conecta/desconecta mediante el
-backend y refresca automáticamente las IPs del header al cambiar el túnel.
+proveedor/paÃ­s/ciudad si los metadatos existen, conecta/desconecta mediante el
+backend y refresca automÃ¡ticamente las IPs del header al cambiar el tÃºnel.
 
 ## Utilidades
 
@@ -360,7 +365,7 @@ Rutas:
 | WHOAMI Local | `/utilidades/identidad/whoami-local` |
 | WHOAMI Server | `/utilidades/identidad/whoami-server` |
 
-`WHOAMI` adapta la utilidad de **La Identidad de Gollum** al estilo Caligo y queda separada en dos lecturas: la local mide navegador, pantalla, permisos, storage, cookies, WebGL, media devices e IP pública del cliente; la de servidor mide IP pública del backend, interfaces, cabeceras observadas, sistema y estado VPN. Las utilidades de conectividad (`Ping`, `Traceroute`, `MTR`, `Netcat`, `Socat`) se mantienen como vistas de catálogo hasta conectar endpoints específicos.
+`WHOAMI` adapta la utilidad de **La Identidad de Gollum** al estilo Caligo y queda separada en dos lecturas: la local mide navegador, pantalla, permisos, storage, cookies, WebGL, media devices e IP pÃºblica del cliente; la de servidor mide IP pÃºblica del backend, interfaces, cabeceras observadas, sistema y estado VPN. Las utilidades de conectividad (`Ping`, `Traceroute`, `MTR`, `Netcat`, `Socat`) se mantienen como vistas de catÃ¡logo hasta conectar endpoints especÃ­ficos.
 
 Endpoints usados:
 
@@ -399,11 +404,11 @@ La vista no ejecuta herramientas en navegador. Siempre:
 - Muestra resultados normalizados cuando el backend los devuelve.
 - Permite descargar un PDF de resultados al terminar el job.
 
-Nmap expone perfil, tipo de escaneo, modo de puertos, top ports/lista custom, timing, detección de versiones, NSE seguro, OS detect, `-Pn`, traceroute y reintentos.
+Nmap expone perfil, tipo de escaneo, modo de puertos, top ports/lista custom, timing, detecciÃ³n de versiones, NSE seguro, OS detect, `-Pn`, traceroute y reintentos.
 
-OpenVAS expone perfil Greenbone, port list y alive test. Si GVM todavía no tiene feeds, socket o credenciales, la pantalla lo muestra como motor pendiente en vez de lanzar una tarea falsa.
+OpenVAS expone perfil Greenbone, port list y alive test. Si GVM todavÃ­a no tiene feeds, socket o credenciales, la pantalla lo muestra como motor pendiente en vez de lanzar una tarea falsa.
 Cuando el backend devuelve entidades reales de GVM, la vista respeta los defaults
-del servidor para evitar seleccionar por accidente scanners no válidos como `CVE`
+del servidor para evitar seleccionar por accidente scanners no vÃ¡lidos como `CVE`
 en tareas OpenVAS normales.
 
 ## Hydra dentro de Vulnerabilidades
@@ -426,22 +431,22 @@ Endpoints:
 | Uso | Endpoint |
 | --- | --- |
 | Capacidades, servicios y wordlists | `GET /api/bruteforce/hydra/capabilities` |
-| Crear ejecución | `POST /api/bruteforce/hydra/runs` |
+| Crear ejecuciÃ³n | `POST /api/bruteforce/hydra/runs` |
 | Polling de job | `GET /api/bruteforce/hydra/runs/{id}` |
 | Historial de usuario | `GET /api/bruteforce/hydra/runs` |
 
 La pantalla permite:
 
 - Seleccionar servicio Hydra, puerto y SSL/TLS.
-- Usar usuario único, lista pegada o wordlist del servidor.
-- Usar password única, lista pegada, wordlist del servidor o combo `login:password`.
-- Configurar `http-post-form`/`http-get-form` con ruta, parámetros y condición `F=`/`S=`.
+- Usar usuario Ãºnico, lista pegada o wordlist del servidor.
+- Usar password Ãºnica, lista pegada, wordlist del servidor o combo `login:password`.
+- Configurar `http-post-form`/`http-get-form` con ruta, parÃ¡metros y condiciÃ³n `F=`/`S=`.
 - Ajustar tareas, timeout, espera, parada al encontrar, loop de usuarios y verbose.
-- Ver progreso, comando redaccionado, trazas en vivo, historial y credenciales válidas encontradas.
+- Ver progreso, comando redaccionado, trazas en vivo, historial y credenciales vÃ¡lidas encontradas.
 
 Las passwords no se muestran en el preview del comando ni en logs; los resultados encontrados se muestran enmascarados hasta que el usuario decide revelarlos.
 
-## Validación y Web dentro de Vulnerabilidades
+## ValidaciÃ³n y Web dentro de Vulnerabilidades
 
 Vistas:
 
@@ -472,7 +477,7 @@ Endpoints comunes:
 
 Nuclei, Nikto y sqlmap crean jobs persistentes en el backend. Searchsploit solo consulta la base local de Exploit-DB y no toca el objetivo. El backend bloquea URLs externas si `CALIGO_VULNERABILITIES_ALLOW_EXTERNAL_TARGETS=false`.
 
-## Contraseñas
+## ContraseÃ±as
 
 Vistas:
 
@@ -513,9 +518,9 @@ Endpoints comunes:
 | Historial de John/Hashcat/Crunch/CeWL | `GET /api/passwords/{tool}/runs` |
 | Polling de job persistente | `GET /api/passwords/{tool}/runs/{id}` |
 
-La pantalla de John permite elegir formato, pegar hashes y usar wordlists del servidor o una lista temporal. Hashcat permite modo de hash, ataque por diccionario o máscara y formato `user:hash`. Crunch genera diccionarios acotados en el servidor. CeWL genera wordlists desde URLs autorizadas por la política del backend. El inventario de wordlists sólo muestra ficheros bajo raíces permitidas.
+La pantalla de John permite elegir formato, pegar hashes y usar wordlists del servidor o una lista temporal. Hashcat permite modo de hash, ataque por diccionario o mÃ¡scara y formato `user:hash`. Crunch genera diccionarios acotados en el servidor. CeWL genera wordlists desde URLs autorizadas por la polÃ­tica del backend. El inventario de wordlists sÃ³lo muestra ficheros bajo raÃ­ces permitidas.
 
-## Esteganografía
+## EsteganografÃ­a
 
 Vistas:
 
@@ -567,9 +572,9 @@ caligo.osint.exposure.<tool>
 
 Al volver a una vista, Caligo consulta el job recordado y reengancha el polling si sigue en `QUEUED` o `RUNNING`.
 
-Las herramientas OSINT server-side que no son jobs guardan último formulario no sensible y último resultado en `localStorage`; los campos marcados como sensibles, como la contraseña de `Password Exposure`, no se persisten.
+Las herramientas OSINT server-side que no son jobs guardan Ãºltimo formulario no sensible y Ãºltimo resultado en `localStorage`; los campos marcados como sensibles, como la contraseÃ±a de `Password Exposure`, no se persisten.
 
-### Análisis inteligente de URLs
+### AnÃ¡lisis inteligente de URLs
 
 Ruta frontend:
 
@@ -583,20 +588,20 @@ Endpoint:
 POST /api/urls/intelligent-analysis
 ```
 
-Une todas las herramientas del apartado en un informe único y simplificado.
+Une todas las herramientas del apartado en un informe Ãºnico y simplificado.
 
 ### Vistas y endpoints
 
 | Herramienta | Ruta frontend | Endpoint |
 | --- | --- | --- |
-| Análisis inteligente de URLs | `/urls` | `POST /api/urls/intelligent-analysis` |
+| AnÃ¡lisis inteligente de URLs | `/urls` | `POST /api/urls/intelligent-analysis` |
 | Resolver DNS | `/urls/resolver-dns` | `POST /api/urls/dns-resolver` |
 | Inspector URL | `/urls/inspector` | `POST /api/urls/inspector` |
 | Seguridad HTTP | `/urls/seguridad-http` | `POST /api/urls/http-security` |
 | TLS y certificado | `/urls/tls` | `POST /api/urls/tls-certificate` |
-| Reputación | `/urls/reputacion` | `POST /api/urls/reputation` |
-| Historial público | `/urls/historial` | `POST /api/urls/history` |
-| Archivos públicos | `/urls/archivos-publicos` | `POST /api/urls/public-files` |
+| ReputaciÃ³n | `/urls/reputacion` | `POST /api/urls/reputation` |
+| Historial pÃºblico | `/urls/historial` | `POST /api/urls/history` |
+| Archivos pÃºblicos | `/urls/archivos-publicos` | `POST /api/urls/public-files` |
 | Endpoints pasivos | `/urls/endpoints` | `POST /api/urls/endpoints` |
 | Herramientas locales | `/urls/herramientas-locales` | `GET /api/urls/local-tools` |
 
@@ -613,15 +618,15 @@ Muestra:
 - Cookies.
 - Checks de seguridad.
 - Certificado TLS.
-- Reputación.
+- ReputaciÃ³n.
 - RDAP, crt.sh y Wayback.
-- Archivos públicos.
+- Archivos pÃºblicos.
 - Endpoints pasivos.
 - Herramientas locales detectadas.
 
 ### Rangos privados
 
-La opción **Permitir rangos privados para laboratorio local** envía:
+La opciÃ³n **Permitir rangos privados para laboratorio local** envÃ­a:
 
 ```json
 {
@@ -629,7 +634,7 @@ La opción **Permitir rangos privados para laboratorio local** envía:
 }
 ```
 
-Debe activarse sólo para objetivos internos o laboratorios autorizados. Por defecto el backend bloquea loopback, link-local y redes privadas para evitar SSRF.
+Debe activarse sÃ³lo para objetivos internos o laboratorios autorizados. Por defecto el backend bloquea loopback, link-local y redes privadas para evitar SSRF.
 
 ## Fuentes y herramientas del backend
 
@@ -676,12 +681,12 @@ La verificacion actual del frontend es:
 npm run build
 ```
 
-No hay test runner configurado todavía. El build de Vite es la comprobación principal.
+No hay test runner configurado todavÃ­a. El build de Vite es la comprobaciÃ³n principal.
 
 ## Notas de seguridad
 
 - El frontend no ejecuta herramientas ofensivas directamente.
 - Todas las llamadas de URLs pasan por backend con JWT.
 - Las API keys nunca deben vivir en Vue; se configuran en el backend.
-- La ejecución futura de herramientas activas debe ir por jobs, permisos, rate limit y auditoría.
+- La ejecuciÃ³n futura de herramientas activas debe ir por jobs, permisos, rate limit y auditorÃ­a.
 - No se debe versionar `.env`, tokens, claves ni resultados sensibles.

@@ -13,9 +13,8 @@ export default {
   },
   data() {
     return {
-      page: modulePages.contrasenas,
+      page: modulePages.tools,
     };
   },
 };
 </script>
-

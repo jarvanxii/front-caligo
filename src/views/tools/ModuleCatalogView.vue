@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     page() {
-      return modulePages[this.$route.meta?.moduleKey] || modulePages.reconocimiento;
+      return modulePages[this.$route.meta.moduleKey] || modulePages.scan;
     },
   },
 };

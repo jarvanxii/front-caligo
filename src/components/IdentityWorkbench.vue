@@ -380,7 +380,7 @@ export default {
         },
       ];
       if (this.mode === "local") {
-        return cards.filter((item) => ["IP cliente", "ExposiciÃ³n local"].includes(item.label));
+        return cards.filter((item) => ["IP cliente", "Exposición local"].includes(item.label));
       }
       if (this.mode === "server") {
         return cards.filter((item) => ["IP servidor", "VPN servidor"].includes(item.label));

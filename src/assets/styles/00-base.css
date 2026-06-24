@@ -39,10 +39,6 @@ body {
   background-size: 48px 48px;
 }
 
-body.settings-updates-open {
-  overflow: hidden;
-}
-
 a {
   color: inherit;
   text-decoration: none;

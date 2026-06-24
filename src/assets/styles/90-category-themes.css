@@ -224,3 +224,956 @@
     linear-gradient(180deg, rgba(10, 15, 17, 0.88), rgba(4, 8, 9, 0.92)),
     var(--category-panel);
 }
+
+.app-shell--module-scan {
+  --category-accent: #7dd3fc;
+  --category-accent-2: #5eead4;
+  --category-accent-rgb: 125, 211, 252;
+  --category-accent-2-rgb: 94, 234, 212;
+  --category-bg-a: rgba(5, 14, 19, 0.98);
+  --category-bg-b: rgba(2, 8, 12, 0.995);
+  --category-panel: rgba(6, 16, 20, 0.86);
+}
+
+.app-shell--module-xploit {
+  --category-accent: #fb7185;
+  --category-accent-2: #fb923c;
+  --category-accent-rgb: 251, 113, 133;
+  --category-accent-2-rgb: 251, 146, 60;
+  --category-bg-a: rgba(20, 8, 10, 0.98);
+  --category-bg-b: rgba(10, 5, 5, 0.995);
+  --category-panel: rgba(20, 9, 9, 0.86);
+}
+
+.app-shell--module-network {
+  --category-accent: #00ff5f;
+  --category-accent-2: #38bdf8;
+  --category-accent-rgb: 0, 255, 95;
+  --category-accent-2-rgb: 56, 189, 248;
+  --category-bg-a: rgba(3, 18, 10, 0.98);
+  --category-bg-b: rgba(2, 8, 10, 0.995);
+  --category-panel: rgba(3, 18, 12, 0.86);
+}
+
+.app-shell--module-coding {
+  --category-accent: #c084fc;
+  --category-accent-2: #34d399;
+  --category-accent-rgb: 192, 132, 252;
+  --category-accent-2-rgb: 52, 211, 153;
+  --category-bg-a: rgba(15, 9, 27, 0.98);
+  --category-bg-b: rgba(4, 8, 13, 0.995);
+  --category-panel: rgba(14, 10, 27, 0.86);
+}
+
+.app-shell--module-tools {
+  --category-accent: #facc15;
+  --category-accent-2: #67e8f9;
+  --category-accent-rgb: 250, 204, 21;
+  --category-accent-2-rgb: 103, 232, 249;
+  --category-bg-a: rgba(17, 14, 5, 0.98);
+  --category-bg-b: rgba(4, 9, 10, 0.995);
+  --category-panel: rgba(18, 15, 6, 0.86);
+}
+
+.app-sidebar--scan {
+  --sidebar-accent: #7dd3fc;
+  --sidebar-accent-2: #5eead4;
+  --sidebar-accent-rgb: 125, 211, 252;
+}
+
+.app-sidebar--xploit {
+  --sidebar-accent: #fb7185;
+  --sidebar-accent-2: #fb923c;
+  --sidebar-accent-rgb: 251, 113, 133;
+}
+
+.app-sidebar--network {
+  --sidebar-accent: #00ff5f;
+  --sidebar-accent-2: #38bdf8;
+  --sidebar-accent-rgb: 0, 255, 95;
+}
+
+.app-sidebar--coding {
+  --sidebar-accent: #c084fc;
+  --sidebar-accent-2: #34d399;
+  --sidebar-accent-rgb: 192, 132, 252;
+}
+
+.app-sidebar--tools {
+  --sidebar-accent: #facc15;
+  --sidebar-accent-2: #67e8f9;
+  --sidebar-accent-rgb: 250, 204, 21;
+}
+
+.app-shell--module-scan :is(.module-workspace, .urls-workspace, .scanner-workspace, .catalog-tool),
+.app-shell--module-xploit :is(.module-workspace, .msf-workbench, .hydra-workbench, .vuln-workbench, .catalog-tool),
+.app-shell--module-network :is(.module-workspace, .vpn-workbench, .catalog-tool),
+.app-shell--module-coding :is(.module-workspace, .stego-workspace, .catalog-tool),
+.app-shell--module-tools :is(.module-workspace, .identity-workbench, .password-lab, .catalog-tool) {
+  --module-accent: var(--category-accent);
+  --module-accent-soft: rgba(var(--category-accent-rgb), 0.1);
+  background:
+    radial-gradient(circle at 86% 18%, rgba(var(--category-accent-2-rgb), 0.14), transparent 32%),
+    linear-gradient(112deg, rgba(var(--category-accent-rgb), 0.12), transparent 31%),
+    linear-gradient(245deg, rgba(var(--category-accent-2-rgb), 0.09), transparent 34%),
+    linear-gradient(180deg, var(--category-bg-a), var(--category-bg-b));
+}
+
+.app-shell--module-scan :is(.module-workspace, .urls-workspace, .scanner-workspace, .catalog-tool)::before,
+.app-shell--module-xploit :is(.module-workspace, .msf-workbench, .hydra-workbench, .vuln-workbench, .catalog-tool)::before,
+.app-shell--module-network :is(.module-workspace, .vpn-workbench, .catalog-tool)::before,
+.app-shell--module-coding :is(.module-workspace, .stego-workspace, .catalog-tool)::before,
+.app-shell--module-tools :is(.module-workspace, .identity-workbench, .password-lab, .catalog-tool)::before {
+  background:
+    linear-gradient(90deg, rgba(226, 232, 240, 0.032) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(var(--category-accent-rgb), 0.026) 1px, transparent 1px),
+    repeating-linear-gradient(180deg, rgba(226, 232, 240, 0.022) 0 1px, transparent 1px 8px);
+  background-size: 72px 72px, 72px 72px, auto;
+}
+
+.app-shell--module-scan :is(.module-workspace__frame, .urls-workspace__copy, .urls-console, .urls-panel, .urls-score, .scanner-workspace__header > div, .scanner-engine, .scanner-console, .scanner-run, .scanner-panel, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-xploit :is(.module-workspace__frame, .msf-title-block, .msf-rpc, .msf-status-strip article, .msf-panel, .hydra-topline > div, .hydra-status, .hydra-console, .hydra-run-panel, .hydra-results, .hydra-history, .vuln-tool-head, .vuln-tool-status, .vuln-panel, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-network :is(.module-workspace__frame, .vpn-profile-card, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-coding :is(.module-workspace__frame, .stego-header > div, .stego-status, .stego-panel, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-tools :is(.module-workspace__frame, .identity-head, .identity-panel, .identity-card, .password-lab__header > div, .password-lab__engine, .password-console, .password-run, .password-results, .password-history, .catalog-tool__head, .catalog-tool__panel) {
+  border-color: rgba(var(--category-accent-rgb), 0.18);
+  background:
+    linear-gradient(135deg, rgba(var(--category-accent-rgb), 0.055), transparent 44%),
+    linear-gradient(180deg, rgba(10, 15, 17, 0.88), rgba(4, 8, 9, 0.92)),
+    var(--category-panel);
+}
+
+:root {
+  --caligo-tool-width: min(1460px, calc(100% - 28px));
+  --caligo-tool-wide-width: min(1520px, calc(100% - 28px));
+  --caligo-tool-page-x: clamp(14px, 1.75vw, 28px);
+  --caligo-tool-top: clamp(18px, 2.15vw, 32px);
+  --caligo-tool-bottom: clamp(30px, 3.4vw, 56px);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) {
+  padding-right: var(--caligo-tool-page-x);
+  padding-left: var(--caligo-tool-page-x);
+}
+
+.app-shell :is(
+  .module-workspace__frame,
+  .urls-workspace__hero,
+  .urls-score,
+  .urls-panel,
+  .urls-ready,
+  .scanner-workspace__shell,
+  .hydra-workbench__shell,
+  .stego-shell,
+  .password-lab__shell,
+  .vuln-workbench__shell,
+  .osint-workbench__shell,
+  .identity-workbench__shell,
+  .vpn-workbench__shell,
+  .catalog-tool__shell
+) {
+  width: var(--caligo-tool-width);
+  max-width: var(--caligo-tool-width);
+}
+
+.app-shell :is(.msf-shell) {
+  width: var(--caligo-tool-wide-width);
+  max-width: var(--caligo-tool-wide-width);
+}
+
+.app-shell :is(
+  .urls-workspace__hero,
+  .urls-score,
+  .urls-panel,
+  .urls-ready,
+  .scanner-workspace__shell,
+  .hydra-workbench__shell,
+  .msf-shell,
+  .stego-shell,
+  .password-lab__shell,
+  .vuln-workbench__shell,
+  .osint-workbench__shell,
+  .identity-workbench__shell,
+  .vpn-workbench__shell,
+  .catalog-tool__shell
+) {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.app-shell--module-osint,
+.app-shell--module-scan,
+.app-shell--module-xploit,
+.app-shell--module-network,
+.app-shell--module-coding,
+.app-shell--module-tools {
+  background:
+    radial-gradient(circle at 86% 18%, rgba(var(--category-accent-2-rgb), 0.13), transparent 32%),
+    linear-gradient(112deg, rgba(var(--category-accent-rgb), 0.11), transparent 31%),
+    linear-gradient(245deg, rgba(var(--category-accent-2-rgb), 0.08), transparent 34%),
+    linear-gradient(180deg, var(--category-bg-a), var(--category-bg-b));
+}
+
+.app-shell--module-osint .app-shell__route,
+.app-shell--module-scan .app-shell__route,
+.app-shell--module-xploit .app-shell__route,
+.app-shell--module-network .app-shell__route,
+.app-shell--module-coding .app-shell__route,
+.app-shell--module-tools .app-shell__route {
+  min-height: calc(100vh - var(--header-height) - 30px);
+}
+
+.app-shell--module-osint :is(.module-workspace, .osint-workbench, .catalog-tool),
+.app-shell--module-scan :is(.module-workspace, .urls-workspace, .scanner-workspace, .catalog-tool),
+.app-shell--module-xploit :is(.module-workspace, .msf-workbench, .hydra-workbench, .vuln-workbench, .catalog-tool),
+.app-shell--module-network :is(.module-workspace, .identity-workbench, .vpn-workbench, .catalog-tool),
+.app-shell--module-coding :is(.module-workspace, .stego-workspace, .catalog-tool),
+.app-shell--module-tools :is(.module-workspace, .identity-workbench, .password-lab, .catalog-tool) {
+  --module-accent: var(--category-accent);
+  --module-accent-soft: rgba(var(--category-accent-rgb), 0.1);
+  background:
+    radial-gradient(circle at 86% 18%, rgba(var(--category-accent-2-rgb), 0.14), transparent 32%),
+    linear-gradient(112deg, rgba(var(--category-accent-rgb), 0.12), transparent 31%),
+    linear-gradient(245deg, rgba(var(--category-accent-2-rgb), 0.09), transparent 34%),
+    linear-gradient(180deg, var(--category-bg-a), var(--category-bg-b));
+}
+
+.app-shell--module-osint :is(.module-workspace, .osint-workbench, .catalog-tool)::before,
+.app-shell--module-scan :is(.module-workspace, .urls-workspace, .scanner-workspace, .catalog-tool)::before,
+.app-shell--module-xploit :is(.module-workspace, .msf-workbench, .hydra-workbench, .vuln-workbench, .catalog-tool)::before,
+.app-shell--module-network :is(.module-workspace, .identity-workbench, .vpn-workbench, .catalog-tool)::before,
+.app-shell--module-coding :is(.module-workspace, .stego-workspace, .catalog-tool)::before,
+.app-shell--module-tools :is(.module-workspace, .identity-workbench, .password-lab, .catalog-tool)::before {
+  background:
+    linear-gradient(90deg, rgba(226, 232, 240, 0.032) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(var(--category-accent-rgb), 0.026) 1px, transparent 1px),
+    repeating-linear-gradient(180deg, rgba(226, 232, 240, 0.022) 0 1px, transparent 1px 8px);
+  background-size: 72px 72px, 72px 72px, auto;
+}
+
+.app-shell--module-osint :is(.module-workspace__frame, .osint-tool-head > div, .osint-tool-status, .osint-panel, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-scan :is(.module-workspace__frame, .urls-workspace__copy, .urls-console, .urls-panel, .urls-score, .scanner-workspace__header > div, .scanner-engine, .scanner-console, .scanner-run, .scanner-panel, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-xploit :is(.module-workspace__frame, .msf-title-block, .msf-rpc, .msf-status-strip article, .msf-panel, .hydra-topline > div, .hydra-status, .hydra-console, .hydra-run-panel, .hydra-results, .hydra-history, .vuln-tool-head, .vuln-tool-status, .vuln-panel, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-network :is(.module-workspace__frame, .identity-head, .identity-panel, .identity-card, .vpn-profile-card, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-coding :is(.module-workspace__frame, .stego-header > div, .stego-status, .stego-panel, .catalog-tool__head, .catalog-tool__panel),
+.app-shell--module-tools :is(.module-workspace__frame, .identity-head, .identity-panel, .identity-card, .password-lab__header > div, .password-lab__engine, .password-console, .password-run, .password-results, .password-history, .catalog-tool__head, .catalog-tool__panel) {
+  border-color: rgba(var(--category-accent-rgb), 0.18);
+  background:
+    linear-gradient(135deg, rgba(var(--category-accent-rgb), 0.055), transparent 44%),
+    linear-gradient(180deg, rgba(10, 15, 17, 0.88), rgba(4, 8, 9, 0.92)),
+    var(--category-panel);
+}
+
+@media (max-width: 720px) {
+  :root {
+    --caligo-tool-width: 100%;
+    --caligo-tool-wide-width: 100%;
+  }
+}
+
+/* Capa final: superficies lisas, altura consistente y color por categoría. */
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) {
+  --module-accent: var(--category-accent);
+  --module-accent-soft: rgba(var(--category-accent-rgb), 0.055);
+  --caligo-control-border: rgba(var(--category-accent-rgb), 0.24);
+  --caligo-control-border-strong: rgba(var(--category-accent-rgb), 0.52);
+  padding-top: var(--caligo-tool-top);
+  padding-right: var(--caligo-tool-page-x);
+  padding-bottom: var(--caligo-tool-bottom);
+  padding-left: var(--caligo-tool-page-x);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(var(--category-accent-2-rgb), 0.105), transparent 32%),
+    linear-gradient(116deg, rgba(var(--category-accent-rgb), 0.074), transparent 34%),
+    linear-gradient(244deg, rgba(var(--category-accent-2-rgb), 0.048), transparent 38%),
+    linear-gradient(180deg, var(--category-bg-a), var(--category-bg-b));
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+)::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(226, 232, 240, 0.028) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(226, 232, 240, 0.016) 1px, transparent 1px),
+    repeating-linear-gradient(180deg, rgba(var(--category-accent-rgb), 0.018) 0 1px, transparent 1px 8px);
+  background-size: 72px 72px, 72px 72px, auto;
+  content: "";
+  opacity: 0.72;
+}
+
+.app-shell :is(.module-workspace, .urls-workspace, .scanner-workspace)::after {
+  opacity: 0.12;
+}
+
+.app-shell :is(
+  .tool-hero,
+  .module-workspace__frame,
+  .module-workspace__status div,
+  .module-workspace__stats div,
+  .module-workspace__panel,
+  .module-workspace__tool-row,
+  .urls-workspace__copy,
+  .urls-console,
+  .urls-panel,
+  .urls-score,
+  .urls-score > div,
+  .urls-ready,
+  .urls-subpanel,
+  .urls-dns-card,
+  .urls-kv-grid article,
+  .urls-tool-grid article,
+  .scanner-workspace__header > div,
+  .scanner-engine,
+  .scanner-console,
+  .scanner-run,
+  .scanner-panel,
+  .hydra-topline > div,
+  .hydra-status,
+  .hydra-console,
+  .hydra-run-panel,
+  .hydra-results,
+  .hydra-history,
+  .msf-title-block,
+  .msf-rpc,
+  .msf-status-strip article,
+  .msf-panel,
+  .vuln-tool-head,
+  .vuln-tool-status,
+  .vuln-panel,
+  .password-lab__header > div,
+  .password-lab__engine,
+  .password-console,
+  .password-run,
+  .password-results,
+  .password-history,
+  .stego-header > div,
+  .stego-status,
+  .stego-panel,
+  .identity-head,
+  .identity-panel,
+  .identity-card,
+  .identity-metric,
+  .identity-raw-grid article,
+  .vpn-profile-card,
+  .vpn-profile-detail,
+  .vpn-provider-list article,
+  .vpn-map-card,
+  .vpn-route-card dl div,
+  .catalog-tool__head,
+  .catalog-tool__panel,
+  .catalog-tool__status,
+  .catalog-tool__execution article,
+  .catalog-tool pre
+) {
+  border-color: rgba(var(--category-accent-rgb), 0.17);
+  background:
+    linear-gradient(135deg, rgba(var(--category-accent-rgb), 0.026), rgba(var(--category-accent-2-rgb), 0.012) 44%, transparent 72%),
+    rgba(5, 9, 11, 0.93);
+}
+
+.app-shell .tool-hero::before,
+.app-shell .tool-hero__visual::before {
+  background: none;
+  opacity: 0;
+}
+
+/* Sistema de herramientas: controles sólidos, grids estables y estados comunes. */
+:root {
+  --caligo-tool-gap: clamp(14px, 1.45vw, 20px);
+  --caligo-panel-pad: clamp(16px, 1.45vw, 22px);
+  --caligo-control-height: 44px;
+  --caligo-control-border: rgba(var(--category-accent-rgb, 94, 234, 212), 0.22);
+  --caligo-control-border-strong: rgba(var(--category-accent-rgb, 94, 234, 212), 0.48);
+  --caligo-control-bg: rgba(1, 5, 7, 0.78);
+  --caligo-control-ink: rgba(246, 250, 252, 0.94);
+}
+
+.app-shell :is(
+  .module-workspace__frame,
+  .urls-workspace__hero,
+  .urls-score,
+  .urls-panel,
+  .urls-ready,
+  .scanner-workspace__shell,
+  .hydra-workbench__shell,
+  .msf-shell,
+  .stego-shell,
+  .password-lab__shell,
+  .vuln-workbench__shell,
+  .osint-workbench__shell,
+  .identity-workbench__shell,
+  .vpn-workbench__shell,
+  .catalog-tool__shell
+) {
+  display: grid;
+  align-content: start;
+  gap: var(--caligo-tool-gap);
+}
+
+.app-shell :is(
+  .urls-workspace__hero,
+  .urls-split,
+  .scanner-layout,
+  .hydra-grid,
+  .hydra-run-panel,
+  .msf-dashboard,
+  .msf-ops-grid,
+  .msf-fs-actions,
+  .password-lab__header,
+  .password-lab__grid,
+  .vuln-tool-head,
+  .vuln-grid,
+  .osint-tool-head,
+  .osint-grid,
+  .stego-layout,
+  .identity-head,
+  .identity-split,
+  .identity-summary-grid,
+  .vpn-grid,
+  .vpn-command-bar,
+  .vpn-control-grid,
+  .vpn-profile-grid,
+  .catalog-tool__head,
+  .catalog-tool__control,
+  .catalog-tool__execution
+) {
+  align-items: start;
+  grid-auto-rows: auto;
+}
+
+.app-shell :is(
+  .tool-hero,
+  .module-workspace__frame,
+  .urls-workspace__copy,
+  .urls-console,
+  .urls-panel,
+  .urls-score,
+  .scanner-console,
+  .scanner-run,
+  .scanner-panel,
+  .hydra-console,
+  .hydra-run-panel,
+  .hydra-results,
+  .hydra-history,
+  .msf-panel,
+  .password-console,
+  .password-run,
+  .password-results,
+  .password-history,
+  .vuln-panel,
+  .osint-panel,
+  .stego-panel,
+  .identity-head,
+  .identity-panel,
+  .identity-card,
+  .vpn-profile-card,
+  .vpn-profile-detail,
+  .vpn-map-card,
+  .catalog-tool__head,
+  .catalog-tool__panel
+) {
+  min-width: 0;
+  align-self: start;
+}
+
+.app-shell :is(
+  .urls-console,
+  .scanner-console,
+  .scanner-run,
+  .scanner-panel,
+  .hydra-console,
+  .hydra-run-panel,
+  .hydra-results,
+  .hydra-history,
+  .msf-panel,
+  .password-console,
+  .password-run,
+  .password-results,
+  .password-history,
+  .vuln-panel,
+  .osint-panel,
+  .stego-panel,
+  .identity-panel,
+  .vpn-profile-detail,
+  .catalog-tool__panel
+) {
+  padding: var(--caligo-panel-pad);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(label, .scanner-switch, .hydra-switch, .msf-switches label, .password-switch, .vuln-switch, .osint-switch, .urls-toggle, .catalog-tool__switch) {
+  min-width: 0;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--caligo-control-border);
+  outline: none;
+  background-color: var(--caligo-control-bg);
+  color: var(--caligo-control-ink);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  color-scheme: dark;
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.2;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select) {
+  height: var(--caligo-control-height);
+  min-height: var(--caligo-control-height);
+  padding: 0 12px;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) textarea {
+  min-height: 116px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) select {
+  appearance: none;
+  padding-right: 40px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(var(--category-accent-rgb, 94, 234, 212), 0.9) 50%),
+    linear-gradient(135deg, rgba(var(--category-accent-rgb, 94, 234, 212), 0.9) 50%, transparent 50%),
+    linear-gradient(90deg, rgba(var(--category-accent-rgb, 94, 234, 212), 0.12), transparent);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%,
+    100% 0;
+  background-repeat: no-repeat;
+  background-size:
+    6px 6px,
+    6px 6px,
+    42px 100%;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) select option {
+  background: #05090b;
+  color: rgba(246, 250, 252, 0.94);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) input[type="file"] {
+  height: auto;
+  min-height: var(--caligo-control-height);
+  padding: 7px 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) input[type="file"]::file-selector-button {
+  min-height: 30px;
+  margin-right: 12px;
+  border: 1px solid rgba(var(--category-accent-rgb, 94, 234, 212), 0.35);
+  background: rgba(var(--category-accent-rgb, 94, 234, 212), 0.1);
+  color: rgba(246, 250, 252, 0.96);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea):focus {
+  border-color: var(--caligo-control-border-strong);
+  background-color: rgba(2, 8, 10, 0.9);
+  box-shadow:
+    0 0 0 2px rgba(var(--category-accent-rgb, 94, 234, 212), 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(input::placeholder, textarea::placeholder) {
+  color: rgba(178, 190, 200, 0.42);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) input:is([type="checkbox"], [type="radio"]) {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--category-accent);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  accent-color: var(--category-accent);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(button, .stego-actions a, .catalog-tool__execution a) {
+  display: inline-grid;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--caligo-control-height);
+  border: 1px solid rgba(var(--category-accent-rgb, 94, 234, 212), 0.3);
+  padding: 0 16px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(var(--category-accent-rgb, 94, 234, 212), 0.09), rgba(var(--category-accent-rgb, 94, 234, 212), 0.045)),
+    rgba(5, 9, 11, 0.92);
+  color: rgba(246, 250, 252, 0.94);
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(button, .stego-actions a, .catalog-tool__execution a):hover:not(:disabled) {
+  border-color: rgba(var(--category-accent-rgb, 94, 234, 212), 0.58);
+  background:
+    linear-gradient(180deg, rgba(var(--category-accent-rgb, 94, 234, 212), 0.16), rgba(var(--category-accent-rgb, 94, 234, 212), 0.08)),
+    rgba(6, 12, 14, 0.96);
+  box-shadow: 0 0 22px rgba(var(--category-accent-rgb, 94, 234, 212), 0.1);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) :is(button, .stego-actions a, .catalog-tool__execution a):active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.app-shell :is(
+  .module-workspace,
+  .urls-workspace,
+  .scanner-workspace,
+  .hydra-workbench,
+  .msf-workbench,
+  .stego-workspace,
+  .password-lab,
+  .vuln-workbench,
+  .osint-workbench,
+  .identity-workbench,
+  .vpn-workbench,
+  .catalog-tool
+) button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+}
+
+.app-shell :is(
+  .scanner-switch-grid,
+  .hydra-toggle-row,
+  .msf-switches,
+  .password-switches,
+  .vuln-check-grid,
+  .osint-check-grid
+) :is(label, .scanner-switch, .hydra-switch, .password-switch, .vuln-switch, .osint-switch) {
+  min-height: 48px;
+  align-items: center;
+  border: 1px solid rgba(var(--category-accent-rgb, 94, 234, 212), 0.14);
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.app-shell .stego-file-field {
+  display: grid;
+  gap: 9px;
+}
+
+.app-shell .stego-file-control {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(124px, auto) minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-height: var(--caligo-control-height);
+  overflow: hidden;
+  border: 1px solid var(--caligo-control-border);
+  background: var(--caligo-control-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.app-shell .stego-file-button {
+  display: inline-grid;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--caligo-control-height) - 2px);
+  padding: 0 16px;
+  border-right: 1px solid rgba(var(--category-accent-rgb), 0.28);
+  background: rgba(var(--category-accent-rgb), 0.105);
+  color: rgba(246, 250, 252, 0.96);
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.app-shell .stego-file-name {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 14px;
+  color: rgba(226, 232, 240, 0.74);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .stego-file-native {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.app-shell .stego-file-control:focus-within {
+  border-color: var(--caligo-control-border-strong);
+  box-shadow:
+    0 0 0 2px rgba(var(--category-accent-rgb), 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}

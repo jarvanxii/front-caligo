@@ -28,22 +28,21 @@
 }
 
 .login-portfolio-access button {
-  position: relative;
-  min-height: 40px;
+  --login-button-bg:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.16), rgba(73, 179, 139, 0.08) 50%, rgba(255, 142, 60, 0.1)),
+    rgba(2, 8, 8, 0.94);
+  --login-button-border: rgba(94, 234, 212, 0.42);
+  --login-button-font-size: 0.88rem;
+  --login-button-glow: rgba(94, 234, 212, 0.1);
+  --login-button-hover-ink: #ecfff8;
+  --login-button-ink: #c9ffee;
+  --login-button-inner: rgba(255, 255, 255, 0.08);
+  --login-button-letter-spacing: 0.13em;
+  --login-button-text-shadow:
+    0 0 8px rgba(94, 234, 212, 0.52),
+    0 0 18px rgba(94, 234, 212, 0.2);
+  min-height: 46px;
   margin-top: 0;
-  border: 1px solid rgba(94, 234, 212, 0.42);
-  background:
-    linear-gradient(90deg, rgba(94, 234, 212, 0.14), rgba(94, 234, 212, 0.035)),
-    rgba(2, 8, 8, 0.92);
-  color: #c9ffee;
-  font-family: var(--font-display);
-  font-size: 0.88rem;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  overflow: hidden;
-  text-shadow:
-    0 0 8px rgba(94, 234, 212, 0.58),
-    0 0 18px rgba(94, 234, 212, 0.25);
 }
 
 .login-portfolio-access button::after {
@@ -61,14 +60,12 @@
   mix-blend-mode: screen;
 }
 
-.login-portfolio-access button:hover:not(:disabled) {
-  border-color: rgba(255, 142, 60, 0.72);
-  color: #ffe5c7;
-  transform: translateY(-1px);
-  box-shadow:
-    0 0 0 1px rgba(255, 142, 60, 0.16),
-    0 0 24px rgba(255, 142, 60, 0.14),
-    inset 0 0 22px rgba(94, 234, 212, 0.08);
+.login-portfolio-access button:hover:not(:disabled),
+.login-portfolio-access button:focus-visible {
+  --login-button-glow: rgba(94, 234, 212, 0.18);
+  --login-button-text-shadow:
+    0 0 10px rgba(94, 234, 212, 0.66),
+    0 0 24px rgba(94, 234, 212, 0.26);
 }
 
 .login-portfolio-access small {

@@ -799,7 +799,13 @@
   background: rgba(127, 29, 29, 0.14);
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 1480px) and (min-width: 1281px) {
+  .app-header__ip-monitor {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
   .app-header__ip-monitor {
     display: none;
   }

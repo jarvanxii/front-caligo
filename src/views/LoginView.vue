@@ -18,14 +18,14 @@
         <input id="password" v-model="password" type="password" placeholder="password123" autocomplete="current-password" />
 
         <p v-if="error" class="login-panel__error">{{ error }}</p>
-        <button type="submit" :disabled="loading" :aria-busy="loading.toString()">
+        <button class="login-submit" type="submit" :disabled="loading" :aria-busy="loading.toString()">
           {{ loading ? "Validando" : "Acceder" }}
         </button>
 
-        <div class="login-portfolio-access" aria-label="Acceso de demostración sin usuario">
-          <span>Modo portfolio</span>
+        <div class="login-portfolio-access" aria-label="Acceso de demo sin usuario">
+          <span>Entrar a la demo</span>
           <button type="button" :disabled="portfolioLoading || loading" @click="enterPortfolio">
-            {{ portfolioLoading ? "Abriendo demostración" : "ACCESO SIN USUARIO" }}
+            {{ portfolioLoading ? "Abriendo demo" : "ACCESO SIN USUARIO" }}
           </button>
         </div>
       </form>
@@ -76,7 +76,7 @@ export default {
         await this.$store.dispatch("enterPortfolio");
         this.$router.push({ name: "home" });
       } catch (error) {
-        this.error = error.message || "No se pudo abrir el modo portfolio";
+        this.error = error.message || "No se pudo abrir la demo";
       } finally {
         this.portfolioLoading = false;
       }

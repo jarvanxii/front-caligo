@@ -13,7 +13,7 @@ export default {
   },
   data() {
     return {
-      page: modulePages.vulnerabilidades,
+      page: modulePages.xploit,
     };
   },
 };

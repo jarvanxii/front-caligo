@@ -346,6 +346,16 @@ export default {
   beforeUnmount() {
     this.stopPolling();
   },
+  activated() {
+    if (isRuntimeJobRunning(this.job)) {
+      this.startPolling();
+    } else if (!this.job && this.tool.mode !== "search") {
+      this.restoreJob();
+    }
+  },
+  deactivated() {
+    this.stopPolling();
+  },
   methods: {
     async loadCapabilities() {
       try {

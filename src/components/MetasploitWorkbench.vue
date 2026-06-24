@@ -569,15 +569,26 @@ export default {
   mounted() {
     this.loadCapabilities();
     this.restoreRuntimeJobs();
-    this.refreshSessions();
-    this.sessionPollTimer = window.setInterval(this.refreshSessions, 5000);
+    this.startSessionPolling();
+  },
+  activated() {
+    this.startSessionPolling();
+    if (isRuntimeJobRunning(this.nmapJob)) {
+      this.startNmapPolling();
+    }
+    if (isRuntimeJobRunning(this.executeJob)) {
+      this.startExecutePolling(this.executeJob.id);
+    }
   },
   beforeUnmount() {
     this.stopNmapPolling();
     this.stopExecutePolling();
-    if (this.sessionPollTimer) {
-      window.clearInterval(this.sessionPollTimer);
-    }
+    this.stopSessionPolling();
+  },
+  deactivated() {
+    this.stopNmapPolling();
+    this.stopExecutePolling();
+    this.stopSessionPolling();
   },
   methods: {
     async ensureSession() {
@@ -832,6 +843,17 @@ export default {
         }
       } catch {
         this.sessions = [];
+      }
+    },
+    startSessionPolling() {
+      this.stopSessionPolling();
+      this.refreshSessions();
+      this.sessionPollTimer = window.setInterval(this.refreshSessions, 5000);
+    },
+    stopSessionPolling() {
+      if (this.sessionPollTimer) {
+        window.clearInterval(this.sessionPollTimer);
+        this.sessionPollTimer = null;
       }
     },
     startExecutePolling(id) {

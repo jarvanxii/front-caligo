@@ -41,18 +41,6 @@ export const osintExposureTools = {
       { key: "timeoutSeconds", label: "Timeout", type: "number", defaultValue: 12, min: 5, max: 45 },
     ],
   },
-  emailBreach: {
-    key: "email-breach",
-    title: "Email Breach Check",
-    eyebrow: "OSINT / Brechas",
-    command: "HIBP",
-    endpoint: "/api/osint/exposure/email-breach",
-    summary: "Comprueba si un email propio o autorizado aparece en brechas públicas cuando el backend tiene HIBP configurado.",
-    required: ["email"],
-    fields: [
-      { key: "email", label: "Email autorizado", type: "email", placeholder: "nombre@dominio.com" },
-    ],
-  },
   passwordExposure: {
     key: "password-exposure",
     title: "Password Exposure",

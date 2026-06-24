@@ -141,7 +141,6 @@ const EXPOSURE_CATALOG_TOOL = {
   emailExposure: "email-exposure",
   phoneLookup: "phone-lookup",
   domainContacts: "domain-contacts",
-  emailBreach: "email-breach",
   passwordExposure: "password-exposure",
   metadataExposure: "metadata-exposure",
   publicFiles: "public-files",
@@ -177,7 +176,6 @@ export default {
       return EXPOSURE_CATALOG_TOOL[this.toolKey] || this.tool.key;
     },
     heroLogos() {
-      if (this.toolKey === "emailBreach") return [this.catalogToolId, "theharvester"];
       if (this.toolKey === "metadataExposure") return [this.catalogToolId, "exiftool"];
       return [this.catalogToolId];
     },

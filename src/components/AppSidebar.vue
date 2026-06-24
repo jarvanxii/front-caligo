@@ -30,35 +30,37 @@
             </span>
           </button>
 
-          <div v-show="isSectionOpen(item)" :id="sectionPanelId(item.id)" class="app-sidebar__section-items">
-            <template v-for="utility in item.utilities" :key="utility.id">
-              <RouterLink
-                v-if="utility.routeName"
-                class="app-sidebar__link"
-                :class="{ 'is-active': isRouteActive(utility.routeName) }"
-                :to="{ name: utility.routeName }"
-              >
-                <span class="app-sidebar__text">
-                  <strong>{{ utility.label }}</strong>
-                  <small>{{ utility.description }}</small>
-                </span>
-                <span class="app-sidebar__index">{{ utility.code }}</span>
-              </RouterLink>
+          <Transition name="sidebar-section">
+            <div v-show="isSectionOpen(item)" :id="sectionPanelId(item.id)" class="app-sidebar__section-items">
+              <template v-for="utility in item.utilities" :key="utility.id">
+                <RouterLink
+                  v-if="utility.routeName"
+                  class="app-sidebar__link"
+                  :class="{ 'is-active': isRouteActive(utility.routeName) }"
+                  :to="{ name: utility.routeName }"
+                >
+                  <span class="app-sidebar__text">
+                    <strong>{{ utility.label }}</strong>
+                    <small>{{ utility.description }}</small>
+                  </span>
+                  <span class="app-sidebar__index">{{ utility.code }}</span>
+                </RouterLink>
 
-              <a
-                v-else
-                class="app-sidebar__link"
-                :class="{ 'is-active': isHashActive(`#${utility.id}`) }"
-                :href="`#${utility.id}`"
-              >
-                <span class="app-sidebar__text">
-                  <strong>{{ utility.label }}</strong>
-                  <small>{{ utility.description }}</small>
-                </span>
-                <span class="app-sidebar__index">{{ utility.code }}</span>
-              </a>
-            </template>
-          </div>
+                <a
+                  v-else
+                  class="app-sidebar__link"
+                  :class="{ 'is-active': isHashActive(`#${utility.id}`) }"
+                  :href="`#${utility.id}`"
+                >
+                  <span class="app-sidebar__text">
+                    <strong>{{ utility.label }}</strong>
+                    <small>{{ utility.description }}</small>
+                  </span>
+                  <span class="app-sidebar__index">{{ utility.code }}</span>
+                </a>
+              </template>
+            </div>
+          </Transition>
         </div>
 
         <RouterLink
@@ -100,7 +102,7 @@ export default {
   data() {
     return {
       activeHash: "#module-overview",
-      openSections: {},
+      openSectionId: "",
     };
   },
   computed: {
@@ -130,16 +132,22 @@ export default {
     sidebarThemeClass() {
       const moduleKey = this.$route.meta?.moduleKey || this.currentPage?.key || this.$route.name;
       const themeByModule = {
-        reconocimiento: "reconocimiento",
         osint: "osint",
-        vulnerabilidades: "vulnerabilidades",
-        contrasenas: "contrasenas",
-        codificacion: "codificacion",
-        esteganografia: "esteganografia",
-        redes: "redes",
-        utilidades: "utilidades",
-        redesUtilidades: "redes",
-        reversing: "reversing",
+        scan: "scan",
+        xploit: "xploit",
+        network: "network",
+        coding: "coding",
+        tools: "tools",
+        reconocimiento: "scan",
+        vulnerabilidades: "xploit",
+        contrasenas: "tools",
+        passwords: "tools",
+        codificacion: "coding",
+        esteganografia: "coding",
+        redes: "network",
+        utilidades: "tools",
+        redesUtilidades: "network",
+        reversing: "coding",
       };
       return `app-sidebar--${themeByModule[moduleKey] || this.currentPage?.accent || "green"}`;
     },
@@ -151,6 +159,7 @@ export default {
   },
   mounted() {
     this.syncActiveHash();
+    this.syncOpenSection();
     window.addEventListener("hashchange", this.syncActiveHash);
   },
   beforeUnmount() {
@@ -171,17 +180,10 @@ export default {
       return section.utilities.some((utility) => this.isUtilityActive(utility));
     },
     isSectionOpen(section) {
-      if (typeof this.openSections[section.id] === "boolean") {
-        return this.openSections[section.id];
-      }
-
-      return this.isSectionActive(section);
+      return this.openSectionId === section.id;
     },
     toggleSection(section) {
-      this.openSections = {
-        ...this.openSections,
-        [section.id]: !this.isSectionOpen(section),
-      };
+      this.openSectionId = this.isSectionOpen(section) ? "" : section.id;
     },
     sectionPanelId(id) {
       return `${id}-items`;
@@ -194,6 +196,11 @@ export default {
     },
     syncActiveHash() {
       this.activeHash = window.location.hash || "#module-overview";
+      this.syncOpenSection();
+    },
+    syncOpenSection() {
+      const activeSection = this.navigationItems.find((item) => item.type === "section" && this.isSectionActive(item));
+      this.openSectionId = activeSection?.id || "";
     },
   },
 };

@@ -24,7 +24,6 @@ const logoById = Object.fromEntries(
 
 const LOGO_ALIASES = {
   "base-converter": "cyberchef",
-  binwalk: "binwalk-reversing",
   "browser-exiftool": "exiftool",
   "linpeas-sh": "linpeas",
   "metadata-analyzer": "exiftool",
@@ -39,7 +38,6 @@ const LOGO_ALIASES = {
   "john-the-ripper": "john",
   seclists: "wordlists",
   "sec-lists": "wordlists",
-  tshark: "wireshark",
   "winpeas-exe": "winpeas",
 };
 

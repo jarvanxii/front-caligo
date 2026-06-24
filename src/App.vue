@@ -20,6 +20,24 @@
 <script>
 import { defineAsyncComponent } from "vue";
 
+const UNCACHED_ROUTE_NAMES = new Set([
+  "home",
+  "osint",
+  "scan",
+  "xploit",
+  "network",
+  "coding",
+  "tools",
+  "reconocimiento",
+  "vulnerabilidades",
+  "contrasenas",
+  "passwords",
+  "codificacion",
+  "redes",
+  "redesUtilidades",
+  "utilidades",
+]);
+
 const AppHeader = defineAsyncComponent(() => import("@/components/AppHeader.vue"));
 const AppSidebar = defineAsyncComponent(() => import("@/components/AppSidebar.vue"));
 const PortfolioAccessNotice = defineAsyncComponent(() => import("@/components/PortfolioAccessNotice.vue"));
@@ -59,7 +77,7 @@ export default {
   },
   methods: {
     shouldCacheRoute(route) {
-      return !route.meta.authLayout && this.$store.getters.hasAppAccess;
+      return !route.meta.authLayout && !UNCACHED_ROUTE_NAMES.has(route.name) && this.$store.getters.hasAppAccess;
     },
     activeModuleKey() {
       if (this.$route.meta.authLayout || this.$route.name === "home") {
@@ -72,21 +90,27 @@ export default {
 
       const path = this.$route.path || "";
       const categories = [
-        ["/urls", "reconocimiento"],
-        ["/nmap", "reconocimiento"],
-        ["/openvas", "reconocimiento"],
-        ["/reconocimiento", "reconocimiento"],
+        ["/urls", "scan"],
+        ["/nmap", "scan"],
+        ["/openvas", "scan"],
+        ["/scan", "scan"],
+        ["/reconocimiento", "scan"],
         ["/osint", "osint"],
-        ["/metasploit", "vulnerabilidades"],
-        ["/fuerza-bruta", "vulnerabilidades"],
-        ["/vulnerabilidades", "vulnerabilidades"],
-        ["/contrasenas", "contrasenas"],
-        ["/codificacion", "codificacion"],
-        ["/esteganografia", "esteganografia"],
-        ["/redes", "redes"],
-        ["/utilidades", "utilidades"],
-        ["/redes-utilidades", "redes"],
-        ["/reversing", "reversing"],
+        ["/metasploit", "xploit"],
+        ["/fuerza-bruta", "xploit"],
+        ["/xploit", "xploit"],
+        ["/vulnerabilidades", "xploit"],
+        ["/tools", "tools"],
+        ["/contrasenas", "tools"],
+        ["/passwords", "tools"],
+        ["/utilidades", "tools"],
+        ["/coding", "coding"],
+        ["/codificacion", "coding"],
+        ["/esteganografia", "coding"],
+        ["/reversing", "coding"],
+        ["/network", "network"],
+        ["/redes", "network"],
+        ["/redes-utilidades", "network"],
       ];
       return categories.find(([prefix]) => path.startsWith(prefix))?.[1] || this.$route.name || "";
     },

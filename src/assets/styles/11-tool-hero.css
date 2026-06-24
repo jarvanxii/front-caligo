@@ -1,18 +1,17 @@
 .tool-hero {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(220px, 0.34fr);
-  gap: clamp(14px, 2.1vw, 26px);
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(16px, 2vw, 28px);
+  align-items: center;
   width: 100%;
-  min-height: 134px;
-  padding: clamp(16px, 2vw, 24px);
+  min-height: 148px;
+  padding: clamp(18px, 2.1vw, 26px);
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--tool-accent, #65f2d3) 36%, rgba(255, 255, 255, 0.08));
   background:
-    radial-gradient(circle at 13% 18%, var(--tool-glow, rgba(101, 242, 211, 0.16)), transparent 26%),
-    linear-gradient(135deg, color-mix(in srgb, var(--tool-accent, #65f2d3) 9%, transparent), transparent 44%),
-    linear-gradient(180deg, rgba(10, 16, 18, 0.94), rgba(3, 7, 9, 0.96));
+    linear-gradient(135deg, color-mix(in srgb, var(--tool-accent, #65f2d3) 4%, transparent), transparent 46%),
+    rgba(5, 9, 11, 0.96);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.045),
     0 20px 64px rgba(0, 0, 0, 0.22);
@@ -24,12 +23,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 7px);
-  background-size: 54px 54px, auto;
-  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 86%, transparent);
-  opacity: 0.72;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--tool-accent, #65f2d3) 10%, transparent), transparent);
+  opacity: 0.18;
 }
 
 .tool-hero::after {
@@ -45,7 +40,7 @@
 }
 
 .tool-hero--compact {
-  min-height: 112px;
+  min-height: 124px;
   padding: 16px;
 }
 
@@ -57,62 +52,83 @@
 }
 
 .tool-hero__visual {
-  display: grid;
+  display: inline-grid;
   place-items: center;
-  min-width: clamp(94px, 9vw, 128px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  padding-right: clamp(12px, 1.6vw, 20px);
+  justify-self: end;
+  width: fit-content;
+  min-width: 0;
+  padding: clamp(8px, 0.9vw, 12px);
+  border: 1px solid color-mix(in srgb, var(--tool-accent, #65f2d3) 28%, rgba(255, 255, 255, 0.08));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--tool-accent, #65f2d3) 5%, transparent), transparent 58%),
+    rgba(0, 0, 0, 0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 0 26px var(--tool-glow, rgba(101, 242, 211, 0.16));
+}
+
+.tool-hero__visual::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  background: none;
+  content: "";
+  opacity: 0;
 }
 
 .tool-hero__logo-stack {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 78px;
+  justify-content: flex-start;
+  width: fit-content;
+  min-width: 0;
+  gap: clamp(7px, 0.8vw, 10px);
+  padding: 0;
 }
 
 .tool-hero__logo {
+  flex: 0 0 auto;
   display: grid;
   place-items: center;
-  width: 74px;
-  height: 74px;
+  width: clamp(58px, 4.7vw, 70px);
+  height: clamp(58px, 4.7vw, 70px);
   border: 1px solid color-mix(in srgb, var(--tool-accent, #65f2d3) 46%, rgba(255, 255, 255, 0.1));
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--tool-accent, #65f2d3) 18%, transparent), rgba(255, 255, 255, 0.028)),
-    rgba(0, 0, 0, 0.28);
+    linear-gradient(135deg, color-mix(in srgb, var(--tool-accent, #65f2d3) 6%, transparent), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.32);
   box-shadow:
     0 0 24px var(--tool-glow, rgba(101, 242, 211, 0.16)),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.tool-hero__logo + .tool-hero__logo {
-  width: 54px;
-  height: 54px;
-  margin-left: -14px;
+.tool-hero__logo--primary {
+  width: clamp(76px, 5.8vw, 92px);
+  height: clamp(76px, 5.8vw, 92px);
+  box-shadow:
+    0 0 34px var(--tool-glow, rgba(101, 242, 211, 0.18)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .tool-hero__logo img {
-  max-width: 76%;
-  max-height: 76%;
+  max-width: 84%;
+  max-height: 84%;
   object-fit: contain;
   filter: drop-shadow(0 0 12px color-mix(in srgb, var(--tool-accent, #65f2d3) 30%, transparent));
 }
 
 .tool-hero__logo--fallback strong {
+  max-width: 82%;
+  overflow: hidden;
   color: color-mix(in srgb, var(--tool-accent, #65f2d3) 76%, white 24%);
   font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 0.78rem;
+  font-size: clamp(0.64rem, 0.7vw, 0.82rem);
   font-weight: 900;
-}
-
-.tool-hero__visual i {
-  position: absolute;
-  right: 14px;
-  bottom: 18px;
-  width: 8px;
-  height: 8px;
-  border: 1px solid var(--tool-accent, #65f2d3);
-  box-shadow: 0 0 16px var(--tool-glow, rgba(101, 242, 211, 0.16));
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
 }
 
 .tool-hero__body {
@@ -136,15 +152,15 @@
   margin: 0;
   color: rgba(248, 252, 255, 0.97);
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3.2vw, 3.35rem);
+  font-size: clamp(1.7rem, 2.45vw, 2.75rem);
   font-weight: 800;
-  line-height: 0.96;
+  line-height: 1.02;
   letter-spacing: 0;
   text-shadow: 0 0 22px color-mix(in srgb, var(--tool-accent, #65f2d3) 18%, transparent);
 }
 
 .tool-hero--compact h1 {
-  font-size: clamp(1.55rem, 2.4vw, 2.55rem);
+  font-size: clamp(1.5rem, 2.1vw, 2.35rem);
 }
 
 .tool-hero p {
@@ -200,7 +216,11 @@
 
 @media (max-width: 980px) {
   .tool-hero {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 1fr;
+  }
+
+  .tool-hero__visual {
+    justify-self: start;
   }
 
   .tool-hero__meta {

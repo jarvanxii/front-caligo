@@ -486,6 +486,16 @@ export default {
   beforeUnmount() {
     this.stopPolling();
   },
+  activated() {
+    if (isRuntimeJobRunning(this.job)) {
+      this.startPolling();
+    } else if (!this.job) {
+      this.restoreActiveJob();
+    }
+  },
+  deactivated() {
+    this.stopPolling();
+  },
   methods: {
     reset() {
       this.stopPolling();

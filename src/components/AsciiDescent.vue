@@ -9,8 +9,15 @@
       <div class="ascii-descent__lockup" aria-hidden="true">
         <pre class="ascii-descent__art ascii-descent__word" @animationend.self="finishBoot">{{ wordText }}</pre>
         <div class="control-illusion" aria-hidden="true">
-          <div class="control-illusion__phrase" aria-hidden="true">
-            {{ controlPhrase }}
+          <div
+            v-for="phrase in controlPhrases"
+            :key="phrase.key"
+            class="control-illusion__phrase"
+            :class="`control-illusion__phrase--${phrase.tone}`"
+            :data-phrase="phrase.text"
+            aria-hidden="true"
+          >
+            {{ phrase.text }}
           </div>
         </div>
         <span
@@ -71,7 +78,13 @@ const MATRIX_CELL_SIZE = 11;
 const ASCII_BUILD_MS = 8600;
 const MATRIX_SETTLE_MS = 1100;
 const SPARK_INTERVAL_MS = 360;
-const CONTROL_PHRASE = "CONTROL IS AN ILLUSION";
+const CONTROL_PHRASES = [
+  {
+    key: "control",
+    text: "CONTROL IS AN ILLUSION",
+    tone: "primary",
+  },
+];
 
 function seededUnit(index, salt) {
   const value = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43758.5453;
@@ -86,7 +99,7 @@ export default {
       settling: false,
       matrixVisible: true,
       activeHashSpark: "",
-      controlPhrase: CONTROL_PHRASE,
+      controlPhrases: CONTROL_PHRASES,
       hashSparkTimer: null,
       settleTimer: null,
     };
@@ -113,9 +126,30 @@ export default {
     }
     this.$nextTick(this.startMatrixRain);
   },
+  activated() {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      this.finishBoot();
+      return;
+    }
+    if (this.booting && this.matrixVisible) {
+      this.$nextTick(this.startMatrixRain);
+      return;
+    }
+    this.startHashSpark();
+  },
+  deactivated() {
+    this.stopMatrixRain();
+    this.stopHashSpark();
+    window.clearTimeout(this.settleTimer);
+    this.settleTimer = null;
+    if (!this.booting) {
+      this.settling = false;
+      this.matrixVisible = false;
+    }
+  },
   beforeUnmount() {
     this.stopMatrixRain();
-    window.clearInterval(this.hashSparkTimer);
+    this.stopHashSpark();
     window.clearTimeout(this.settleTimer);
   },
   methods: {
@@ -128,15 +162,24 @@ export default {
         this.settling = false;
         this.matrixVisible = false;
         this.stopMatrixRain();
-        this.jumpHashSpark();
-        this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
+        this.startHashSpark();
       }, MATRIX_SETTLE_MS);
+    },
+    startHashSpark() {
+      if (this.booting || this.hashSparkTimer) return;
+      this.jumpHashSpark();
+      this.hashSparkTimer = window.setInterval(this.jumpHashSpark, SPARK_INTERVAL_MS);
+    },
+    stopHashSpark() {
+      window.clearInterval(this.hashSparkTimer);
+      this.hashSparkTimer = null;
     },
     jumpHashSpark() {
       const nextIndex = Math.floor(Math.random() * HASH_POSITIONS.length);
       this.activeHashSpark = HASH_POSITIONS[nextIndex];
     },
     startMatrixRain() {
+      this.stopMatrixRain();
       const canvas = this.$refs.matrixCanvas;
       if (!canvas) return;
 
@@ -227,30 +270,34 @@ export default {
       return [...asciiCells, ...phraseCells];
     },
     buildMatrixPhraseCells(canvas, offset) {
-      const phrase = canvas.parentElement?.querySelector(".control-illusion__phrase");
-      if (!phrase) return [];
+      const phrases = Array.from(canvas.parentElement.querySelectorAll(".control-illusion__phrase") || []);
+      if (!phrases.length) return [];
 
       const canvasRect = canvas.getBoundingClientRect();
-      const phraseRect = phrase.getBoundingClientRect();
-      const phraseStyle = window.getComputedStyle(phrase);
-      const fontSize = Number.parseFloat(phraseStyle.fontSize) || 11;
-      const lineHeight = Number.parseFloat(phraseStyle.lineHeight) || fontSize;
-      const chars = Array.from(CONTROL_PHRASE);
-      const charWidth = phraseRect.width / Math.max(1, chars.length);
-      const originX = phraseRect.left - canvasRect.left;
-      const originY = phraseRect.top - canvasRect.top;
+      return phrases.flatMap((phrase, phraseIndex) => {
+        const phraseRect = phrase.getBoundingClientRect();
+        const phraseStyle = window.getComputedStyle(phrase);
+        const fontSize = Number.parseFloat(phraseStyle.fontSize) || 11;
+        const lineHeight = Number.parseFloat(phraseStyle.lineHeight) || fontSize;
+        const text = phrase.dataset.phrase || phrase.textContent.trim() || "";
+        const chars = Array.from(text);
+        const charWidth = phraseRect.width / Math.max(1, chars.length);
+        const originX = phraseRect.left - canvasRect.left;
+        const originY = phraseRect.top - canvasRect.top;
+        const revealBase = 0.72 + phraseIndex * 0.045;
 
-      return chars.flatMap((value, index) => {
-        if (value === " ") return [];
-        return {
-          value,
-          x: originX + index * charWidth + charWidth * 0.06,
-          y: originY,
-          fontSize,
-          lineHeight,
-          revealAt: 0.76 + seededUnit(index, 239) * 0.14,
-          flicker: seededUnit(index + offset, 241),
-        };
+        return chars.flatMap((value, index) => {
+          if (value === " ") return [];
+          return {
+            value,
+            x: originX + index * charWidth + charWidth * 0.06,
+            y: originY,
+            fontSize,
+            lineHeight,
+            revealAt: revealBase + seededUnit(index + phraseIndex * 53, 239) * 0.13,
+            flicker: seededUnit(index + offset + phraseIndex * 97, 241),
+          };
+        });
       });
     },
     renderMatrixRain(timestamp) {

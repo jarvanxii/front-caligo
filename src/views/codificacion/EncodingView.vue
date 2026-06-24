@@ -13,9 +13,8 @@ export default {
   },
   data() {
     return {
-      page: modulePages.codificacion,
+      page: modulePages.coding,
     };
   },
 };
 </script>
-

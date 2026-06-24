@@ -13,7 +13,7 @@ export default {
   },
   data() {
     return {
-      page: modulePages.utilidades,
+      page: modulePages.tools,
     };
   },
 };

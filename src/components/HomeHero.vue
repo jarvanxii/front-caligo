@@ -1,119 +1,139 @@
 <template>
   <section class="home-hero" aria-labelledby="home-title">
     <AsciiDescent />
+    <HomeToolRail />
 
     <div class="home-command" aria-labelledby="home-title">
-      <section class="home-command__copy">
-        <span class="eyebrow">Centro operativo</span>
-        <h1 id="home-title">Herramientas reales. Presentación segura. Evidencia trazable.</h1>
-        <p>
-          Un laboratorio black hat controlado para enseñar arquitectura, operación y criterio técnico: backend con motores
-          reales, frontend navegable, trabajos persistentes y salida preparada para auditoría.
-        </p>
+      <section class="home-command-panel">
+        <header class="home-command-panel__intro">
+          <span class="eyebrow">Caligo runtime</span>
+          <h1 id="home-title">Laboratorio operativo</h1>
+          <p>
+            Consola web para orquestar motores reales de ciberseguridad, conservar contexto entre vistas y exportar
+            evidencia técnica desde un entorno controlado.
+          </p>
 
-        <nav class="home-command__logo-strip" aria-label="Accesos rápidos a herramientas principales">
-          <RouterLink
-            v-for="tool in toolHighlights"
-            :key="tool.id"
-            :style="toolCssVars(tool)"
-            :title="tool.label"
-            :to="{ name: tool.routeName }"
-          >
-            <span aria-hidden="true">{{ toolMark(tool) }}</span>
-            <strong>{{ tool.label }}</strong>
+          <div class="home-command-panel__chips" aria-label="Resumen de plataforma">
+            <span><strong>{{ guideToolCount }}</strong> herramientas</span>
+            <span><strong>{{ platformGuide.length }}</strong> módulos</span>
+            <span><strong>{{ activeToolGroups }}</strong> motores</span>
+          </div>
+        </header>
+
+        <aside class="home-command-panel__session-card" aria-label="Control de sesión">
+          <header>
+            <span>Control de sesión</span>
+            <strong>{{ runtimeState }}</strong>
+          </header>
+
+          <dl class="home-command-panel__session">
+            <div v-for="item in sessionItems" :key="item.label">
+              <dt>{{ item.key }}</dt>
+              <dd>{{ item.value }}</dd>
+            </div>
+          </dl>
+        </aside>
+
+        <nav class="home-command-panel__modules" aria-label="Módulos principales">
+          <RouterLink v-for="module in platformGuide" :key="module.id" :to="{ name: module.routeName }">
+            <strong>{{ module.title }}</strong>
+            <span>{{ module.tools.length }} tools</span>
           </RouterLink>
         </nav>
-
-        <div class="home-command__stats" aria-label="Resumen del laboratorio">
-          <span><strong>{{ guideToolCount }}</strong> herramientas</span>
-          <span><strong>{{ sessionMode }}</strong> acceso</span>
-          <span><strong>LAN</strong> backend</span>
-        </div>
       </section>
-
-      <aside class="home-status-board" aria-label="Estado del laboratorio">
-        <div class="home-status-board__top">
-          <span>caligo://runtime</span>
-          <strong>{{ runtimeState }}</strong>
-        </div>
-
-        <div class="home-status-board__grid">
-          <div>
-            <span>API</span>
-            <strong>{{ apiBaseUrl }}</strong>
-          </div>
-          <div>
-            <span>Sesión</span>
-            <strong>{{ currentUser }}</strong>
-          </div>
-          <div>
-            <span>Modo</span>
-            <strong>{{ labMode }}</strong>
-          </div>
-          <div>
-            <span>Salida</span>
-            <strong>Jobs y PDF</strong>
-          </div>
-        </div>
-
-        <div class="home-status-board__modules" aria-label="Módulos principales">
-          <RouterLink v-for="module in moduleLinks" :key="module.id" :to="{ name: module.routeName }">
-            <span>{{ module.tools.length }}</span>
-            <strong>{{ module.title }}</strong>
-            <small>{{ module.eyebrow }}</small>
-          </RouterLink>
-        </div>
-
-        <div class="home-status-board__trace">
-          <span>scope.locked</span>
-          <span>audit.enabled</span>
-          <span>server.tools.synced</span>
-        </div>
-      </aside>
     </div>
   </section>
 </template>
 
 <script>
 import AsciiDescent from "@/components/AsciiDescent.vue";
-import { guideToolCount, platformGuide, toolLogoRail } from "@/data/platformGuide";
-import { toolCssVars, toolMark } from "@/data/toolBranding";
+import HomeToolRail from "@/components/HomeToolRail.vue";
+import { guideToolCount, platformGuide } from "@/data/platformGuide";
+import { caligoApi } from "@/services/caligoApi";
+import { resolveClientIp, resolveServerIp } from "@/utils/networkIdentity";
 
 export default {
   name: "HomeHero",
   components: {
     AsciiDescent,
+    HomeToolRail,
+  },
+  data() {
+    return {
+      clientPublicIp: "",
+      networkIdentity: null,
+    };
   },
   computed: {
+    activeToolGroups() {
+      return new Set(platformGuide.flatMap((section) => section.tools.map((tool) => tool.engine.split(" ")[0]))).size;
+    },
     apiBaseUrl() {
       return this.$store.state.apiBaseUrl?.replace(/^https?:\/\//, "") || "sin configurar";
     },
+    clientIp() {
+      return resolveClientIp(this.networkIdentity, this.clientPublicIp);
+    },
     currentUser() {
-      return this.$store.state.user?.username || "sin sesión";
+      return this.$store.state.user?.username || caligoApi.getStoredUser()?.username || "operador";
     },
     guideToolCount() {
       return guideToolCount;
     },
     labMode() {
-      return this.$store.getters.isPortfolioMode ? "Portfolio seguro" : "Authorized lab";
+      return this.$store.getters.isPortfolioMode ? "Demo protegida" : "Authorized lab";
     },
-    moduleLinks() {
+    platformGuide() {
       return platformGuide;
     },
     runtimeState() {
-      return this.$store.getters.isPortfolioMode ? "Demo segura" : "Operativo";
+      return this.$store.getters.isPortfolioMode ? "Demo" : "Operativo";
     },
-    sessionMode() {
-      return this.$store.getters.isPortfolioMode ? "Demo" : "JWT";
+    serverIp() {
+      return resolveServerIp(this.networkIdentity);
     },
-    toolHighlights() {
-      const ids = ["nmap", "openvas", "metasploit", "hydra", "nuclei", "sqlmap", "hashcat", "wireguard"];
-      return ids.map((id) => toolLogoRail.find((tool) => tool.id === id)).filter(Boolean);
+    sessionState() {
+      if (this.$store.getters.isPortfolioMode) return "Acceso demo";
+      return caligoApi.getStoredToken() ? "JWT activo" : "Sin sesión";
+    },
+    sessionItems() {
+      return [
+        { label: "Sesión", key: "session", value: this.sessionState },
+        { label: "Usuario", key: "user", value: this.currentUser },
+        { label: "Modo", key: "mode", value: this.labMode },
+        { label: "Backend", key: "backend", value: this.apiBaseUrl },
+        { label: "IP servidor", key: "server.ip", value: this.serverIp || "..." },
+        { label: "IP cliente", key: "client.ip", value: this.clientIp || "..." },
+      ];
     },
   },
+  mounted() {
+    this.refreshRuntimeIdentity();
+  },
   methods: {
-    toolCssVars,
-    toolMark,
+    async refreshRuntimeIdentity() {
+      await Promise.allSettled([this.loadNetworkIdentity(), this.loadClientPublicIp()]);
+    },
+    async loadNetworkIdentity() {
+      if (!caligoApi.getStoredToken()) return;
+      try {
+        this.networkIdentity = await caligoApi.request("/api/network/identity");
+      } catch {
+        this.networkIdentity = null;
+      }
+    },
+    async loadClientPublicIp() {
+      try {
+        const response = await fetch("https://api.ipify.org?format=json", { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (/^[0-9a-fA-F:.]{3,80}$/.test(payload?.ip || "")) {
+          this.clientPublicIp = payload.ip;
+        }
+      } catch {
+        this.clientPublicIp = "";
+      }
+    },
   },
 };
 </script>

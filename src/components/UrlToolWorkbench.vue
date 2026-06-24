@@ -137,7 +137,7 @@
         </article>
         <article>
           <span>Validez</span>
-          <strong>{{ result.tls.validNow ? "Válido" : "Revisar" }}</strong>
+        <strong>{{ result.tls?.validNow ? "Válido" : "Revisar" }}</strong>
         </article>
         <article>
           <span>Expira</span>
@@ -389,7 +389,7 @@ export default {
       this.error = "";
       try {
         await this.ensureSession();
-        if (this.tool.noTarget) {
+        if (this.tool?.noTarget) {
           this.result = await caligoApi.request(this.tool.endpoint);
         } else {
           this.result = await caligoApi.request(this.tool.endpoint, {

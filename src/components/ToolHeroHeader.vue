@@ -1,32 +1,25 @@
 <template>
   <header class="tool-hero" :class="{ 'tool-hero--compact': compact }" :style="heroStyle">
-    <div class="tool-hero__visual" aria-hidden="true">
-      <div class="tool-hero__logo-stack">
-        <span
-          v-for="logo in logoItems"
-          :key="logo.key"
-          class="tool-hero__logo"
-          :class="{ 'tool-hero__logo--fallback': !logo.src }"
-        >
-          <img v-if="logo.src" :src="logo.src" :alt="`${logo.label} logo`" />
-          <strong v-else>{{ logo.mark }}</strong>
-        </span>
-      </div>
-      <i></i>
-    </div>
-
     <div class="tool-hero__body">
       <span class="tool-hero__eyebrow">{{ resolvedEyebrow }}</span>
       <h1 :id="titleId">{{ resolvedTitle }}</h1>
       <p>{{ resolvedSummary }}</p>
     </div>
 
-    <dl v-if="visibleMeta.length" class="tool-hero__meta" aria-label="Datos de la herramienta">
-      <div v-for="item in visibleMeta" :key="item.label">
-        <dt>{{ item.label }}</dt>
-        <dd>{{ item.value }}</dd>
+    <div class="tool-hero__visual" aria-hidden="true">
+      <div class="tool-hero__logo-stack" :class="`tool-hero__logo-stack--count-${logoItems.length}`">
+        <span
+          v-for="(logo, index) in logoItems"
+          :key="logo.key"
+          class="tool-hero__logo"
+          :class="{ 'tool-hero__logo--fallback': !logo.src, 'tool-hero__logo--primary': index === 0 }"
+          :title="logo.label"
+        >
+          <img v-if="logo.src" :src="logo.src" :alt="`${logo.label} logo`" />
+          <strong v-else>{{ logo.mark }}</strong>
+        </span>
       </div>
-    </dl>
+    </div>
   </header>
 </template>
 
@@ -107,7 +100,12 @@ export default {
       return this.summary || this.tool?.summary || this.tool?.purpose || this.catalogTool?.purpose || "Interfaz operativa conectada al laboratorio Caligo.";
     },
     heroStyle() {
-      return toolCssVars(this.primaryTool);
+      return {
+        ...toolCssVars(this.primaryTool),
+        "--tool-accent": "var(--category-accent, #65f2d3)",
+        "--tool-accent-2": "var(--category-accent-2, #9fb3c8)",
+        "--tool-glow": "rgba(var(--category-accent-rgb, 94, 234, 212), 0.12)",
+      };
     },
     logoItems() {
       const refs = this.logoTools.length ? this.logoTools : [this.primaryTool];
@@ -120,7 +118,7 @@ export default {
           seen.add(key);
           return true;
         })
-        .slice(0, 4)
+        .slice(0, 3)
         .map((entry) => ({
           key: entry.id || entry.serverId || entry.label || entry.command,
           label: entry.label || entry.title || entry.name || entry.id || "Herramienta",

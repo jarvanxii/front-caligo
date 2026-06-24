@@ -18,8 +18,46 @@
 }
 
 .home-view {
+  position: relative;
+  isolation: isolate;
   width: 100%;
-  padding: 0 0 64px;
+  min-height: calc(100vh - var(--header-height));
+  padding: 0 0 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(1, 4, 5, 0.96) 0%, rgba(4, 11, 12, 0.62) 16%, transparent 32%, transparent 68%, rgba(4, 11, 12, 0.62) 84%, rgba(1, 4, 5, 0.96) 100%),
+    linear-gradient(132deg, rgba(94, 234, 212, 0.08) 0%, rgba(94, 234, 212, 0.025) 22%, transparent 46%),
+    linear-gradient(232deg, rgba(125, 211, 252, 0.045) 0%, transparent 42%),
+    linear-gradient(180deg, rgba(5, 12, 13, 0.98) 0%, rgba(2, 7, 8, 1) 58%, rgba(1, 4, 5, 1) 100%);
+}
+
+.home-view::before,
+.home-view::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+}
+
+.home-view::before {
+  background:
+    linear-gradient(90deg, rgba(94, 234, 212, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(226, 232, 240, 0.027) 1px, transparent 1px),
+    repeating-linear-gradient(180deg, rgba(226, 232, 240, 0.018) 0 1px, transparent 1px 7px);
+  background-size: 76px 76px, 76px 76px, auto;
+  opacity: 0.72;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%),
+    linear-gradient(180deg, black 0%, black 82%, transparent 100%);
+}
+
+.home-view::after {
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(94, 234, 212, 0.045) 18%, transparent 19%, transparent 81%, rgba(125, 211, 252, 0.035) 82%, transparent 100%),
+    linear-gradient(120deg, transparent 0 42%, rgba(184, 247, 239, 0.045) 42.2%, transparent 44%, transparent 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.34) 100%);
+  opacity: 0.95;
 }
 
 .home-hero {
@@ -29,9 +67,7 @@
   overflow: hidden;
   border-bottom: 1px solid rgba(192, 201, 213, 0.14);
   background:
-    linear-gradient(115deg, rgba(73, 179, 139, 0.11) 0%, transparent 25%),
-    linear-gradient(245deg, rgba(215, 247, 200, 0.08) 0%, transparent 27%),
-    linear-gradient(180deg, rgba(15, 19, 24, 0.84) 0%, rgba(7, 10, 10, 0.96) 54%, rgba(8, 10, 9, 1) 100%);
+    linear-gradient(180deg, rgba(8, 14, 15, 0.36) 0%, rgba(4, 8, 9, 0.1) 62%, rgba(2, 5, 6, 0.32) 100%);
 }
 
 .home-hero::before {
@@ -39,11 +75,12 @@
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(226, 232, 240, 0.045) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(94, 234, 212, 0.034) 1px, transparent 1px);
-  background-size: 76px 76px, 76px 76px;
+    linear-gradient(90deg, rgba(226, 232, 240, 0.024) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(94, 234, 212, 0.024) 1px, transparent 1px);
+  background-size: 152px 76px, 152px 76px;
   content: "";
-  mask-image: linear-gradient(180deg, black 0%, black 58%, transparent 100%);
+  opacity: 0.44;
+  mask-image: linear-gradient(180deg, black 0%, black 48%, transparent 100%);
 }
 
 .home-hero::after {
@@ -77,6 +114,10 @@
 
 .ascii-descent::-webkit-scrollbar {
   display: none;
+}
+
+.home-hero > .ascii-descent {
+  margin-bottom: 0;
 }
 
 .ascii-descent::before {
@@ -1215,6 +1256,276 @@ p {
 
   .home-status-board {
     min-height: 0;
+  }
+}
+
+.home-command {
+  display: block;
+  width: min(1340px, calc(100% - 40px));
+  margin-top: 0;
+  padding-top: clamp(12px, 1.6vw, 20px);
+}
+
+.home-command-panel {
+  --console-bg: #020706;
+  --console-panel: #050b0b;
+  --console-panel-alt: #07100f;
+  --console-line: rgba(126, 247, 214, 0.18);
+  --console-line-strong: rgba(126, 247, 214, 0.34);
+  --console-phosphor: #c8ffd6;
+  --console-cyan: #8cf7e2;
+  --console-muted: rgba(197, 219, 213, 0.62);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(340px, 0.92fr) minmax(470px, 1.08fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--console-line-strong);
+  background: var(--console-line);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+    0 22px 70px rgba(0, 0, 0, 0.32),
+    0 0 0 1px rgba(0, 0, 0, 0.52);
+}
+
+.home-command-panel::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 6px);
+  content: "";
+  opacity: 0.46;
+  mix-blend-mode: screen;
+}
+
+.home-command-panel__intro,
+.home-command-panel__session-card,
+.home-command-panel__modules {
+  position: relative;
+  z-index: 2;
+  background: var(--console-bg);
+}
+
+.home-command-panel__intro {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  padding: clamp(18px, 2vw, 25px);
+  box-shadow:
+    inset 4px 0 0 rgba(126, 247, 214, 0.42),
+    inset -1px 0 0 rgba(255, 255, 255, 0.025);
+}
+
+.home-command-panel__intro h1 {
+  margin: 8px 0 9px;
+  color: #eef7f4;
+  font-family: var(--font-display);
+  font-size: clamp(1.38rem, 1.75vw, 1.82rem);
+  font-weight: 850;
+  line-height: 1;
+  text-shadow:
+    0 0 14px rgba(238, 247, 244, 0.12),
+    0 0 24px rgba(126, 247, 214, 0.09);
+}
+
+.home-command-panel__intro p {
+  max-width: 600px;
+  margin: 0;
+  color: var(--console-muted);
+  font-size: 0.91rem;
+  line-height: 1.52;
+}
+
+.home-command-panel__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.home-command-panel__chips span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 28px;
+  border: 1px solid var(--console-line);
+  border-left-color: var(--console-line-strong);
+  padding: 4px 9px;
+  background: var(--console-panel);
+  color: rgba(140, 247, 226, 0.76);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.home-command-panel__chips strong {
+  color: var(--console-phosphor);
+  font-size: 0.9rem;
+  text-shadow: 0 0 10px rgba(200, 255, 214, 0.16);
+}
+
+.home-command-panel__session-card {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  padding: clamp(16px, 2vw, 24px);
+  background: var(--console-panel);
+}
+
+.home-command-panel__session-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--console-line-strong);
+  padding-bottom: 10px;
+  color: rgba(140, 247, 226, 0.76);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.home-command-panel__session-card header strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--console-phosphor);
+  font-size: 0.7rem;
+  text-shadow: 0 0 12px rgba(200, 255, 214, 0.2);
+}
+
+.home-command-panel__session-card header strong::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--console-phosphor);
+  box-shadow: 0 0 12px rgba(200, 255, 214, 0.7);
+  content: "";
+}
+
+.home-command-panel__session {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  border: 1px solid var(--console-line);
+  padding: 10px 12px;
+  background: var(--console-bg);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.015),
+    inset 0 -18px 36px rgba(0, 0, 0, 0.22);
+}
+
+.home-command-panel__session div {
+  display: grid;
+  grid-template-columns: minmax(74px, 0.38fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  min-width: 0;
+  min-height: 0;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(126, 247, 214, 0.09);
+  background: transparent;
+}
+
+.home-command-panel__session div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.home-command-panel__session dt,
+.home-command-panel__modules span {
+  color: rgba(140, 247, 226, 0.7);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.home-command-panel__session dd {
+  margin: 0;
+  overflow: hidden;
+  color: #f3fbf8;
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 850;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-command-panel__modules {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-column: 1 / -1;
+  gap: 1px;
+  background: var(--console-line);
+}
+
+.home-command-panel__modules a {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  min-height: 50px;
+  padding: 10px 14px;
+  background: var(--console-bg);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.home-command-panel__modules a:hover,
+.home-command-panel__modules a:focus-visible {
+  outline: none;
+  background: var(--console-panel-alt);
+  box-shadow:
+    inset 0 -2px 0 rgba(140, 247, 226, 0.58),
+    inset 0 0 0 1px rgba(140, 247, 226, 0.08);
+}
+
+.home-command-panel__modules strong {
+  overflow: hidden;
+  color: rgba(238, 247, 244, 0.9);
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  .home-command-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .home-command-panel__session {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+  }
+
+  .home-command-panel__modules {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .home-command {
+    width: min(100% - 22px, 1340px);
+  }
+
+  .home-command-panel__session,
+  .home-command-panel__modules {
+    grid-template-columns: 1fr;
+  }
+
+  .home-command-panel__session div:nth-last-child(-n + 2) {
+    border-bottom: 1px solid rgba(192, 201, 213, 0.08);
+  }
+
+  .home-command-panel__session div:last-child {
+    border-bottom: 0;
   }
 }
 

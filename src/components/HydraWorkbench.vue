@@ -429,7 +429,7 @@ export default {
     },
     credentialHint() {
       if (this.form.passwordMode === "combo") return "Formato login:password, manual o desde fichero permitido.";
-      if (this.form.passwordMode === "file") return "Se usara una wordlist local del servidor.";
+      if (this.form.passwordMode === "file") return "Se usará una wordlist local del servidor.";
       if (this.form.passwordMode === "list") return "Una password por línea.";
       return "No se guarda en parámetros ni preview.";
     },
@@ -487,6 +487,16 @@ export default {
     this.restoreActiveJob();
   },
   beforeUnmount() {
+    this.stopPolling();
+  },
+  activated() {
+    if (isRuntimeJobRunning(this.job)) {
+      this.startPolling();
+    } else if (!this.job) {
+      this.restoreActiveJob();
+    }
+  },
+  deactivated() {
     this.stopPolling();
   },
   methods: {

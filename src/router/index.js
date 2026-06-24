@@ -18,6 +18,11 @@ const UrlEndpointsView = () => import("@/views/reconocimiento/urls/UrlEndpointsV
 const UrlLocalToolsView = () => import("@/views/reconocimiento/urls/UrlLocalToolsView.vue");
 const NmapView = () => import("@/views/reconocimiento/NmapView.vue");
 const OpenvasView = () => import("@/views/reconocimiento/OpenvasView.vue");
+const AssetfinderView = () => import("@/views/reconocimiento/AssetfinderView.vue");
+const DnsenumView = () => import("@/views/reconocimiento/DnsenumView.vue");
+const DnsreconView = () => import("@/views/reconocimiento/DnsreconView.vue");
+const FierceView = () => import("@/views/reconocimiento/FierceView.vue");
+const FpingView = () => import("@/views/reconocimiento/FpingView.vue");
 const OsintView = () => import("@/views/osint/OsintView.vue");
 const ProfileSearchView = () => import("@/views/osint/ProfileSearchView.vue");
 const SherlockView = () => import("@/views/osint/SherlockView.vue");
@@ -28,7 +33,9 @@ const TheHarvesterView = () => import("@/views/osint/TheHarvesterView.vue");
 const EmailExposureView = () => import("@/views/osint/EmailExposureView.vue");
 const PhoneLookupView = () => import("@/views/osint/PhoneLookupView.vue");
 const DomainContactsView = () => import("@/views/osint/DomainContactsView.vue");
-const EmailBreachView = () => import("@/views/osint/EmailBreachView.vue");
+const GitDumperView = () => import("@/views/osint/GitDumperView.vue");
+const SpiderFootView = () => import("@/views/osint/SpiderFootView.vue");
+const TruffleHogView = () => import("@/views/osint/TruffleHogView.vue");
 const PasswordExposureView = () => import("@/views/osint/PasswordExposureView.vue");
 const MetadataExposureView = () => import("@/views/osint/MetadataExposureView.vue");
 const PublicFilesExposureView = () => import("@/views/osint/PublicFilesExposureView.vue");
@@ -59,6 +66,59 @@ const WhoamiView = () => import("@/views/utilidades/WhoamiView.vue");
 const VpnsView = () => import("@/views/redes/VpnsView.vue");
 const ModuleCatalogView = () => import("@/views/tools/ModuleCatalogView.vue");
 const CatalogToolView = () => import("@/views/tools/CatalogToolView.vue");
+const PlatformGuideView = () => import("@/views/tools/PlatformGuideView.vue");
+const PlatformUpdatesView = () => import("@/views/tools/PlatformUpdatesView.vue");
+
+const legacyToolRedirects = [
+  ["/openvas", "openvas"],
+  ["/metasploit", "metasploit"],
+  ["/urls", "urls"],
+  ["/urls/resolver-dns", "urlsDnsResolver"],
+  ["/urls/inspector", "urlsInspector"],
+  ["/urls/seguridad-http", "urlsHttpSecurity"],
+  ["/urls/tls", "urlsTls"],
+  ["/urls/reputacion", "urlsReputation"],
+  ["/urls/historial", "urlsHistory"],
+  ["/urls/archivos-publicos", "urlsPublicFiles"],
+  ["/urls/endpoints", "urlsEndpoints"],
+  ["/urls/herramientas-locales", "urlsLocalTools"],
+  ["/nmap", "nmap"],
+  ["/osint/personas", "osintProfileSearch"],
+  ["/osint/sherlock", "osintSherlock"],
+  ["/osint/maigret", "osintMaigret"],
+  ["/osint/social-analyzer", "osintSocialAnalyzer"],
+  ["/osint/holehe", "osintHolehe"],
+  ["/osint/theharvester", "osintTheHarvester"],
+  ["/osint/contacto/email-exposure", "osintEmailExposure"],
+  ["/osint/contacto/phone-lookup", "osintPhoneLookup"],
+  ["/osint/contacto/domain-contacts", "osintDomainContacts"],
+  ["/osint/documentos/git-dumper", "osintGitDumper"],
+  ["/osint/identidad/spiderfoot", "osintSpiderFoot"],
+  ["/osint/documentos/trufflehog", "osintTruffleHog"],
+  ["/osint/brechas/password", "osintPasswordExposure"],
+  ["/osint/documentos/metadatos", "osintMetadataExposure"],
+  ["/osint/documentos/archivos-publicos", "osintPublicFiles"],
+  ["/contrasenas/john", "passwordsJohn"],
+  ["/contrasenas/hashcat", "passwordsHashcat"],
+  ["/contrasenas/identificador", "passwordsIdentifier"],
+  ["/contrasenas/crunch", "passwordsCrunch"],
+  ["/contrasenas/cewl", "passwordsCewl"],
+  ["/contrasenas/wordlists", "passwordsWordlists"],
+  ["/fuerza-bruta", "fuerzaBruta"],
+  ["/vulnerabilidades/nuclei", "vulnerabilidadesNuclei"],
+  ["/vulnerabilidades/searchsploit", "vulnerabilidadesSearchsploit"],
+  ["/vulnerabilidades/nikto", "vulnerabilidadesNikto"],
+  ["/vulnerabilidades/sqlmap", "vulnerabilidadesSqlmap"],
+  ["/esteganografia/analizador", "stegoAnalyze"],
+  ["/esteganografia/metadatos/analizador", "stegoMetadataAnalyze"],
+  ["/esteganografia/metadatos/editor", "stegoMetadataEditor"],
+  ["/esteganografia/incrustar", "stegoEmbed"],
+  ["/esteganografia/extraer", "stegoExtract"],
+  ["/utilidades/identidad/whoami-local", "networkWhoamiLocal"],
+  ["/utilidades/identidad/whoami-server", "networkWhoamiServer"],
+  ["/redes/vpns/wireguard", "networkVpnsWireguard"],
+  ["/redes/vpns/openvpn", "networkVpnsOpenvpn"],
+];
 
 const routes = [
   {
@@ -80,115 +140,181 @@ const routes = [
     },
   },
   {
-    path: "/reconocimiento",
-    name: "reconocimiento",
-    component: ReconnaissanceView,
+    path: "/settings/guide",
+    name: "platformGuide",
+    component: PlatformGuideView,
     meta: {
-      moduleKey: "reconocimiento",
+      hideSidebar: true,
+      moduleKey: "tools",
     },
   },
   {
-    path: "/openvas",
+    path: "/settings/updates",
+    name: "platformUpdates",
+    component: PlatformUpdatesView,
+    meta: {
+      hideSidebar: true,
+      moduleKey: "tools",
+    },
+  },
+  {
+    path: "/scan",
+    name: "scan",
+    component: ReconnaissanceView,
+    meta: {
+      moduleKey: "scan",
+    },
+  },
+  {
+    path: "/reconocimiento",
+    name: "reconocimiento",
+    redirect: { name: "scan" },
+    meta: {
+      moduleKey: "scan",
+    },
+  },
+  {
+    path: "/tool/openvas",
     name: "openvas",
     component: OpenvasView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/metasploit",
+    path: "/tool/metasploit",
     name: "metasploit",
     component: MetasploitView,
     meta: {
-      moduleKey: "vulnerabilidades",
+      moduleKey: "xploit",
     },
   },
   {
-    path: "/urls",
+    path: "/tool/caligo-intel",
     name: "urls",
     component: UrlsView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/resolver-dns",
+    path: "/tool/dns-resolver",
     name: "urlsDnsResolver",
     component: UrlDnsResolverView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/inspector",
+    path: "/tool/url-inspector",
     name: "urlsInspector",
     component: UrlInspectorView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/seguridad-http",
+    path: "/tool/http-security",
     name: "urlsHttpSecurity",
     component: UrlHttpSecurityView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/tls",
+    path: "/tool/tls-certificate",
     name: "urlsTls",
     component: UrlTlsView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/reputacion",
+    path: "/tool/url-reputation",
     name: "urlsReputation",
     component: UrlReputationView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/historial",
+    path: "/tool/url-history",
     name: "urlsHistory",
     component: UrlHistoryView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/archivos-publicos",
+    path: "/tool/url-public-files",
     name: "urlsPublicFiles",
     component: UrlPublicFilesView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/endpoints",
+    path: "/tool/url-endpoints",
     name: "urlsEndpoints",
     component: UrlEndpointsView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/urls/herramientas-locales",
+    path: "/tool/url-local-tools",
     name: "urlsLocalTools",
     component: UrlLocalToolsView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
     },
   },
   {
-    path: "/nmap",
+    path: "/tool/nmap",
     name: "nmap",
     component: NmapView,
     meta: {
-      moduleKey: "reconocimiento",
+      moduleKey: "scan",
+    },
+  },
+  {
+    path: "/tool/assetfinder",
+    name: "assetfinder",
+    component: AssetfinderView,
+    meta: {
+      moduleKey: "scan",
+    },
+  },
+  {
+    path: "/tool/dnsenum",
+    name: "dnsenum",
+    component: DnsenumView,
+    meta: {
+      moduleKey: "scan",
+    },
+  },
+  {
+    path: "/tool/dnsrecon",
+    name: "dnsrecon",
+    component: DnsreconView,
+    meta: {
+      moduleKey: "scan",
+    },
+  },
+  {
+    path: "/tool/fierce",
+    name: "fierce",
+    component: FierceView,
+    meta: {
+      moduleKey: "scan",
+    },
+  },
+  {
+    path: "/tool/fping",
+    name: "fping",
+    component: FpingView,
+    meta: {
+      moduleKey: "scan",
     },
   },
   {
@@ -200,7 +326,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/personas",
+    path: "/tool/caligo-people",
     name: "osintProfileSearch",
     component: ProfileSearchView,
     meta: {
@@ -208,7 +334,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/sherlock",
+    path: "/tool/sherlock",
     name: "osintSherlock",
     component: SherlockView,
     meta: {
@@ -216,7 +342,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/maigret",
+    path: "/tool/maigret",
     name: "osintMaigret",
     component: MaigretView,
     meta: {
@@ -224,7 +350,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/social-analyzer",
+    path: "/tool/social-analyzer",
     name: "osintSocialAnalyzer",
     component: SocialAnalyzerView,
     meta: {
@@ -232,7 +358,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/holehe",
+    path: "/tool/holehe",
     name: "osintHolehe",
     component: HoleheView,
     meta: {
@@ -240,7 +366,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/theharvester",
+    path: "/tool/theharvester",
     name: "osintTheHarvester",
     component: TheHarvesterView,
     meta: {
@@ -248,7 +374,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/contacto/email-exposure",
+    path: "/tool/email-exposure",
     name: "osintEmailExposure",
     component: EmailExposureView,
     meta: {
@@ -256,7 +382,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/contacto/phone-lookup",
+    path: "/tool/phone-lookup",
     name: "osintPhoneLookup",
     component: PhoneLookupView,
     meta: {
@@ -264,7 +390,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/contacto/domain-contacts",
+    path: "/tool/domain-contacts",
     name: "osintDomainContacts",
     component: DomainContactsView,
     meta: {
@@ -272,15 +398,31 @@ const routes = [
     },
   },
   {
-    path: "/osint/brechas/email",
-    name: "osintEmailBreach",
-    component: EmailBreachView,
+    path: "/tool/git-dumper",
+    name: "osintGitDumper",
+    component: GitDumperView,
     meta: {
       moduleKey: "osint",
     },
   },
   {
-    path: "/osint/brechas/password",
+    path: "/tool/spiderfoot",
+    name: "osintSpiderFoot",
+    component: SpiderFootView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/tool/trufflehog",
+    name: "osintTruffleHog",
+    component: TruffleHogView,
+    meta: {
+      moduleKey: "osint",
+    },
+  },
+  {
+    path: "/tool/password-exposure",
     name: "osintPasswordExposure",
     component: PasswordExposureView,
     meta: {
@@ -288,7 +430,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/documentos/metadatos",
+    path: "/tool/metadata-exposure",
     name: "osintMetadataExposure",
     component: MetadataExposureView,
     meta: {
@@ -296,7 +438,7 @@ const routes = [
     },
   },
   {
-    path: "/osint/documentos/archivos-publicos",
+    path: "/tool/public-files",
     name: "osintPublicFiles",
     component: PublicFilesExposureView,
     meta: {
@@ -304,107 +446,130 @@ const routes = [
     },
   },
   {
-    path: "/vulnerabilidades",
-    name: "vulnerabilidades",
+    path: "/xploit",
+    name: "xploit",
     component: VulnerabilitiesView,
     meta: {
-      moduleKey: "vulnerabilidades",
+      moduleKey: "xploit",
+    },
+  },
+  {
+    path: "/vulnerabilidades",
+    name: "vulnerabilidades",
+    redirect: { name: "xploit" },
+    meta: {
+      moduleKey: "xploit",
+    },
+  },
+  {
+    path: "/tools",
+    name: "tools",
+    component: UtilitiesView,
+    meta: {
+      moduleKey: "tools",
+    },
+  },
+  {
+    path: "/passwords",
+    name: "passwords",
+    component: PasswordsView,
+    meta: {
+      moduleKey: "tools",
     },
   },
   {
     path: "/contrasenas",
-    name: "contrasenas",
-    component: PasswordsView,
+    redirect: { name: "passwords" },
     meta: {
-      moduleKey: "contrasenas",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/contrasenas/john",
+    path: "/tool/john",
     name: "passwordsJohn",
     component: JohnView,
     meta: {
-      moduleKey: "contrasenas",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/contrasenas/hashcat",
+    path: "/tool/hashcat",
     name: "passwordsHashcat",
     component: HashcatView,
     meta: {
-      moduleKey: "contrasenas",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/contrasenas/identificador",
+    path: "/tool/hashid",
     name: "passwordsIdentifier",
     component: HashIdentifierView,
     meta: {
-      moduleKey: "contrasenas",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/contrasenas/crunch",
+    path: "/tool/crunch",
     name: "passwordsCrunch",
     component: CrunchView,
     meta: {
-      moduleKey: "contrasenas",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/contrasenas/cewl",
+    path: "/tool/cewl",
     name: "passwordsCewl",
     component: CewlView,
     meta: {
-      moduleKey: "contrasenas",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/contrasenas/wordlists",
+    path: "/tool/wordlists",
     name: "passwordsWordlists",
     component: WordlistsView,
     meta: {
-      moduleKey: "contrasenas",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/fuerza-bruta",
+    path: "/tool/hydra",
     name: "fuerzaBruta",
     component: BruteForceView,
     meta: {
-      moduleKey: "vulnerabilidades",
+      moduleKey: "xploit",
     },
   },
   {
-    path: "/vulnerabilidades/nuclei",
+    path: "/tool/nuclei",
     name: "vulnerabilidadesNuclei",
     component: NucleiView,
     meta: {
-      moduleKey: "vulnerabilidades",
+      moduleKey: "xploit",
     },
   },
   {
-    path: "/vulnerabilidades/searchsploit",
+    path: "/tool/searchsploit",
     name: "vulnerabilidadesSearchsploit",
     component: SearchsploitView,
     meta: {
-      moduleKey: "vulnerabilidades",
+      moduleKey: "xploit",
     },
   },
   {
-    path: "/vulnerabilidades/nikto",
+    path: "/tool/nikto",
     name: "vulnerabilidadesNikto",
     component: NiktoView,
     meta: {
-      moduleKey: "vulnerabilidades",
+      moduleKey: "xploit",
     },
   },
   {
-    path: "/vulnerabilidades/sqlmap",
+    path: "/tool/sqlmap",
     name: "vulnerabilidadesSqlmap",
     component: SqlmapView,
     meta: {
-      moduleKey: "vulnerabilidades",
+      moduleKey: "xploit",
     },
   },
   {
@@ -412,71 +577,79 @@ const routes = [
     name: "esteganografia",
     component: SteganographyView,
     meta: {
-      moduleKey: "esteganografia",
+      moduleKey: "coding",
     },
   },
   {
-    path: "/esteganografia/analizador",
+    path: "/tool/stego-analyze",
     name: "stegoAnalyze",
     component: StegoAnalyzeView,
     meta: {
-      moduleKey: "esteganografia",
+      moduleKey: "coding",
     },
   },
   {
-    path: "/esteganografia/metadatos/analizador",
+    path: "/tool/metadata-analyzer",
     name: "stegoMetadataAnalyze",
     component: StegoMetadataAnalyzeView,
     meta: {
-      moduleKey: "esteganografia",
+      moduleKey: "coding",
     },
   },
   {
-    path: "/esteganografia/metadatos/editor",
+    path: "/tool/metadata-editor",
     name: "stegoMetadataEditor",
     component: StegoMetadataEditorView,
     meta: {
-      moduleKey: "esteganografia",
+      moduleKey: "coding",
     },
   },
   {
-    path: "/esteganografia/incrustar",
+    path: "/tool/stego-embed",
     name: "stegoEmbed",
     component: StegoEmbedView,
     meta: {
-      moduleKey: "esteganografia",
+      moduleKey: "coding",
     },
   },
   {
-    path: "/esteganografia/extraer",
+    path: "/tool/stego-extract",
     name: "stegoExtract",
     component: StegoExtractView,
     meta: {
-      moduleKey: "esteganografia",
+      moduleKey: "coding",
     },
   },
   {
     path: "/redes-utilidades",
     name: "redesUtilidades",
-    redirect: { name: "redes" },
+    redirect: { name: "network" },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
+    },
+  },
+  {
+    path: "/network",
+    name: "network",
+    component: NetworksView,
+    meta: {
+      moduleKey: "network",
     },
   },
   {
     path: "/redes",
     name: "redes",
-    component: NetworksView,
+    redirect: { name: "network" },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
     },
   },
   {
     path: "/utilidades",
     name: "utilidades",
-    component: UtilitiesView,
+    redirect: { name: "tools" },
     meta: {
-      moduleKey: "utilidades",
+      moduleKey: "tools",
     },
   },
   {
@@ -484,50 +657,50 @@ const routes = [
     name: "networkWhoami",
     redirect: { name: "networkWhoamiLocal" },
     meta: {
-      moduleKey: "utilidades",
+      moduleKey: "tools",
     },
   },
   {
     path: "/redes-utilidades/identidad/whoami",
     redirect: { name: "networkWhoamiLocal" },
     meta: {
-      moduleKey: "utilidades",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/utilidades/identidad/whoami-local",
+    path: "/tool/whoami-local",
     name: "networkWhoamiLocal",
     component: WhoamiView,
     props: {
       mode: "local",
     },
     meta: {
-      moduleKey: "utilidades",
+      moduleKey: "tools",
     },
   },
   {
     path: "/redes-utilidades/identidad/whoami-local",
     redirect: { name: "networkWhoamiLocal" },
     meta: {
-      moduleKey: "utilidades",
+      moduleKey: "tools",
     },
   },
   {
-    path: "/utilidades/identidad/whoami-server",
+    path: "/tool/whoami-server",
     name: "networkWhoamiServer",
     component: WhoamiView,
     props: {
       mode: "server",
     },
     meta: {
-      moduleKey: "utilidades",
+      moduleKey: "tools",
     },
   },
   {
     path: "/redes-utilidades/identidad/whoami-server",
     redirect: { name: "networkWhoamiServer" },
     meta: {
-      moduleKey: "utilidades",
+      moduleKey: "tools",
     },
   },
   {
@@ -535,65 +708,73 @@ const routes = [
     name: "networkVpns",
     redirect: { name: "networkVpnsWireguard" },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
     },
   },
   {
     path: "/redes-utilidades/identidad/vpns",
     redirect: { name: "networkVpnsWireguard" },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
     },
   },
   {
     path: "/redes-utilidades/vpns",
     redirect: { name: "networkVpnsWireguard" },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
     },
   },
   {
-    path: "/redes/vpns/wireguard",
+    path: "/tool/wireguard",
     name: "networkVpnsWireguard",
     component: VpnsView,
     props: {
       initialProtocol: "wireguard",
     },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
     },
   },
   {
     path: "/redes-utilidades/vpns/wireguard",
     redirect: { name: "networkVpnsWireguard" },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
     },
   },
   {
-    path: "/redes/vpns/openvpn",
+    path: "/tool/openvpn",
     name: "networkVpnsOpenvpn",
     component: VpnsView,
     props: {
       initialProtocol: "openvpn",
     },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
     },
   },
   {
     path: "/redes-utilidades/vpns/openvpn",
     redirect: { name: "networkVpnsOpenvpn" },
     meta: {
-      moduleKey: "redes",
+      moduleKey: "network",
+    },
+  },
+  {
+    path: "/coding",
+    name: "coding",
+    component: EncodingView,
+    meta: {
+      moduleKey: "coding",
     },
   },
   {
     path: "/codificacion",
     name: "codificacion",
-    component: EncodingView,
+    redirect: { name: "coding" },
     meta: {
-      moduleKey: "codificacion",
+      moduleKey: "coding",
     },
   },
   {
@@ -601,9 +782,13 @@ const routes = [
     name: "reversing",
     component: ModuleCatalogView,
     meta: {
-      moduleKey: "reversing",
+      moduleKey: "coding",
     },
   },
+  ...legacyToolRedirects.map(([path, routeName]) => ({
+    path,
+    redirect: { name: routeName },
+  })),
   ...catalogToolRoutes.map((tool) => ({
     path: tool.path,
     name: tool.routeName,
