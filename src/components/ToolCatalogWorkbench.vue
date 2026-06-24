@@ -15,7 +15,7 @@
         <article class="catalog-tool__panel catalog-tool__panel--primary">
           <header>
             <span>Operativa</span>
-            <strong>{{ tool.implemented ? "Conector activo" : "Conector pendiente" }}</strong>
+            <strong>Conector pendiente</strong>
           </header>
 
           <p>{{ tool.usage }}</p>
@@ -31,58 +31,53 @@
             </div>
             <div>
               <dt>Estado servidor</dt>
-              <dd>{{ serverTool ? (installed ? "Instalada" : "No detectada") : "Sin inventario" }}</dd>
+              <dd>{{ serverStateLabel }}</dd>
             </div>
           </dl>
         </article>
 
-        <form class="catalog-tool__panel" @submit.prevent="simulateRun">
+        <article class="catalog-tool__panel catalog-tool__notice">
           <header>
-            <span>Parámetros</span>
-            <strong>{{ tool.code }}</strong>
+            <span>En desarrollo</span>
+            <strong>Formulario desactivado</strong>
           </header>
 
-          <label>
-            Objetivo o entrada autorizada
-            <input v-model.trim="form.target" type="text" autocomplete="off" spellcheck="false" placeholder="dominio, IP, URL, fichero o hash" />
-          </label>
+          <div class="catalog-tool__notice-body">
+            <span class="catalog-tool__notice-mark" aria-hidden="true">{{ tool.code }}</span>
+            <div>
+              <h2>Este apartado todavía no funciona desde Caligo.</h2>
+              <p>
+                La herramienta está registrada en el catálogo, pero aún no tiene un conector operativo,
+                validaciones de alcance ni job persistente en el backend. Para evitar falsas expectativas,
+                el formulario queda apagado hasta completar esa integración.
+              </p>
+            </div>
+          </div>
 
-          <label>
-            Perfil de ejecución
-            <select v-model="form.profile">
-              <option value="safe">Seguro / pasivo</option>
-              <option value="standard">Estándar</option>
-              <option value="deep">Profundo controlado</option>
-            </select>
-          </label>
-
-          <label>
-            Notas de alcance
-            <textarea v-model.trim="form.scope" rows="4" spellcheck="false" placeholder="Describe el laboratorio, cliente interno o rango autorizado."></textarea>
-          </label>
-
-          <label class="catalog-tool__switch">
-            <input v-model="form.authorized" type="checkbox" />
-            <span>Confirmo que el objetivo pertenece a un entorno autorizado.</span>
-          </label>
-
-          <button type="submit" :disabled="!canPrepareRun">
-            Preparar ejecución
-          </button>
-        </form>
+          <dl class="catalog-tool__dev-status">
+            <div>
+              <dt>Conector</dt>
+              <dd>Pendiente</dd>
+            </div>
+            <div>
+              <dt>Servidor</dt>
+              <dd>{{ serverStateLabel }}</dd>
+            </div>
+          </dl>
+        </article>
       </section>
 
       <section class="catalog-tool__panel catalog-tool__panel--wide">
         <header>
           <span>Plan de integración</span>
-          <strong>{{ prepared ? "Listo para backend" : "Esperando parámetros" }}</strong>
+          <strong>Bloqueado hasta backend</strong>
         </header>
 
         <div class="catalog-tool__execution">
           <article>
-            <span>Entrada esperada</span>
-            <strong>{{ form.target || "Objetivo autorizado" }}</strong>
-            <small>{{ form.scope || "Define alcance antes de activar ejecución real." }}</small>
+            <span>Estado visible</span>
+            <strong>Desarrollo activo</strong>
+            <small>El usuario ve una explicación clara en lugar de un formulario que no ejecuta nada real.</small>
           </article>
           <article>
             <span>Backend necesario</span>
@@ -90,13 +85,21 @@
             <small>Validación de alcance, rate limit, redacción de secretos y salida normalizada.</small>
           </article>
           <article>
-            <span>Persistencia</span>
-            <strong>Vuex / job id</strong>
-            <small>La vista conservará estado al navegar, igual que Nmap, OpenVAS e Hydra.</small>
+            <span>Programa servidor</span>
+            <strong>{{ serverStateLabel }}</strong>
+            <small>{{ serverHint }}</small>
           </article>
         </div>
 
-        <pre>{{ commandPreview }}</pre>
+        <ol class="catalog-tool__roadmap" aria-label="Siguientes pasos técnicos">
+          <li v-for="item in roadmapItems" :key="item.title">
+            <span>{{ item.step }}</span>
+            <div>
+              <strong>{{ item.title }}</strong>
+              <p>{{ item.copy }}</p>
+            </div>
+          </li>
+        </ol>
       </section>
     </div>
   </section>
@@ -161,13 +164,6 @@ export default {
     return {
       serverTools: [],
       inventoryLoaded: false,
-      prepared: false,
-      form: {
-        target: "",
-        profile: "safe",
-        scope: "",
-        authorized: false,
-      },
     };
   },
   computed: {
@@ -176,7 +172,7 @@ export default {
         id: "unknown",
         label: "Herramienta",
         code: "LAB",
-        moduleKey: "utilidades",
+        moduleKey: "tools",
         moduleLabel: "Caligo",
         section: "diagnostics",
         command: "backend",
@@ -195,42 +191,51 @@ export default {
     installed() {
       return Boolean(this.serverTool?.installed);
     },
-    statusLabel() {
-      if (this.tool.implemented) return "Operativo";
-      if (!this.inventoryLoaded) return "Comprobando";
-      return this.installed ? "Instalada" : "Planificada";
-    },
     versionLabel() {
       if (this.serverTool?.version) return this.serverTool.version;
       if (this.serverTool && !this.serverTool.installed) return "No detectada en servidor";
-      return this.tool.implemented ? "Endpoint funcional" : "Vista preparada";
+      return "Sin conector activo";
     },
     heroMeta() {
       return [
-        { label: "Estado", value: this.statusLabel },
+        { label: "Estado", value: "En desarrollo" },
         { label: "Programa", value: this.tool.command },
-        { label: "Version", value: this.versionLabel },
+        { label: "Versión", value: this.versionLabel },
       ];
     },
-    canPrepareRun() {
-      return Boolean(this.form.target && this.form.authorized);
+    serverStateLabel() {
+      if (!this.inventoryLoaded) return "Comprobando inventario";
+      if (this.serverTool) return this.installed ? "Instalada" : "No detectada";
+      return "Sin inventario específico";
     },
-    commandPreview() {
-      const payload = {
-        tool: this.tool.id,
-        command: this.tool.command,
-        status: this.tool.implemented ? "implemented" : "planned",
-        profile: this.form.profile,
-        target: this.form.target || "<objetivo-autorizado>",
-        scope: this.form.scope || "<alcance>",
-        requiredBackend: {
-          endpoint: this.tool.endpoint || `/api/catalog/${this.tool.id}/runs`,
-          auth: "JWT",
-          persistence: "job-id",
-          safeguards: ["scope validation", "rate limit", "output redaction", "audit log"],
+    serverHint() {
+      if (!this.inventoryLoaded) return "Caligo está consultando el inventario del servidor.";
+      if (this.serverTool?.installed) {
+        return "El binario existe en el servidor, pero falta exponerlo con una operativa segura.";
+      }
+      if (this.serverTool) {
+        return "Primero habrá que instalarlo o declararlo correctamente antes de crear la ejecución.";
+      }
+      return "Esta herramienta aún no está mapeada en el inventario técnico del backend.";
+    },
+    roadmapItems() {
+      return [
+        {
+          step: "01",
+          title: "Contrato de ejecución",
+          copy: `Definir /api/catalog/${this.tool.id}/runs o moverla a un módulo operativo existente.`,
         },
-      };
-      return JSON.stringify(payload, null, 2);
+        {
+          step: "02",
+          title: "Guardarraíles",
+          copy: "Añadir alcance autorizado, límites de intensidad, auditoría y salida sin secretos.",
+        },
+        {
+          step: "03",
+          title: "Interfaz real",
+          copy: "Reactivar el formulario sólo cuando el job, historial y errores estén conectados al backend.",
+        },
+      ];
     },
   },
   mounted() {
@@ -246,9 +251,6 @@ export default {
       } finally {
         this.inventoryLoaded = true;
       }
-    },
-    simulateRun() {
-      this.prepared = true;
     },
   },
 };
