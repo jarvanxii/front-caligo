@@ -14,16 +14,14 @@
   "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "/caligo-tab-icon-192x192.png",
+      "src": "/caligo-install-v3-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
-      "src": "/caligo-tab-icon-512x512.png",
+      "src": "/caligo-install-v3-512x512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     }
   ]
 }
