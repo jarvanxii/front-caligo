@@ -69,7 +69,7 @@ export default {
       return new Set(platformGuide.flatMap((section) => section.tools.map((tool) => tool.engine.split(" ")[0]))).size;
     },
     apiBaseUrl() {
-      return this.$store.state.apiBaseUrl?.replace(/^https?:\/\//, "") || "sin configurar";
+      return this.$store.state.apiBaseUrl?.replace(/^https?:\/\//, "") || "mismo origen";
     },
     clientIp() {
       return resolveClientIp(this.networkIdentity, this.clientPublicIp);
