@@ -26,6 +26,11 @@
           :style="activeSparkStyle"
         >#</span>
       </div>
+      <div class="ascii-descent__mobile-brand" aria-hidden="true">
+        <img src="@/assets/images/caligo-wordmark.png" alt="" />
+        <strong>SEC-LAB</strong>
+        <span>CONTROLLED MODE</span>
+      </div>
       <div class="ascii-descent__meta ascii-descent__meta--bottom" aria-hidden="true">
         <span>TRACE ENABLED</span>
         <span>CONTROLLED MODE</span>

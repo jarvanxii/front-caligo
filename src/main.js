@@ -18,5 +18,6 @@ import "./assets/styles/10-tool-catalog.css";
 import "./assets/styles/11-tool-hero.css";
 import "./assets/styles/90-category-themes.css";
 import "./assets/styles/91-portfolio-access.css";
+import "./assets/styles/12-mobile-polish.css";
 
 createApp(App).use(store).use(router).mount("#app");

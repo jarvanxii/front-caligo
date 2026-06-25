@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_CALIGO_API_BASE_URL || "http://192.168.0.253:8080";
+const API_BASE_URL = (import.meta.env.VITE_CALIGO_API_BASE_URL || "").replace(/\/$/, "");
+const REQUEST_TIMEOUT_MS = 12000;
 const TOKEN_KEY = "caligo.jwt";
 const USER_KEY = "caligo.user";
 const ACCESS_MODE_KEY = "caligo.accessMode";
@@ -61,30 +62,56 @@ function assertOperationalAccess() {
   }
 }
 
-export async function apiRequest(path, options = {}) {
-  assertOperationalAccess();
+function parsePayload(text) {
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text };
+  }
+}
+
+async function requestJson(path, options = {}, { includeAuth = true, requireOperationalAccess = true } = {}) {
+  if (requireOperationalAccess) {
+    assertOperationalAccess();
+  }
   const headers = {
     Accept: "application/json",
     ...(options.body ? { "Content-Type": "application/json" } : {}),
     ...(options.headers || {}),
   };
-  const token = getStoredToken();
+  const token = includeAuth ? getStoredToken() : "";
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-  });
+  let response;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+      signal: options.signal || controller.signal,
+    });
+  } catch (error) {
+    const timedOut = error?.name === "AbortError";
+    throw new Error(timedOut ? "El backend de Caligo no respondió a tiempo" : "No se pudo conectar con el backend de Caligo");
+  } finally {
+    window.clearTimeout(timeout);
+  }
 
   const text = await response.text();
-  const payload = text ? JSON.parse(text) : null;
+  const payload = parsePayload(text);
   if (!response.ok) {
     const message = payload?.message || payload?.error || response.statusText || "Error de API";
     throw new Error(message);
   }
   return payload;
+}
+
+export async function apiRequest(path, options = {}) {
+  return requestJson(path, options);
 }
 
 export async function downloadApiFile(path, filename) {
@@ -126,10 +153,14 @@ export async function downloadApiFile(path, filename) {
 }
 
 export async function login(username, password) {
-  const session = await apiRequest("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
+  const session = await requestJson(
+    "/api/auth/login",
+    {
+      method: "POST",
+      body: JSON.stringify({ username, password }),
+    },
+    { includeAuth: false, requireOperationalAccess: false },
+  );
   storeSession(session);
   return session;
 }

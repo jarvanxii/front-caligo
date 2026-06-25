@@ -102,7 +102,9 @@ export default {
   data() {
     return {
       activeHash: "#module-overview",
+      isMobileSidebar: false,
       openSectionId: "",
+      sidebarMediaQuery: null,
     };
   },
   computed: {
@@ -158,11 +160,15 @@ export default {
     },
   },
   mounted() {
+    this.sidebarMediaQuery = window.matchMedia?.("(max-width: 760px)") || null;
+    this.isMobileSidebar = Boolean(this.sidebarMediaQuery?.matches);
+    this.sidebarMediaQuery?.addEventListener?.("change", this.handleSidebarMediaChange);
     this.syncActiveHash();
     this.syncOpenSection();
     window.addEventListener("hashchange", this.syncActiveHash);
   },
   beforeUnmount() {
+    this.sidebarMediaQuery?.removeEventListener?.("change", this.handleSidebarMediaChange);
     window.removeEventListener("hashchange", this.syncActiveHash);
   },
   methods: {
@@ -194,11 +200,26 @@ export default {
       }
       return this.activeHash === hash;
     },
+    handleSidebarMediaChange(event) {
+      this.isMobileSidebar = event.matches;
+      if (this.isMobileSidebar) {
+        this.openSectionId = "";
+        return;
+      }
+      this.syncOpenSection();
+    },
     syncActiveHash() {
       this.activeHash = window.location.hash || "#module-overview";
       this.syncOpenSection();
     },
     syncOpenSection() {
+      if (this.isMobileSidebar) {
+        const sectionExists = this.navigationItems.some((item) => item.type === "section" && item.id === this.openSectionId);
+        if (!sectionExists) {
+          this.openSectionId = "";
+        }
+        return;
+      }
       const activeSection = this.navigationItems.find((item) => item.type === "section" && this.isSectionActive(item));
       this.openSectionId = activeSection?.id || "";
     },
