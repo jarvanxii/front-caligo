@@ -26,11 +26,6 @@
           :style="activeSparkStyle"
         >#</span>
       </div>
-      <div class="ascii-descent__mobile-brand" aria-hidden="true">
-        <img src="@/assets/images/caligo-wordmark.png" alt="" />
-        <strong>SEC-LAB</strong>
-        <span>CONTROLLED MODE</span>
-      </div>
       <div class="ascii-descent__meta ascii-descent__meta--bottom" aria-hidden="true">
         <span>TRACE ENABLED</span>
         <span>CONTROLLED MODE</span>
@@ -140,6 +135,10 @@ export default {
       this.$nextTick(this.startMatrixRain);
       return;
     }
+    if (!this.booting && this.shouldKeepMatrixRain()) {
+      this.matrixVisible = true;
+      this.$nextTick(this.startMatrixRain);
+    }
     this.startHashSpark();
   },
   deactivated() {
@@ -165,10 +164,17 @@ export default {
       this.settling = true;
       this.settleTimer = window.setTimeout(() => {
         this.settling = false;
+        if (this.shouldKeepMatrixRain()) {
+          this.startHashSpark();
+          return;
+        }
         this.matrixVisible = false;
         this.stopMatrixRain();
         this.startHashSpark();
       }, MATRIX_SETTLE_MS);
+    },
+    shouldKeepMatrixRain() {
+      return Boolean(window.matchMedia?.("(max-width: 760px)").matches);
     },
     startHashSpark() {
       if (this.booting || this.hashSparkTimer) return;
